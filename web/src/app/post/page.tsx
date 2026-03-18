@@ -1,34 +1,42 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { calendarEvents, type CalendarEvent } from "@/data/mock";
 import { CalendarGrid } from "@/components/calendar/CalendarGrid";
 import {
-  PostHeader,
-  PostControls,
-  PostCardsView,
-  KanbanView,
-  EventDetailDialog,
-  CreateContentDialog,
-} from "@/components/post";
+    PostHeader,
+    PostControls,
+    PostCardsView,
+    KanbanView,
+    ListView,
+    EventDetailDialog,
+    CreateContentDialog,
+  } from "@/components/post";
 import { getDaysInMonth, getFirstDayOfMonth } from "@/lib/constants";
 import { Platform } from "@/components/social/PlatformIcon";
 
 type ViewMode = "calendar" | "cards";
 type CalendarView = "month" | "week";
-type CardsView = "grid" | "kanban";
+type CardsView = "grid" | "kanban" | "list";
 
 export default function PostPage() {
   const [viewMode, setViewMode] = useState<ViewMode>("calendar");
   const [calendarView, setCalendarView] = useState<CalendarView>("month");
   const [cardsView, setCardsView] = useState<CardsView>("grid");
-  const [currentDate, setCurrentDate] = useState(new Date());
+  // Use a fixed date for initial render to prevent hydration mismatch
+  // The same date renders on server and client, then updates to real date on client
+  const [currentDate, setCurrentDate] = useState<Date>(() => new Date("2026-01-01T00:00:00"));
+
+  useEffect(() => {
+    // Update to actual date on client mount only (after hydration)
+    setCurrentDate(new Date());
+  }, []);
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [events, setEvents] = useState(calendarEvents);
   const [draggedEvent, setDraggedEvent] = useState<CalendarEvent | null>(null);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [selectedDateForCreate, setSelectedDateForCreate] = useState<string | null>(null);
-  const [selectedPlatform, setSelectedPlatform] = useState<Platform | "all">("all");
+  const [selectedPlatform, setSelectedPlatform] = useState<Platform | "all">("all" as const);
 
   const openCreateDialog = (dateStr?: string) => {
     setSelectedDateForCreate(dateStr || null);
@@ -118,7 +126,7 @@ const eventsByDate = useMemo(() => {
     [draggedEvent]
   );
 
-  const today = new Date();
+  const today = currentDate;
   const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
 
   // Calculate cells based on calendar view
@@ -189,13 +197,21 @@ const eventsByDate = useMemo(() => {
           />
         )}
 
-        {viewMode === "cards" && cardsView === "kanban" && (
-          <KanbanView
-            events={filteredEvents}
-            onEventClick={setSelectedEvent}
-            onCreateClick={() => openCreateDialog()}
-          />
-        )}
+          {viewMode === "cards" && cardsView === "kanban" && (
+            <KanbanView
+              events={filteredEvents}
+              onEventClick={setSelectedEvent}
+              onCreateClick={() => openCreateDialog()}
+              onEventsChange={setEvents}
+            />
+          )}
+
+          {viewMode === "cards" && cardsView === "list" && (
+            <ListView
+              events={filteredEvents}
+              onEventClick={setSelectedEvent}
+            />
+          )}
 
         <EventDetailDialog
           event={selectedEvent}

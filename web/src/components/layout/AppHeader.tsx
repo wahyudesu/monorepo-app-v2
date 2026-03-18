@@ -34,20 +34,20 @@ export function AppHeader() {
   return (
     <header className="mx-auto flex w-full max-w-[1024px] items-center justify-between px-5 py-3">
       {/* Workspace Selector */}
-      <DropdownMenu>
-        <DropdownMenuTrigger
-          className={buttonVariants({
-            variant: "ghost",
-            className:
-              "gap-2 px-2 font-display text-base font-semibold hover:bg-muted/50",
-          })}
-        >
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-xs font-bold text-primary-foreground">
-            A
-          </div>
-          Acme Corp
-          <ChevronDown className="h-4 w-4 text-muted-foreground" />
-        </DropdownMenuTrigger>
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            className={buttonVariants({
+              variant: "ghost",
+              className:
+                "group gap-2 px-2 font-display text-base font-semibold hover:bg-muted/50",
+            })}
+          >
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-xs font-bold text-primary-foreground">
+              A
+            </div>
+            Acme Corp
+            <ChevronDown className="h-4 w-4 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
+          </DropdownMenuTrigger>
         <DropdownMenuContent align="start" className="w-56">
           <DropdownMenuItem>
             <div className="flex h-6 w-6 items-center justify-center rounded bg-primary text-xs font-bold text-primary-foreground">

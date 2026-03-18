@@ -19,63 +19,62 @@ interface ContentCardProps {
 }
 
 export function ContentCard({ event, onClick }: ContentCardProps) {
-    const badgeStyle = statusBadgeStyles[event.status] || statusBadgeStyles.draft;
-  
-    return (
-      <Card
-        className={cn(
-          "cursor-pointer transition-all hover:shadow-md hover:border-primary/50",
-          platformColors[event.platform as Platform]?.split(" ").slice(0, 2).join(" "),
-          event.thumbnail && "pt-0"
-        )}
-        onClick={onClick}
-      >
-        {event.thumbnail && (
-          <div className="relative aspect-video w-full overflow-hidden rounded-t-xl">
-            <img
-              src={event.thumbnail}
-              alt={event.title}
-              className="h-full w-full object-cover"
-            />
-            {event.mediaType === "video" && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/90 shadow-lg backdrop-blur-sm">
-                  <Play className="h-5 w-5 text-gray-900 fill-gray-900" />
+      const badgeStyle = statusBadgeStyles[event.status] || statusBadgeStyles.draft;
+    
+      return (
+        <Card
+          className={cn(
+            "cursor-pointer transition-all hover:shadow-md hover:border-primary/50",
+            platformColors[event.platform as Platform]?.split(" ").slice(0, 2).join(" ")
+          )}
+          onClick={onClick}
+        >
+          <CardContent className="p-3">
+            <div className="flex gap-3">
+              {/* Thumbnail on the left */}
+              {event.thumbnail && (
+                <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg">
+                  <img
+                    src={event.thumbnail}
+                    alt={event.title}
+                    className="h-full w-full object-cover"
+                  />
+                  {event.mediaType === "video" && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                      <Play className="h-4 w-4 text-white fill-white" />
+                    </div>
+                  )}
+                </div>
+              )}
+              
+              {/* Content on the right */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-start justify-between mb-1.5">
+                  <PlatformIcon platform={event.platform as Platform} size={16} />
+                  <Badge
+                    variant="secondary"
+                    className="text-[10px] capitalize"
+                    style={{
+                      backgroundColor: badgeStyle.bg,
+                      color: badgeStyle.text,
+                    }}
+                  >
+                    {event.status}
+                  </Badge>
+                </div>
+                <h3 className="font-display font-semibold text-sm mb-0.5 truncate">{event.title}</h3>
+                {event.description && (
+                  <p className="text-xs text-muted-foreground line-clamp-1 mb-1.5">
+                    {event.description}
+                  </p>
+                )}
+                <div className="flex items-center justify-between text-[10px] text-muted-foreground">
+                  <span className="capitalize">{event.type}</span>
+                  <span>{event.date}</span>
                 </div>
               </div>
-            )}
-          </div>
-        )}
-        <CardContent className="p-4">
-          <div className="flex items-start justify-between mb-3">
-            <div className="flex items-center gap-1.5">
-              <PlatformIcon platform={event.platform as Platform} size={18} />
-              <span className="text-xs font-medium capitalize text-muted-foreground">
-                {event.platform}
-              </span>
             </div>
-            <Badge
-              variant="secondary"
-              className="text-[10px] capitalize"
-              style={{
-                backgroundColor: badgeStyle.bg,
-                color: badgeStyle.text,
-              }}
-            >
-              {event.status}
-            </Badge>
-          </div>
-          <h3 className="font-display font-semibold mb-1">{event.title}</h3>
-          {event.description && (
-            <p className="text-xs text-muted-foreground line-clamp-2 mb-3">
-              {event.description}
-            </p>
-          )}
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <span className="capitalize">{event.type}</span>
-            <span>{event.date}</span>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
+          </CardContent>
+        </Card>
+      );
+    }

@@ -7,6 +7,7 @@ import {
 	HugeiconsIcon,
 	PlusSignIcon,
 	ToolsIcon,
+	FloppyDiskIcon,
 } from "@/components/icons";
 import { cn } from "@/lib/utils";
 import {
@@ -71,6 +72,12 @@ export interface ComposerProps {
 	toneOptions?: Array<{ value: string; label: string; color: string; shortDesc?: string }>;
 	/** Default tone */
 	defaultTone?: string;
+	/** Show template button */
+	showTemplateButton?: boolean;
+	/** Callback when template button is clicked */
+	onTemplateClick?: () => void;
+	/** Number of available templates */
+	templateCount?: number;
 }
 
 // Internal tone options
@@ -107,6 +114,9 @@ export const Composer: FC<ComposerProps> = ({
 	showToneSelector = false,
 	toneOptions = defaultToneOptions,
 	defaultTone = "casual",
+	showTemplateButton = false,
+	onTemplateClick,
+	templateCount = 0,
 }) => {
 	const [inputValue, setInputValue] = useState(defaultValue);
 	const [selectedTone, setSelectedTone] = useState(defaultTone);
@@ -397,6 +407,37 @@ export const Composer: FC<ComposerProps> = ({
 									/>
 								)}
 							</button>
+						)}
+
+						{/* Template Button */}
+						{showTemplateButton && (
+							<div className="relative">
+								<button
+									type="button"
+									onClick={onTemplateClick}
+									disabled={disabled || isLoading}
+									className={cn(
+										"group relative flex h-9 items-center gap-1.5 px-2.5 rounded-full cursor-pointer",
+										"bg-zinc-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400 transition-colors",
+										"hover:bg-zinc-300 dark:hover:bg-zinc-600/90",
+										"disabled:cursor-wait disabled:opacity-70 text-xs font-medium",
+									)}
+									aria-label="Templates"
+								>
+									<HugeiconsIcon icon={FloppyDiskIcon} size={16} />
+									<span>Templates</span>
+									{templateCount > 0 && (
+										<span
+											className={cn(
+												"flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full",
+												"bg-[#00bbff] text-white text-[10px] font-semibold",
+											)}
+										>
+											{templateCount > 9 ? "9+" : templateCount}
+										</span>
+									)}
+								</button>
+							</div>
 						)}
 
 						{/* Tone Selector - inline pills */}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Wand2, UserCheck, FileText, Sparkles, Copy, Check, ChevronDown, ChevronUp } from "lucide-react";
+import { Wand2, UserCheck, FileText, Sparkles, Copy, Check, ChevronDown, ChevronUp, Bookmark } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,6 +10,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { ContentScriptTemplateDialog } from "@/components/tools/content-script-template-dialog";
+import { getToolTemplateManager, type ContentScriptTemplate } from "@/lib/types/tool-template";
 import { cn } from "@/lib/utils";
 import { toast as sooner } from "sonner";
 
@@ -264,6 +266,10 @@ function ContentScriptEngine() {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [expandedOutputId, setExpandedOutputId] = useState<string | null>(null);
 
+  // Template state
+  const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false);
+  const templateManager = getToolTemplateManager();
+
   const handleGenerate = () => {
     if (!topic.trim()) {
       sooner.error("Please enter a topic");
@@ -293,6 +299,28 @@ function ContentScriptEngine() {
 
   const toggleExpand = (id: string) => {
     setExpandedOutputId(expandedOutputId === id ? null : id);
+  };
+
+  // Template handlers
+  const getCurrentConfig = () => ({
+    purpose,
+    platform,
+    persona,
+    framework,
+    tone,
+    format,
+    topic: topic || undefined,
+  });
+
+  const handleLoadTemplate = (template: ContentScriptTemplate) => {
+    setPurpose(template.purpose);
+    setPlatform(template.platform);
+    setPersona(template.persona);
+    setFramework(template.framework);
+    setTone(template.tone);
+    setFormat(template.format);
+    if (template.topic) setTopic(template.topic);
+    sooner.success(`Template "${template.name}" loaded!`);
   };
 
   return (
@@ -502,9 +530,26 @@ function ContentScriptEngine() {
 
       {/* Section 5: Quantity & Generate */}
       <div className="space-y-4">
-        <div className="flex items-center gap-2">
-          <div className="flex size-7 items-center justify-center rounded-lg bg-primary text-xs font-bold text-primary-foreground">5</div>
-          <h3 className="font-semibold">Generate Variasi</h3>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="flex size-7 items-center justify-center rounded-lg bg-primary text-xs font-bold text-primary-foreground">5</div>
+            <h3 className="font-semibold">Generate Variasi</h3>
+          </div>
+          {/* Template Button */}
+          <Button
+            onClick={() => setIsTemplateDialogOpen(true)}
+            variant="outline"
+            size="sm"
+            className="gap-2"
+          >
+            <Bookmark className="h-4 w-4" />
+            Templates
+            {templateManager.templates.length > 0 && (
+              <Badge variant="secondary" className="ml-1 text-xs">
+                {templateManager.templates.length > 9 ? "9+" : templateManager.templates.length}
+              </Badge>
+            )}
+          </Button>
         </div>
         <div className="flex flex-wrap items-center gap-4">
           <div className="space-y-2">
@@ -515,7 +560,7 @@ function ContentScriptEngine() {
                   key={q}
                   onClick={() => setQuantity(q)}
                   className={cn(
-                    "px-4 py-2 rounded-lg text-sm font-medium transition-all",
+                    "px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer",
                     quantity === q
                       ? "bg-primary text-primary-foreground"
                       : "bg-muted text-muted-foreground hover:bg-muted/80"
@@ -628,6 +673,15 @@ function ContentScriptEngine() {
           )}
         </div>
       )}
+
+      {/* Template Dialog */}
+      <ContentScriptTemplateDialog
+        isOpen={isTemplateDialogOpen}
+        onClose={() => setIsTemplateDialogOpen(false)}
+        templateManager={templateManager}
+        onLoadTemplate={handleLoadTemplate}
+        currentConfig={getCurrentConfig()}
+      />
     </div>
   );
 }

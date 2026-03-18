@@ -1,21 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Sparkles } from "lucide-react";
 import { Composer } from "@/components/ui/composer";
 import { GeneratedPostCard } from "@/components/ai";
 import { Card } from "@/components/ui/card";
+import { TemplateManagerDialog } from "@/components/ui/template-manager-dialog";
 import { generatePost, platforms, tones, goals, contentTypes } from "@/lib/constants/ai-post";
 import type { Platform, ContentType, Tone, ScriptGoal, GeneratedPost } from "@/lib/types/ai-post";
 import { cn } from "@/lib/utils";
+import { getTemplateManager, type ComposerTemplate } from "@/lib/types/template";
 
 export default function AIChatPage() {
 	const [topic, setTopic] = useState("");
 	const [selectedPlatform, setSelectedPlatform] = useState<Platform>("threads");
 	const [contentType, setContentType] = useState<ContentType>("single");
 	const [selectedGoal, setSelectedGoal] = useState<ScriptGoal>("engagement");
+	const [selectedTone, setSelectedTone] = useState<Tone>("casual");
 	const [posts, setPosts] = useState<GeneratedPost[]>([]);
 	const [isGenerating, setIsGenerating] = useState(false);
+	const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false);
+
+	const templateManager = getTemplateManager();
 
 	const currentPlatform = platforms.find((p) => p.id === selectedPlatform);
 	const supportedContentTypes = contentTypes.filter((c) => currentPlatform?.supports.includes(c.value));
@@ -24,17 +30,18 @@ export default function AIChatPage() {
 		if (!message.trim() || isGenerating) return;
 
 		setTopic(message);
+		if (tone) setSelectedTone(tone as Tone);
 		setIsGenerating(true);
 
 		try {
-			const selectedTone = (tone as Tone) || "casual";
-			const result = await generatePost(message, selectedPlatform, contentType, selectedTone, selectedGoal);
+			const toneToUse = (tone || selectedTone) as Tone;
+			const result = await generatePost(message, selectedPlatform, contentType, toneToUse, selectedGoal);
 
 			const newPost: GeneratedPost = {
 				id: `${Date.now()}`,
 				platform: selectedPlatform,
 				contentType,
-				tone: selectedTone,
+				tone: toneToUse,
 				goal: selectedGoal,
 				content: result.content,
 				hashtags: result.hashtags,
@@ -79,6 +86,22 @@ export default function AIChatPage() {
 		setSelectedGoal(goals[nextIndex]?.value || selectedGoal);
 	};
 
+	const handleLoadTemplate = (template: ComposerTemplate) => {
+		if (template.platform) setSelectedPlatform(template.platform as Platform);
+		if (template.contentType) setContentType(template.contentType as ContentType);
+		if (template.goal) setSelectedGoal(template.goal as ScriptGoal);
+		if (template.tone) setSelectedTone(template.tone as Tone);
+		if (template.message) setTopic(template.message);
+	};
+
+	const getCurrentConfig = () => ({
+		platform: selectedPlatform,
+		contentType: contentType,
+		goal: selectedGoal,
+		tone: selectedTone,
+		message: topic,
+	});
+
 	return (
 		<div className="mx-auto max-w-2xl space-y-6">
 			{/* Header */}
@@ -122,6 +145,9 @@ export default function AIChatPage() {
 				showToolsButton={false}
 				showToneSelector={true}
 				toneOptions={tones}
+				showTemplateButton={true}
+				onTemplateClick={() => setIsTemplateDialogOpen(true)}
+				templateCount={templateManager.templates.length}
 				contextOptions={[
 					{
 						id: "content-type",
@@ -136,6 +162,15 @@ export default function AIChatPage() {
 						onClick: cycleGoal,
 					},
 				]}
+			/>
+
+			{/* Template Manager Dialog */}
+			<TemplateManagerDialog
+				isOpen={isTemplateDialogOpen}
+				onClose={() => setIsTemplateDialogOpen(false)}
+				templateManager={templateManager}
+				onLoadTemplate={handleLoadTemplate}
+				currentConfig={getCurrentConfig()}
 			/>
 
 			{/* Generated Posts List */}

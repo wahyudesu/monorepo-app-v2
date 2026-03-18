@@ -7,17 +7,13 @@ import {
   KanbanBoard,
   KanbanColumn,
   KanbanColumnContent,
-  KanbanColumnHandle,
   KanbanItem,
   KanbanItemHandle,
   KanbanOverlay,
 } from "@/components/reui/kanban";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { PlatformIcon } from "@/components/social/PlatformIcon";
 import { Play, Plus, Calendar, Clock } from "lucide-react";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { DragDropVerticalIcon } from "@hugeicons/core-free-icons";
 import { type CalendarEvent } from "@/data/mock";
 import { cn } from "@/lib/utils";
 
@@ -25,12 +21,25 @@ interface KanbanViewProps {
   events: CalendarEvent[];
   onEventClick: (event: CalendarEvent) => void;
   onCreateClick: () => void;
+  onEventsChange?: (events: CalendarEvent[]) => void;
 }
 
-const COLUMN_TITLES: Record<string, string> = {
-  draft: "Draft",
-  scheduled: "Scheduled",
-  published: "Posted",
+const COLUMN_CONFIG: Record<string, { title: string; colorClass: string; badgeClass: string }> = {
+  draft: {
+    title: "Draft",
+    colorClass: "bg-gray-100 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700",
+    badgeClass: "bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300",
+  },
+  scheduled: {
+    title: "Scheduled",
+    colorClass: "bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800",
+    badgeClass: "bg-yellow-200 text-yellow-800 dark:bg-yellow-800/50 dark:text-yellow-200",
+  },
+  published: {
+    title: "Posted",
+    colorClass: "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800",
+    badgeClass: "bg-green-200 text-green-800 dark:bg-green-800/50 dark:text-green-200",
+  },
 };
 
 interface PostCardProps {
@@ -124,23 +133,18 @@ interface PostColumnProps {
 }
 
 function PostColumn({ value, events, isOverlay, onEventClick, onCreateClick }: PostColumnProps) {
+  const config = COLUMN_CONFIG[value];
+
   return (
     <KanbanColumn value={value}>
       <Card className="h-full">
-        <div className="flex items-center justify-between p-4 border-b">
+        <div className={cn("flex items-center p-4 border-b", config.colorClass)}>
           <div className="flex items-center gap-2.5">
-            <span className="text-sm font-semibold">
-              {COLUMN_TITLES[value]}
+            <span className="text-sm font-semibold">{config.title}</span>
+            <span className={cn("px-2 py-0.5 rounded-full text-xs font-medium", config.badgeClass)}>
+              {events.length}
             </span>
-            <Badge variant="outline">{events.length}</Badge>
           </div>
-          <KanbanColumnHandle
-            render={(props) => (
-              <Button {...props} size="icon-xs" variant="ghost">
-                <HugeiconsIcon icon={DragDropVerticalIcon} strokeWidth={2} />
-              </Button>
-            )}
-          />
         </div>
         <CardContent className="p-3">
           <KanbanColumnContent value={value} className="flex flex-col gap-3 min-h-[200px]">
@@ -170,7 +174,7 @@ function PostColumn({ value, events, isOverlay, onEventClick, onCreateClick }: P
   );
 }
 
-export function KanbanView({ events, onEventClick, onCreateClick }: KanbanViewProps) {
+export function KanbanView({ events, onEventClick, onCreateClick, onEventsChange }: KanbanViewProps) {
   // Group events by status
   const groupedEvents = {
     draft: events.filter((e) => e.status === "draft"),
@@ -180,10 +184,32 @@ export function KanbanView({ events, onEventClick, onCreateClick }: KanbanViewPr
 
   const [columns, setColumns] = useState(groupedEvents);
 
+  // Handle drag end - update event statuses based on their new column
+  const handleValueChange = (newColumns: typeof groupedEvents) => {
+    setColumns(newColumns);
+
+    // Update event statuses when moved between columns
+    if (onEventsChange) {
+      const updatedEvents: CalendarEvent[] = [];
+
+      // Update events based on their new column
+      Object.entries(newColumns).forEach(([status, events]) => {
+        events.forEach((event) => {
+          updatedEvents.push({
+            ...event,
+            status: status as CalendarEvent["status"],
+          });
+        });
+      });
+
+      onEventsChange(updatedEvents);
+    }
+  };
+
   return (
     <Kanban
       value={columns}
-      onValueChange={setColumns}
+      onValueChange={handleValueChange}
       getItemValue={(item) => item.id}
     >
       <KanbanBoard className="grid auto-rows-fr grid-cols-3 gap-4">

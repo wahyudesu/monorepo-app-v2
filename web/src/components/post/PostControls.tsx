@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, LayoutGrid, CalendarDays, CalendarRange, Filter, Check, KanbanSquare, Table } from "lucide-react";
+import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, LayoutGrid, CalendarDays, CalendarRange, Filter, Check, KanbanSquare, Table, List } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -19,7 +19,7 @@ import { PlatformIcon, Platform } from "@/components/social/PlatformIcon";
 
 type ViewMode = "calendar" | "cards";
 type CalendarView = "month" | "week";
-type CardsView = "grid" | "kanban";
+type CardsView = "grid" | "kanban" | "list";
 
 const platforms: { value: Platform | "all"; label: string }[] = [
   { value: "all", label: "All Platforms" },
@@ -71,7 +71,7 @@ export function PostControls({
         {/* View Mode Toggle - Icons Only with Tooltip (SWAPPED - now first) */}
         <div className="flex items-center rounded-lg border border-border/50 bg-card/50 p-1">
           <Tooltip>
-            <TooltipTrigger>
+            <TooltipTrigger asChild>
               <Button
                 variant={viewMode === "calendar" ? "secondary" : "ghost"}
                 size="sm"
@@ -84,7 +84,7 @@ export function PostControls({
             <TooltipContent side="bottom">Calendar View</TooltipContent>
           </Tooltip>
           <Tooltip>
-            <TooltipTrigger>
+            <TooltipTrigger asChild>
               <Button
                 variant={viewMode === "cards" ? "secondary" : "ghost"}
                 size="sm"
@@ -122,33 +122,54 @@ export function PostControls({
           </div>
         )}
 
-        {/* Grid/Kanban Toggle for Cards View */}
-        {viewMode === "cards" && onCardsViewChange && (
-          <div className="flex items-center rounded-lg border border-border/50 bg-card/50 p-1">
-            <Button
-              variant={cardsView === "grid" ? "secondary" : "ghost"}
-              size="sm"
-              className="h-7 px-3 text-xs font-medium"
-              onClick={() => onCardsViewChange("grid")}
-            >
-              <Table className="mr-1.5 h-3.5 w-3.5" />
-              Grid
-            </Button>
-            <Button
-              variant={cardsView === "kanban" ? "secondary" : "ghost"}
-              size="sm"
-              className="h-7 px-3 text-xs font-medium"
-              onClick={() => onCardsViewChange("kanban")}
-            >
-              <KanbanSquare className="mr-1.5 h-3.5 w-3.5" />
-              Kanban
-            </Button>
-          </div>
-        )}
+          {/* Grid/Kanban/List Toggle for Cards View */}
+          {viewMode === "cards" && onCardsViewChange && (
+            <div className="flex items-center rounded-lg border border-border/50 bg-card/50 p-1">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant={cardsView === "grid" ? "secondary" : "ghost"}
+                    size="sm"
+                    className="h-7 w-7 p-0"
+                    onClick={() => onCardsViewChange("grid")}
+                  >
+                    <LayoutGrid className="h-3.5 w-3.5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">Grid View</TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant={cardsView === "kanban" ? "secondary" : "ghost"}
+                    size="sm"
+                    className="h-7 w-7 p-0"
+                    onClick={() => onCardsViewChange("kanban")}
+                  >
+                    <KanbanSquare className="h-3.5 w-3.5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">Kanban View</TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant={cardsView === "list" ? "secondary" : "ghost"}
+                    size="sm"
+                    className="h-7 w-7 p-0"
+                    onClick={() => onCardsViewChange("list")}
+                  >
+                    <List className="h-3.5 w-3.5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">List View</TooltipContent>
+              </Tooltip>
+            </div>
+          )}
 
           {/* Platform Filter */}
           <DropdownMenu>
-            <DropdownMenuTrigger>
+            <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm" className="h-7 gap-1.5 px-3 text-xs font-medium">
                 <Filter className="h-3.5 w-3.5" />
                 {selectedPlatform === "all" ? (

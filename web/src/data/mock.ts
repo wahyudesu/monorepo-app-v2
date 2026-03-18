@@ -1,10 +1,10 @@
 export const teamMembers = [
-  { id: "1", name: "Sarah Chen", role: "Product Lead", email: "sarah@acme.com", avatar: "https://i.pravatar.cc/150?u=sarah", online: true, tasksCompleted: 24 },
-  { id: "2", name: "James Wilson", role: "Frontend Dev", email: "james@acme.com", avatar: "https://i.pravatar.cc/150?u=james", online: true, tasksCompleted: 31 },
-  { id: "3", name: "Maria Garcia", role: "Designer", email: "maria@acme.com", avatar: "https://i.pravatar.cc/150?u=maria", online: false, tasksCompleted: 18 },
-  { id: "4", name: "Alex Kim", role: "Backend Dev", email: "alex@acme.com", avatar: "https://i.pravatar.cc/150?u=alex", online: true, tasksCompleted: 27 },
-  { id: "5", name: "Lisa Park", role: "QA Engineer", email: "lisa@acme.com", avatar: "https://i.pravatar.cc/150?u=lisa", online: false, tasksCompleted: 15 },
-  { id: "6", name: "Tom Brown", role: "DevOps", email: "tom@acme.com", avatar: "https://i.pravatar.cc/150?u=tom", online: true, tasksCompleted: 22 },
+  { id: "1", name: "Sarah Chen", role: "Admin" as const, email: "sarah@acme.com", avatar: "https://i.pravatar.cc/150?u=sarah", online: true, tasksCompleted: 24 },
+  { id: "2", name: "James Wilson", role: "Editor" as const, email: "james@acme.com", avatar: "https://i.pravatar.cc/150?u=james", online: true, tasksCompleted: 31 },
+  { id: "3", name: "Maria Garcia", role: "Member" as const, email: "maria@acme.com", avatar: "https://i.pravatar.cc/150?u=maria", online: false, tasksCompleted: 18 },
+  { id: "4", name: "Alex Kim", role: "Editor" as const, email: "alex@acme.com", avatar: "https://i.pravatar.cc/150?u=alex", online: true, tasksCompleted: 27 },
+  { id: "5", name: "Lisa Park", role: "Member" as const, email: "lisa@acme.com", avatar: "https://i.pravatar.cc/150?u=lisa", online: false, tasksCompleted: 15 },
+  { id: "6", name: "Tom Brown", role: "Member" as const, email: "tom@acme.com", avatar: "https://i.pravatar.cc/150?u=tom", online: true, tasksCompleted: 22 },
 ];
 
 export const projects = [
