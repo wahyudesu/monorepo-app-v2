@@ -7,23 +7,28 @@ import {
   PostHeader,
   PostControls,
   PostCardsView,
+  KanbanView,
   EventDetailDialog,
   CreateContentDialog,
 } from "@/components/post";
 import { getDaysInMonth, getFirstDayOfMonth } from "@/lib/constants";
+import { Platform } from "@/components/social/PlatformIcon";
 
 type ViewMode = "calendar" | "cards";
 type CalendarView = "month" | "week";
+type CardsView = "grid" | "kanban";
 
 export default function PostPage() {
   const [viewMode, setViewMode] = useState<ViewMode>("calendar");
   const [calendarView, setCalendarView] = useState<CalendarView>("month");
+  const [cardsView, setCardsView] = useState<CardsView>("grid");
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [events, setEvents] = useState(calendarEvents);
   const [draggedEvent, setDraggedEvent] = useState<CalendarEvent | null>(null);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [selectedDateForCreate, setSelectedDateForCreate] = useState<string | null>(null);
+  const [selectedPlatform, setSelectedPlatform] = useState<Platform | "all">("all");
 
   const openCreateDialog = (dateStr?: string) => {
     setSelectedDateForCreate(dateStr || null);
@@ -69,14 +74,23 @@ export default function PostPage() {
   const handleNext = calendarView === "week" ? nextWeek : nextMonth;
   const displayName = calendarView === "week" ? weekName : monthName;
 
-  const eventsByDate = useMemo(() => {
+const eventsByDate = useMemo(() => {
     const map: Record<string, CalendarEvent[]> = {};
-    events.forEach((e) => {
+    const filtered = selectedPlatform === "all" 
+      ? events 
+      : events.filter((e) => e.platform === selectedPlatform);
+    filtered.forEach((e) => {
       if (!map[e.date]) map[e.date] = [];
       map[e.date].push(e);
     });
     return map;
-  }, [events]);
+  }, [events, selectedPlatform]);
+
+  const filteredEvents = useMemo(() => {
+    return selectedPlatform === "all" 
+      ? events 
+      : events.filter((e) => e.platform === selectedPlatform);
+  }, [events, selectedPlatform]);
 
   const handleDragStart = useCallback((e: React.DragEvent, event: CalendarEvent) => {
     setDraggedEvent(event);
@@ -134,56 +148,68 @@ export default function PostPage() {
   }, [calendarView, firstDay, daysInMonth, year, month, weekRange]);
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6">
-      <PostHeader />
+      <div className="mx-auto max-w-5xl space-y-6">
+        <PostHeader />
 
-      <PostControls
-        viewMode={viewMode}
-        onViewModeChange={setViewMode}
-        monthName={displayName}
-        onPrevMonth={handlePrev}
-        onNextMonth={handleNext}
-        calendarView={calendarView}
-        onCalendarViewChange={setCalendarView}
-      />
-
-      {viewMode === "calendar" && (
-        <CalendarGrid
-          cells={cells}
-          eventsByDate={eventsByDate}
-          todayStr={todayStr}
-          draggedEvent={draggedEvent}
-          onDateClick={openCreateDialog}
-          onEventClick={setSelectedEvent}
-          onDragStart={handleDragStart}
-          onDragEnd={handleDragEnd}
-          onDragOver={handleDragOver}
-          onDrop={handleDrop}
+        <PostControls
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
+          monthName={displayName}
+          onPrevMonth={handlePrev}
+          onNextMonth={handleNext}
           calendarView={calendarView}
+          onCalendarViewChange={setCalendarView}
+          cardsView={cardsView}
+          onCardsViewChange={setCardsView}
+          selectedPlatform={selectedPlatform}
+          onPlatformChange={setSelectedPlatform}
         />
-      )}
 
-      {viewMode === "cards" && (
-        <PostCardsView
-          events={events}
-          onEventClick={setSelectedEvent}
-          onCreateClick={() => openCreateDialog()}
+        {viewMode === "calendar" && (
+          <CalendarGrid
+            cells={cells}
+            eventsByDate={eventsByDate}
+            todayStr={todayStr}
+            draggedEvent={draggedEvent}
+            onDateClick={openCreateDialog}
+            onEventClick={setSelectedEvent}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+            onDragOver={handleDragOver}
+            onDrop={handleDrop}
+            calendarView={calendarView}
+          />
+        )}
+
+        {viewMode === "cards" && (
+          <PostCardsView
+            events={filteredEvents}
+            onEventClick={setSelectedEvent}
+            onCreateClick={() => openCreateDialog()}
+          />
+        )}
+
+        {viewMode === "kanban" && (
+          <KanbanView
+            events={filteredEvents}
+            onEventClick={setSelectedEvent}
+            onCreateClick={() => openCreateDialog()}
+          />
+        )}
+
+        <EventDetailDialog
+          event={selectedEvent}
+          onClose={() => setSelectedEvent(null)}
         />
-      )}
 
-      <EventDetailDialog
-        event={selectedEvent}
-        onClose={() => setSelectedEvent(null)}
-      />
-
-      <CreateContentDialog
-        open={isCreateDialogOpen}
-        onOpenChange={(open) => {
-          setIsCreateDialogOpen(open);
-          if (!open) setSelectedDateForCreate(null);
-        }}
-        selectedDate={selectedDateForCreate}
-      />
-    </div>
-  );
-}
+        <CreateContentDialog
+          open={isCreateDialogOpen}
+          onOpenChange={(open) => {
+            setIsCreateDialogOpen(open);
+            if (!open) setSelectedDateForCreate(null);
+          }}
+          selectedDate={selectedDateForCreate}
+        />
+      </div>
+    );
+  }

@@ -30,18 +30,11 @@ export interface ComposerContextOption {
 	onClick?: () => void;
 }
 
-export interface ToneOption {
-	value: string;
-	label: string;
-	color: string;
-	shortDesc?: string;
-}
-
 export interface ComposerProps {
 	/** Placeholder text for the input */
 	placeholder?: string;
 	/** Callback when message is submitted */
-	onSubmit?: (message: string, files?: UploadedFile[]) => void;
+	onSubmit?: (message: string, files?: UploadedFile[], tone?: string) => void;
 	/** Callback when input value changes */
 	onChange?: (value: string) => void;
 	/** Whether the composer is disabled */
@@ -72,11 +65,23 @@ export interface ComposerProps {
 	onRemoveFile?: (id: string) => void;
 	/** Whether the composer is in loading state */
 	isLoading?: boolean;
-	/** Tone selector */
-	tone?: string;
-	onToneChange?: (tone: string) => void;
+	/** Show tone selector */
+	showToneSelector?: boolean;
+	/** Tone options */
 	toneOptions?: Array<{ value: string; label: string; color: string; shortDesc?: string }>;
+	/** Default tone */
+	defaultTone?: string;
 }
+
+// Internal tone options
+const defaultToneOptions = [
+	{ value: "professional", label: "Pro", color: "bg-blue-500", shortDesc: "Expert" },
+	{ value: "casual", label: "Casual", color: "bg-green-500", shortDesc: "Relaxed" },
+	{ value: "inspirational", label: "Inspire", color: "bg-purple-500", shortDesc: "Motivating" },
+	{ value: "educational", label: "Edu", color: "bg-orange-500", shortDesc: "Teaching" },
+	{ value: "friendly", label: "Friendly", color: "bg-pink-500", shortDesc: "Warm" },
+	{ value: "storytelling", label: "Story", color: "bg-indigo-500", shortDesc: "Narrative" },
+];
 
 // Primary color matching GAIA: #00bbff
 const PRIMARY_COLOR = "#00bbff";
@@ -99,11 +104,12 @@ export const Composer: FC<ComposerProps> = ({
 	attachedFiles = [],
 	onRemoveFile,
 	isLoading = false,
-	tone,
-	onToneChange,
-	toneOptions = [],
+	showToneSelector = false,
+	toneOptions = defaultToneOptions,
+	defaultTone = "casual",
 }) => {
 	const [inputValue, setInputValue] = useState(defaultValue);
+	const [selectedTone, setSelectedTone] = useState(defaultTone);
 	const [isToolsDropdownOpen, setIsToolsDropdownOpen] = useState(false);
 	const [isContextMenuOpen, setIsContextMenuOpen] = useState(false);
 	const [selectedCategory, setSelectedCategory] = useState("all");
@@ -145,13 +151,13 @@ export const Composer: FC<ComposerProps> = ({
 			e?.preventDefault();
 			if (isLoading) return;
 			if (currentValue.trim() || attachedFiles.length > 0) {
-				onSubmit?.(currentValue, attachedFiles);
+				onSubmit?.(currentValue, attachedFiles, showToneSelector ? selectedTone : undefined);
 				if (value === undefined) {
 					setInputValue("");
 				}
 			}
 		},
-		[currentValue, attachedFiles, onSubmit, value, isLoading],
+		[currentValue, attachedFiles, onSubmit, value, isLoading, showToneSelector, selectedTone],
 	);
 
 	// Handle key down
@@ -393,21 +399,21 @@ export const Composer: FC<ComposerProps> = ({
 							</button>
 						)}
 
-						{/* Tone Selector */}
-						{toneOptions.length > 0 && onToneChange && (
-							<div className="flex items-center gap-1.5 ml-1">
+						{/* Tone Selector - inline pills */}
+						{showToneSelector && (
+							<div className="flex items-center gap-1.5 ml-2">
 								<span className="text-xs text-zinc-500 dark:text-zinc-400">Tone:</span>
 								<div className="flex items-center gap-1">
 									{toneOptions.map((toneOption) => (
 										<button
 											key={toneOption.value}
 											type="button"
-											onClick={() => onToneChange(toneOption.value)}
+											onClick={() => setSelectedTone(toneOption.value)}
 											disabled={disabled || isLoading}
 											className={cn(
 												"flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium transition-all",
 												"cursor-pointer",
-												tone === toneOption.value
+												selectedTone === toneOption.value
 													? "bg-[#00bbff] text-white"
 													: "bg-zinc-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-300 dark:hover:bg-zinc-600",
 												"disabled:cursor-wait disabled:opacity-70",

@@ -13,7 +13,6 @@ export default function AIChatPage() {
 	const [topic, setTopic] = useState("");
 	const [selectedPlatform, setSelectedPlatform] = useState<Platform>("threads");
 	const [contentType, setContentType] = useState<ContentType>("single");
-	const [selectedTone, setSelectedTone] = useState<Tone>("casual");
 	const [selectedGoal, setSelectedGoal] = useState<ScriptGoal>("engagement");
 	const [posts, setPosts] = useState<GeneratedPost[]>([]);
 	const [isGenerating, setIsGenerating] = useState(false);
@@ -21,13 +20,14 @@ export default function AIChatPage() {
 	const currentPlatform = platforms.find((p) => p.id === selectedPlatform);
 	const supportedContentTypes = contentTypes.filter((c) => currentPlatform?.supports.includes(c.value));
 
-	const handleGenerate = async (message: string) => {
+	const handleGenerate = async (message: string, _files?: unknown[], tone?: string) => {
 		if (!message.trim() || isGenerating) return;
 
 		setTopic(message);
 		setIsGenerating(true);
 
 		try {
+			const selectedTone = (tone as Tone) || "casual";
 			const result = await generatePost(message, selectedPlatform, contentType, selectedTone, selectedGoal);
 
 			const newPost: GeneratedPost = {
@@ -117,12 +117,11 @@ export default function AIChatPage() {
 			{/* Composer with Tone Selector */}
 			<Composer
 				placeholder="What do you want to post about?"
-				tone={selectedTone}
-				onToneChange={(t) => setSelectedTone(t as Tone)}
-				toneOptions={tones}
 				onSubmit={handleGenerate}
 				isLoading={isGenerating}
 				showToolsButton={false}
+				showToneSelector={true}
+				toneOptions={tones}
 				contextOptions={[
 					{
 						id: "content-type",

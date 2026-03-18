@@ -6,6 +6,7 @@ import {
 } from "@/components/ui/chart";
 import { BarChart, Bar, CartesianGrid, XAxis, YAxis } from "recharts";
 import type { PostAnalyticsData, AnalyticsPlatformConfig } from "@/data/mock";
+import { PlatformIcon } from "@/components/social/PlatformIcon";
 
 interface StackedBarChartProps {
   data: PostAnalyticsData[];
@@ -77,31 +78,26 @@ export function StackedBarChart({ data, platforms }: StackedBarChartProps) {
             tickMargin={8}
             tickFormatter={(value) => formatChartValue(value as number)}
           />
-          <ChartTooltip
-            content={
-              <ChartTooltipContent
-                hideLabel
-                formatter={(value, name) => (
-                  <div className="flex items-center justify-between gap-4">
-                    <div className="flex items-center gap-2.5">
-                      <span
-                        className="w-3 h-3 rounded-full shrink-0"
-                        style={{
-                          backgroundColor: chartConfig[name as string]?.color || "#888"
-                        }}
-                      />
-                      <span className="text-sm text-foreground font-medium">
-                        {chartConfig[name as string]?.label}
+            <ChartTooltip
+              content={
+                <ChartTooltipContent
+                  hideLabel
+                  formatter={(value, name) => (
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="flex items-center gap-2.5">
+                        <PlatformIcon platform={name as AnalyticsPlatformConfig["id"]} size={16} />
+                        <span className="text-sm text-foreground font-medium">
+                          {chartConfig[name as string]?.label}
+                        </span>
+                      </div>
+                      <span className="text-sm font-semibold font-display">
+                        {formatChartValue(value as number)}
                       </span>
                     </div>
-                    <span className="text-sm font-semibold font-display">
-                      {formatChartValue(value as number)}
-                    </span>
-                  </div>
-                )}
-              />
-            }
-          />
+                  )}
+                />
+              }
+            />
           {platforms.map((platform) => (
             <Bar
               key={platform.id}
@@ -114,20 +110,15 @@ export function StackedBarChart({ data, platforms }: StackedBarChartProps) {
         </BarChart>
       </ChartContainer>
 
-      {/* Legend */}
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs">
-        {platforms.map((platform) => (
-          <div key={platform.id} className="flex items-center gap-1.5">
-            <span
-              className="w-2.5 h-2.5 rounded-sm"
-              style={{ backgroundColor: platform.color }}
-            />
-            <span className="text-muted-foreground">
-              {platform.icon} {platform.name}
-            </span>
-          </div>
-        ))}
-      </div>
+        {/* Legend */}
+        <div className="flex flex-wrap items-center justify-center gap-3 text-xs">
+          {platforms.map((platform) => (
+            <div key={platform.id} className="flex items-center gap-1.5">
+              <PlatformIcon platform={platform.id} size={14} />
+              <span className="text-muted-foreground">{platform.name}</span>
+            </div>
+          ))}
+        </div>
     </div>
   );
 }

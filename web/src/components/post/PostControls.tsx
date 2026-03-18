@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, LayoutGrid, CalendarDays, CalendarRange, Filter, Check } from "lucide-react";
+import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, LayoutGrid, CalendarDays, CalendarRange, Filter, Check, KanbanSquare, Table } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -19,6 +19,7 @@ import { PlatformIcon, Platform } from "@/components/social/PlatformIcon";
 
 type ViewMode = "calendar" | "cards";
 type CalendarView = "month" | "week";
+type CardsView = "grid" | "kanban";
 
 const platforms: { value: Platform | "all"; label: string }[] = [
   { value: "all", label: "All Platforms" },
@@ -45,6 +46,8 @@ interface PostControlsProps {
   onNextMonth: () => void;
   calendarView?: CalendarView;
   onCalendarViewChange?: (view: CalendarView) => void;
+  cardsView?: CardsView;
+  onCardsViewChange?: (view: CardsView) => void;
   selectedPlatform?: Platform | "all";
   onPlatformChange?: (platform: Platform | "all") => void;
 }
@@ -57,6 +60,8 @@ export function PostControls({
   onNextMonth,
   calendarView = "month",
   onCalendarViewChange,
+  cardsView = "grid",
+  onCardsViewChange,
   selectedPlatform = "all",
   onPlatformChange,
 }: PostControlsProps) {
@@ -93,7 +98,7 @@ export function PostControls({
           </Tooltip>
         </div>
 
-        {/* Month/Week Toggle - Text Labels (SWAPPED - now second) */}
+        {/* Month/Week Toggle for Calendar - Text Labels */}
         {viewMode === "calendar" && onCalendarViewChange && (
           <div className="flex items-center rounded-lg border border-border/50 bg-card/50 p-1">
             <Button
@@ -113,6 +118,30 @@ export function PostControls({
             >
               <CalendarRange className="mr-1.5 h-3.5 w-3.5" />
               Week
+            </Button>
+          </div>
+        )}
+
+        {/* Grid/Kanban Toggle for Cards View */}
+        {viewMode === "cards" && onCardsViewChange && (
+          <div className="flex items-center rounded-lg border border-border/50 bg-card/50 p-1">
+            <Button
+              variant={cardsView === "grid" ? "secondary" : "ghost"}
+              size="sm"
+              className="h-7 px-3 text-xs font-medium"
+              onClick={() => onCardsViewChange("grid")}
+            >
+              <Table className="mr-1.5 h-3.5 w-3.5" />
+              Grid
+            </Button>
+            <Button
+              variant={cardsView === "kanban" ? "secondary" : "ghost"}
+              size="sm"
+              className="h-7 px-3 text-xs font-medium"
+              onClick={() => onCardsViewChange("kanban")}
+            >
+              <KanbanSquare className="mr-1.5 h-3.5 w-3.5" />
+              Kanban
             </Button>
           </div>
         )}

@@ -4,14 +4,27 @@ import { cn } from "@/lib/utils";
 interface SummaryCardProps {
   title: string;
   value: string | number;
-  trend?: { value: string; direction: "up" | "down" | "neutral" };
+  trend?: { value: string | number; direction?: "up" | "down" | "neutral" };
   icon?: React.ReactNode;
 }
 
 export function SummaryCard({ title, value, trend, icon }: SummaryCardProps) {
+  // Determine direction from value if not provided
+  const getDirection = (): "up" | "down" | "neutral" => {
+    if (trend?.direction) return trend.direction;
+    
+    const trendValue = typeof trend?.value === "string" ? trend.value : String(trend?.value ?? "0");
+    const numValue = parseFloat(trendValue.replace(/[+%]/g, ""));
+    
+    if (isNaN(numValue) || numValue === 0) return "neutral";
+    return numValue > 0 ? "up" : "down";
+  };
+
+  const direction = getDirection();
+
   const badgeVariants = {
-    up: "bg-success/10 text-success hover:bg-success/10",
-    down: "bg-destructive/10 text-destructive hover:bg-destructive/10",
+    up: "bg-green-500/15 text-green-600 dark:text-green-400 hover:bg-green-500/15 border-green-500/20",
+    down: "bg-red-500/15 text-red-600 dark:text-red-400 hover:bg-red-500/15 border-red-500/20",
     neutral: "bg-muted/50 text-muted-foreground hover:bg-muted/50",
   };
 
@@ -26,29 +39,16 @@ export function SummaryCard({ title, value, trend, icon }: SummaryCardProps) {
       </div>
 
       {/* Large value */}
-      <span className="text-xl font-bold font-display text-foreground">
+      <span className="text-xl font-bold font-display text-foreground ">
         {typeof value === "number" && value > 1000
           ? value.toLocaleString()
           : value}
       </span>
 
         {/* Percentage badge */}
-        {trend && (
-          <Badge
-            variant="destructive"
-            className={cn(
-              "text-xs font-medium px-2 py-0.5",
-              badgeVariants[trend.direction],
-            )}
-          >
-            {trend.direction === "up" && !String(trend.value).startsWith("+") && "+"}
-            {trend.direction === "down" && !String(trend.value).startsWith("-") && "-"}
-            {trend.value}
-            {typeof trend.value === "number" || /^[0-9.]+$/.test(String(trend.value))
-              ? "%"
-              : ""}
-          </Badge>
-        )}
+        <Badge className={cn("text-xs", badgeVariants[direction])}>
+          {trend?.value}
+        </Badge>
     </div>
   );
 }

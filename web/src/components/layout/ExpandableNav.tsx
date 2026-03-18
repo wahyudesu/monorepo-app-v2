@@ -18,8 +18,27 @@ export function ExpandableNav() {
   const pathname = usePathname();
   const router = useRouter();
 
+  // Hide nav on sub-pages that aren't main navigation routes
+  // Only show on exact main routes or direct children of /post and /inbox
+  const shouldShowNav = (() => {
+    // Exact match with main nav items
+    if (navItems.some((item) => item.to === pathname)) {
+      return true;
+    }
+    // Allow sub-pages for post and inbox
+    if (pathname?.startsWith("/post") || pathname?.startsWith("/inbox")) {
+      return true;
+    }
+    // Hide for all other sub-pages (like /analytics/brand-stats, /ai/generated, etc.)
+    return false;
+  })();
+
+  if (!shouldShowNav) {
+    return null;
+  }
+
   // Calculate the current active index based on pathname
-  const activeIndex = navItems.findIndex((item) => item.to === pathname);
+  const activeIndex = navItems.findIndex((item) => pathname.startsWith(item.to));
 
   // Keyboard shortcuts
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
