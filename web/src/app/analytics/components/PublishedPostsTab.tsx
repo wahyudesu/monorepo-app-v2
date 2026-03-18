@@ -183,7 +183,7 @@ export function PublishedPostsTab() {
       </div>
 
       {/* Posts Grid with visual assets */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
         {paginatedPosts.map((post) => {
           const platform = analyticsPlatforms.find(
             (pl) => pl.id === post.platform,

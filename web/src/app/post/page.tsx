@@ -181,7 +181,7 @@ const eventsByDate = useMemo(() => {
           />
         )}
 
-        {viewMode === "cards" && (
+        {viewMode === "cards" && cardsView === "grid" && (
           <PostCardsView
             events={filteredEvents}
             onEventClick={setSelectedEvent}
@@ -189,7 +189,7 @@ const eventsByDate = useMemo(() => {
           />
         )}
 
-        {viewMode === "kanban" && (
+        {viewMode === "cards" && cardsView === "kanban" && (
           <KanbanView
             events={filteredEvents}
             onEventClick={setSelectedEvent}

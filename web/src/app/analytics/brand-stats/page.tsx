@@ -1,16 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  socialAccounts,
-  brandPerformance,
-  analyticsPlatforms,
-  type AnalyticsPlatform,
-} from "@/data/mock";
-import { PlatformIcon } from "@/components/social/PlatformIcon";
+import { brandPerformance } from "@/data/mock";
 import { SankeyChart, SankeyNode, SankeyLink } from "@/components/charts/sankey";
 import { RadarChart } from "@/components/charts/radar-chart";
 import { RadarArea } from "@/components/charts/radar-area";
@@ -22,123 +17,21 @@ import { Ring } from "@/components/charts/ring";
 import { RingCenter } from "@/components/charts/ring-center";
 import { FunnelChart } from "@/components/charts/funnel-chart";
 
-// Extended stats for each platform
-const extendedPlatformStats: Record<AnalyticsPlatform, {
-  reach: number;
-  reachGrowth: string;
-  clicks: number;
-  clicksGrowth: string;
-  saves: number;
-  savesGrowth: string;
-  shares: number;
-  sharesGrowth: string;
-  bestPostTime: string;
-  topHashtag: string;
-}> = {
-  youtube: {
-    reach: 1850000,
-    reachGrowth: "+18.2%",
-    clicks: 45000,
-    clicksGrowth: "+12.4%",
-    saves: 8900,
-    savesGrowth: "+8.1%",
-    shares: 12300,
-    sharesGrowth: "+15.6%",
-    bestPostTime: "Sat 7PM",
-    topHashtag: "#Tutorial",
-  },
-  facebook: {
-    reach: 890000,
-    reachGrowth: "+5.3%",
-    clicks: 23000,
-    clicksGrowth: "+3.2%",
-    saves: 4500,
-    savesGrowth: "+2.1%",
-    shares: 8900,
-    sharesGrowth: "+6.4%",
-    bestPostTime: "Wed 1PM",
-    topHashtag: "#Tips",
-  },
-  instagram: {
-    reach: 1280000,
-    reachGrowth: "+12.5%",
-    clicks: 67000,
-    clicksGrowth: "+18.3%",
-    saves: 34500,
-    savesGrowth: "+24.6%",
-    shares: 15600,
-    sharesGrowth: "+12.8%",
-    bestPostTime: "Thu 6PM",
-    topHashtag: "#BehindTheScenes",
-  },
-  tiktok: {
-    reach: 2400000,
-    reachGrowth: "+24.3%",
-    clicks: 89000,
-    clicksGrowth: "+32.1%",
-    saves: 56000,
-    savesGrowth: "+45.2%",
-    shares: 78900,
-    sharesGrowth: "+28.4%",
-    bestPostTime: "Fri 8PM",
-    topHashtag: "#Viral",
-  },
-  linkedin: {
-    reach: 420000,
-    reachGrowth: "+8.7%",
-    clicks: 12000,
-    clicksGrowth: "+6.5%",
-    saves: 2300,
-    savesGrowth: "+4.2%",
-    shares: 4500,
-    sharesGrowth: "+9.1%",
-    bestPostTime: "Tue 9AM",
-    topHashtag: "#Business",
-  },
-  twitter: {
-    reach: 89000,
-    reachGrowth: "-3.1%",
-    clicks: 5600,
-    clicksGrowth: "-1.2%",
-    saves: 1200,
-    savesGrowth: "-0.8%",
-    shares: 3400,
-    sharesGrowth: "+2.1%",
-    bestPostTime: "Mon 10AM",
-    topHashtag: "#Tech",
-  },
-  pinterest: {
-    reach: 340000,
-    reachGrowth: "+6.8%",
-    clicks: 18000,
-    clicksGrowth: "+9.4%",
-    saves: 45000,
-    savesGrowth: "+12.3%",
-    shares: 2100,
-    sharesGrowth: "+5.6%",
-    bestPostTime: "Sun 8PM",
-    topHashtag: "#Inspiration",
-  },
-  threads: {
-    reach: 125000,
-    reachGrowth: "+42.5%",
-    clicks: 8900,
-    clicksGrowth: "+38.2%",
-    saves: 2100,
-    savesGrowth: "+28.4%",
-    shares: 1200,
-    sharesGrowth: "+18.6%",
-    bestPostTime: "Daily 9PM",
-    topHashtag: "#Discussion",
-  },
-};
-
 export default function BrandStatsPage() {
   const formatNumber = (num: number): string => {
     if (num >= 1000000) return (num / 1000000).toFixed(1) + "M";
     if (num >= 1000) return (num / 1000).toFixed(1) + "K";
     return num.toString();
   };
+
+  const ringData = [
+    { label: "YouTube", value: 85, maxValue: 100, color: "#FF0000" },
+    { label: "Instagram", value: 72, maxValue: 100, color: "#E4405F" },
+    { label: "TikTok", value: 94, maxValue: 100, color: "#000000" },
+    { label: "LinkedIn", value: 58, maxValue: 100, color: "#0A66C2" },
+  ];
+
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   return (
     <div className="mx-auto max-w-6xl space-y-6">
@@ -210,122 +103,6 @@ export default function BrandStatsPage() {
         </Card>
       </div>
 
-      {/* Platform Stats */}
-      <div className="space-y-4">
-        <h2 className="font-display text-lg font-semibold">Platform Breakdown</h2>
-        <div className="grid gap-4">
-          {analyticsPlatforms.map((platform) => {
-            const stats = extendedPlatformStats[platform.id];
-            const account = socialAccounts.find((a) => a.platform === platform.id);
-            const isPositive = stats.reachGrowth.startsWith("+");
-
-            return (
-              <Card key={platform.id} className="border-border/50 shadow-sm">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div
-                        className="flex h-10 w-10 items-center justify-center rounded-lg"
-                        style={{ backgroundColor: `${platform.color}15` }}
-                      >
-                        <PlatformIcon platform={platform.id} size={20} className="text-foreground" />
-                      </div>
-                      <div>
-                        <CardTitle className="font-display text-base font-semibold">
-                          {platform.name}
-                        </CardTitle>
-                        {account && (
-                          <p className="text-xs text-muted-foreground">{account.handle}</p>
-                        )}
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-lg font-semibold">
-                        {formatNumber(account?.followers || 0)}
-                      </p>
-                      <Badge
-                        variant="secondary"
-                        className={`text-xs ${
-                          isPositive
-                            ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
-                            : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
-                        }`}
-                      >
-                        {stats.reachGrowth}
-                      </Badge>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                    {/* Reach */}
-                    <div className="space-y-1">
-                      <p className="text-xs text-muted-foreground">Reach</p>
-                      <p className="text-sm font-medium">{formatNumber(stats.reach)}</p>
-                      <p className={`text-xs ${isPositive ? "text-emerald-600" : "text-red-600"}`}>
-                        {stats.reachGrowth}
-                      </p>
-                    </div>
-
-                    {/* Clicks */}
-                    <div className="space-y-1">
-                      <p className="text-xs text-muted-foreground">Clicks</p>
-                      <p className="text-sm font-medium">{formatNumber(stats.clicks)}</p>
-                      <p className="text-xs text-emerald-600">{stats.clicksGrowth}</p>
-                    </div>
-
-                    {/* Saves */}
-                    <div className="space-y-1">
-                      <p className="text-xs text-muted-foreground">Saves</p>
-                      <p className="text-sm font-medium">{formatNumber(stats.saves)}</p>
-                      <p className="text-xs text-emerald-600">{stats.savesGrowth}</p>
-                    </div>
-
-                    {/* Shares */}
-                    <div className="space-y-1">
-                      <p className="text-xs text-muted-foreground">Shares</p>
-                      <p className="text-sm font-medium">{formatNumber(stats.shares)}</p>
-                      <p className="text-xs text-emerald-600">{stats.sharesGrowth}</p>
-                    </div>
-
-                    {/* Best Post Time */}
-                    <div className="space-y-1">
-                      <p className="text-xs text-muted-foreground">Best Time</p>
-                      <p className="text-sm font-medium">{stats.bestPostTime}</p>
-                    </div>
-
-                    {/* Top Hashtag */}
-                    <div className="space-y-1">
-                      <p className="text-xs text-muted-foreground">Top Hashtag</p>
-                      <p className="text-sm font-medium">{stats.topHashtag}</p>
-                    </div>
-                  </div>
-
-                  {/* Engagement Progress */}
-                  {account && (
-                    <div className="mt-4 space-y-1">
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="text-muted-foreground">Engagement Rate</span>
-                        <span className="font-medium">{account.engagement}%</span>
-                      </div>
-                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-                        <div
-                          className="h-full rounded-full transition-all"
-                          style={{
-                            width: `${Math.min(account.engagement * 10, 100)}%`,
-                            backgroundColor: platform.color,
-                          }}
-                        />
-                      </div>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-      </div>
-
       {/* Advanced Analytics Charts */}
       <div className="grid gap-6 md:grid-cols-2">
         {/* Content Funnel */}
@@ -366,25 +143,48 @@ export default function BrandStatsPage() {
               Monthly follower growth targets
             </p>
           </CardHeader>
-          <CardContent>
+          <CardContent className="flex flex-col sm:flex-row items-center gap-6">
             <RingChart
-              data={[
-                { label: "YouTube", value: 85, maxValue: 100, color: "#FF0000" },
-                { label: "Instagram", value: 72, maxValue: 100, color: "#E4405F" },
-                { label: "TikTok", value: 94, maxValue: 100, color: "#000000" },
-                { label: "LinkedIn", value: 58, maxValue: 100, color: "#0A66C2" },
-              ]}
-              size={200}
+              data={ringData}
+              size={180}
+              hoveredIndex={hoveredIndex}
+              onHoverChange={setHoveredIndex}
             >
-              <Ring index={0} />
-              <Ring index={1} />
-              <Ring index={2} />
-              <Ring index={3} />
-              <RingCenter
-                defaultLabel="Avg Progress"
-                suffix="%"
-              />
+              {ringData.map((_, i) => <Ring index={i} key={i} />)}
+              <RingCenter defaultLabel="Progress" suffix="%" />
             </RingChart>
+
+            {/* Legend */}
+            <div className="flex flex-col gap-2">
+              {ringData.map((item, index) => (
+                <div
+                  key={item.label}
+                  className="flex items-center gap-3 cursor-pointer rounded-lg px-3 py-2 transition-colors hover:bg-muted/50"
+                  onMouseEnter={() => setHoveredIndex(index)}
+                  onMouseLeave={() => setHoveredIndex(null)}
+                >
+                  <div
+                    className="h-3 w-3 rounded-full"
+                    style={{ backgroundColor: item.color }}
+                  />
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">{item.label}</span>
+                      <span className="text-sm text-muted-foreground">{item.value}%</span>
+                    </div>
+                    <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                      <div
+                        className="h-full rounded-full transition-all"
+                        style={{
+                          width: `${(item.value / item.maxValue) * 100}%`,
+                          backgroundColor: item.color,
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </CardContent>
         </Card>
       </div>
