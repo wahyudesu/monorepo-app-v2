@@ -540,3 +540,147 @@ export const publishedPosts: PublishedPost[] = [
     viralScore: 72,
   },
 ];
+
+// ==================== BRAND STATS DATA ====================
+
+// Age Distribution
+export interface AgeDistribution {
+  ageGroup: string;
+  count: number;
+  percentage: number;
+}
+
+export const audienceAgeDistribution: AgeDistribution[] = [
+  { ageGroup: "13-17", count: 8500, percentage: 3.1 },
+  { ageGroup: "18-24", count: 78200, percentage: 28.2 },
+  { ageGroup: "25-34", count: 98500, percentage: 35.5 },
+  { ageGroup: "35-44", count: 62300, percentage: 22.4 },
+  { ageGroup: "45-54", count: 21800, percentage: 7.9 },
+  { ageGroup: "55+", count: 8200, percentage: 2.9 },
+];
+
+// Gender Breakdown
+export interface GenderBreakdown {
+  gender: string;
+  count: number;
+  percentage: number;
+}
+
+export const audienceGender: GenderBreakdown[] = [
+  { gender: "Male", count: 142300, percentage: 51.3 },
+  { gender: "Female", count: 128500, percentage: 46.3 },
+  { gender: "Non-binary", count: 6700, percentage: 2.4 },
+];
+
+// Top Countries
+export interface CountryData {
+  country: string;
+  code: string;
+  followers: number;
+  flag: string;
+}
+
+export const audienceCountries: CountryData[] = [
+  { country: "Indonesia", code: "ID", followers: 98500, flag: "🇮🇩" },
+  { country: "United States", code: "US", followers: 67800, flag: "🇺🇸" },
+  { country: "Malaysia", code: "MY", followers: 42300, flag: "🇲🇾" },
+  { country: "Singapore", code: "SG", followers: 31200, flag: "🇸🇬" },
+  { country: "Philippines", code: "PH", followers: 18900, flag: "🇵🇭" },
+  { country: "Thailand", code: "TH", followers: 15600, flag: "🇹🇭" },
+  { country: "Vietnam", code: "VN", followers: 12300, flag: "🇻🇳" },
+  { country: "India", code: "IN", followers: 11200, flag: "🇮🇳" },
+  { country: "Brazil", code: "BR", followers: 8900, flag: "🇧🇷" },
+  { country: "United Kingdom", code: "UK", followers: 7600, flag: "🇬🇧" },
+];
+
+// Active Hours
+export interface HourlyEngagement {
+  hour: number;
+  label: string;
+  engagement: number;
+}
+
+export const audienceActiveHours: HourlyEngagement[] = [
+  { hour: 0, label: "00:00", engagement: 1200 },
+  { hour: 1, label: "01:00", engagement: 800 },
+  { hour: 2, label: "02:00", engagement: 500 },
+  { hour: 3, label: "03:00", engagement: 300 },
+  { hour: 4, label: "04:00", engagement: 200 },
+  { hour: 5, label: "05:00", engagement: 400 },
+  { hour: 6, label: "06:00", engagement: 800 },
+  { hour: 7, label: "07:00", engagement: 1500 },
+  { hour: 8, label: "08:00", engagement: 3200 },
+  { hour: 9, label: "09:00", engagement: 5600 },
+  { hour: 10, label: "10:00", engagement: 7200 },
+  { hour: 11, label: "11:00", engagement: 6800 },
+  { hour: 12, label: "12:00", engagement: 5400 },
+  { hour: 13, label: "13:00", engagement: 4800 },
+  { hour: 14, label: "14:00", engagement: 6200 },
+  { hour: 15, label: "15:00", engagement: 7800 },
+  { hour: 16, label: "16:00", engagement: 8500 },
+  { hour: 17, label: "17:00", engagement: 9200 },
+  { hour: 18, label: "18:00", engagement: 10500 },
+  { hour: 19, label: "19:00", engagement: 11200 },
+  { hour: 20, label: "20:00", engagement: 9800 },
+  { hour: 21, label: "21:00", engagement: 7600 },
+  { hour: 22, label: "22:00", engagement: 5200 },
+  { hour: 23, label: "23:00", engagement: 2800 },
+];
+
+// Content Type Performance
+export interface ContentTypeData {
+  type: string;
+  posts: number;
+  avgEngagement: number;
+  totalLikes: number;
+  totalShares: number;
+}
+
+export const contentTypePerformance: ContentTypeData[] = [
+  { type: "Reel", posts: 48, avgEngagement: 8.2, totalLikes: 485000, totalShares: 89500 },
+  { type: "Video", posts: 32, avgEngagement: 6.8, totalLikes: 312000, totalShares: 45600 },
+  { type: "Carousel", posts: 56, avgEngagement: 4.5, totalLikes: 198000, totalShares: 23400 },
+  { type: "Photo", posts: 84, avgEngagement: 3.2, totalLikes: 245000, totalShares: 15600 },
+  { type: "Story", posts: 120, avgEngagement: 5.1, totalLikes: 156000, totalShares: 8900 },
+];
+
+// Engagement Trend
+export interface EngagementTrend {
+  date: string;
+  displayDate: string;
+  likes: number;
+  comments: number;
+  shares: number;
+  total: number;
+}
+
+function generateEngagementTrend(days: number): EngagementTrend[] {
+  const data: EngagementTrend[] = [];
+  const today = new Date();
+
+  for (let i = days - 1; i >= 0; i--) {
+    const date = new Date(today);
+    date.setDate(date.getDate() - i);
+    const dateStr = date.toISOString().split("T")[0];
+    const displayDate = date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+
+    const likes = Math.floor(4000 + Math.random() * 3000);
+    const comments = Math.floor(likes * 0.03 + Math.random() * 200);
+    const shares = Math.floor(likes * 0.05 + Math.random() * 500);
+
+    data.push({
+      date: dateStr,
+      displayDate,
+      likes,
+      comments,
+      shares,
+      total: likes + comments + shares,
+    });
+  }
+
+  return data;
+}
+
+export const engagementTrend7d = generateEngagementTrend(7);
+export const engagementTrend30d = generateEngagementTrend(30);
+export const engagementTrend90d = generateEngagementTrend(90);
