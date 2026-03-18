@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, User, LogOut, Settings, UserCircle } from "lucide-react";
+import { ChevronDown, User, LogOut, Settings, UserCircle, Plus } from "lucide-react";
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { buttonVariants } from "@/components/ui/button";
@@ -32,7 +32,7 @@ export function AppHeader() {
   };
 
   return (
-    <header className="mx-auto flex w-full max-w-[1024px] items-center justify-between px-5 py-3">
+    <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-5 py-3">
       {/* Workspace Selector */}
         <DropdownMenu>
           <DropdownMenuTrigger
@@ -62,7 +62,10 @@ export function AppHeader() {
             <span className="ml-2">Side Project</span>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>+ Create workspace...</DropdownMenuItem>
+          <DropdownMenuItem>
+              <Plus className="h-4 w-4" />
+              Create workspace...
+            </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
@@ -137,7 +140,7 @@ export function AppHeader() {
                 setSignOutOpen(true);
               }}
             >
-              <span className="text-sm">Sign out</span>
+              <span className="text-sm font-medium">Sign out</span>
               <LogOut className="h-4 w-4" />
             </DropdownMenuItem>
           </div>

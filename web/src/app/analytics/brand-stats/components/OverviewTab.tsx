@@ -170,7 +170,7 @@ export function OverviewTab() {
         </CardHeader>
         <CardContent>
           <BarChart
-            data={platformData}
+            data={platformData as unknown as Record<string, unknown>[]}
             xDataKey="name"
             orientation="horizontal"
             margin={{ top: 10, right: 30, bottom: 30, left: 80 }}

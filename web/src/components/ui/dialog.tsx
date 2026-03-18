@@ -39,14 +39,18 @@ function DialogOverlay({
   )
 }
 
+interface DialogContentProps extends React.ComponentPropsWithoutRef<typeof DialogPrimitive.Popup> {
+  showCloseButton?: boolean
+  dismissible?: boolean
+}
+
 function DialogContent({
   className,
   children,
   showCloseButton = true,
+  dismissible = true,
   ...props
-}: DialogPrimitive.Popup.Props & {
-  showCloseButton?: boolean
-}) {
+}: DialogContentProps) {
   return (
     <DialogPortal>
       <DialogOverlay />

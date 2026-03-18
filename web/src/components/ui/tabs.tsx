@@ -80,3 +80,6 @@ function TabsContent({ className, ...props }: TabsPrimitive.Panel.Props) {
 }
 
 export { Tabs, TabsList, TabsTrigger, TabsContent, tabsListVariants }
+
+// Aliases for alternative naming conventions
+export { TabsTrigger as TabsTab, TabsContent as TabsPanel }

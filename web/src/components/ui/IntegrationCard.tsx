@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link2, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { PlatformIcon, type Platform } from "@/components/social/PlatformIcon";
+import { PlatformIcon, type Platform } from "@/components/ui/PlatformIcon";
 
 interface IntegrationCardProps {
   id: string;

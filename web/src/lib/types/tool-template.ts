@@ -12,6 +12,7 @@ export interface ContentScriptTemplate {
 	topic?: string;
 	// Timestamp
 	createdAt: number;
+	isPreset?: boolean; // Pre-built templates that cannot be deleted
 }
 
 export interface ToolTemplateManager {
@@ -81,6 +82,80 @@ let templateManager: ToolTemplateManager | null = null;
 export function getToolTemplateManager(): ToolTemplateManager {
 	if (!templateManager) {
 		templateManager = createToolTemplateManager();
+		// Initialize with preset templates if empty
+		if (templateManager.templates.length === 0) {
+			initializePresetTemplates(templateManager);
+		}
 	}
 	return templateManager;
+}
+
+// Pre-built templates
+const PRESET_TEMPLATES: Omit<ContentScriptTemplate, "id" | "createdAt">[] = [
+	{
+		name: "Instagram Edukasi Reels",
+		purpose: "edukasi",
+		platform: "instagram",
+		persona: "expert-mentor",
+		framework: "pas",
+		tone: "casual",
+		format: "reels",
+		isPreset: true,
+	},
+	{
+		name: "TikTok Viral Hook",
+		purpose: "entertainment",
+		platform: "tiktok",
+		persona: "provocative",
+		framework: "aida",
+		tone: "casual",
+		format: "reels",
+		isPreset: true,
+	},
+	{
+		name: "LinkedIn Professional Post",
+		purpose: "edukasi",
+		platform: "linkedin",
+		persona: "professional",
+		framework: "bab",
+		tone: "professional",
+		format: "post",
+		isPreset: true,
+	},
+	{
+		name: "Twitter Thread Story",
+		purpose: "engagement",
+		platform: "twitter",
+		persona: "storyteller",
+		framework: "sss",
+		tone: "friendly",
+		format: "thread",
+		isPreset: true,
+	},
+	{
+		name: "YouTube Shorts Tips",
+		purpose: "edukasi",
+		platform: "youtube",
+		persona: "friendly-relatable",
+		framework: "fab",
+		tone: "friendly",
+		format: "reels",
+		isPreset: true,
+	},
+	{
+		name: "Instagram Promo Carousel",
+		purpose: "promosi",
+		platform: "instagram",
+		persona: "friendly-relatable",
+		framework: "pas",
+		tone: "casual",
+		format: "carousel",
+		isPreset: true,
+	},
+];
+
+function initializePresetTemplates(manager: ToolTemplateManager) {
+	PRESET_TEMPLATES.forEach((preset) => {
+		manager.saveTemplate(preset);
+	});
 }

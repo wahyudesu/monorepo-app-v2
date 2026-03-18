@@ -19,6 +19,13 @@ import {
 	type SlashCommandMatch,
 	type Tool,
 } from "@/components/ui/slash-command-dropdown";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 
 // Re-export types for convenience
 export type { Tool, SlashCommandMatch, UploadedFile };
@@ -29,6 +36,12 @@ export interface ComposerContextOption {
 	icon?: ReactNode;
 	description?: string;
 	onClick?: () => void;
+}
+
+export interface PlatformOption {
+	id: string;
+	name: string;
+	icon: ReactNode;
 }
 
 export interface ComposerProps {
@@ -78,6 +91,12 @@ export interface ComposerProps {
 	onTemplateClick?: () => void;
 	/** Number of available templates */
 	templateCount?: number;
+	/** Platform options for selection */
+	platformOptions?: PlatformOption[];
+	/** Selected platform */
+	selectedPlatform?: string;
+	/** Callback when platform is selected */
+	onPlatformSelect?: (platformId: string) => void;
 }
 
 // Internal tone options
@@ -117,6 +136,9 @@ export const Composer: FC<ComposerProps> = ({
 	showTemplateButton = false,
 	onTemplateClick,
 	templateCount = 0,
+	platformOptions,
+	selectedPlatform,
+	onPlatformSelect,
 }) => {
 	const [inputValue, setInputValue] = useState(defaultValue);
 	const [selectedTone, setSelectedTone] = useState(defaultTone);
@@ -284,6 +306,34 @@ export const Composer: FC<ComposerProps> = ({
 					className="rounded-xl"
 				/>
 
+				{/* Platform Selector */}
+				{platformOptions && platformOptions.length > 0 && (
+					<div className="px-3 pt-2 pb-1">
+						<div className="flex items-center gap-2">
+							<span className="text-xs text-zinc-500 dark:text-zinc-400">Platform:</span>
+							<Select
+								value={selectedPlatform}
+								onValueChange={(value) => onPlatformSelect?.(value)}
+								disabled={disabled || isLoading}
+							>
+								<SelectTrigger className="h-7 w-auto min-w-[120px] border-0 bg-zinc-200 dark:bg-zinc-700 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-300 dark:hover:bg-zinc-600 focus:ring-0 focus:ring-offset-0">
+								<SelectValue placeholder="Select platform" />
+								</SelectTrigger>
+								<SelectContent className="min-w-[140px]">
+									{platformOptions.map((platform) => (
+										<SelectItem key={platform.id} value={platform.id} className="text-xs">
+											<div className="flex items-center gap-2">
+												{platform.icon}
+												{platform.name}
+											</div>
+										</SelectItem>
+									))}
+								</SelectContent>
+							</Select>
+						</div>
+					</div>
+				)}
+
 				{/* Textarea Input */}
 				<form onSubmit={handleSubmit}>
 					<div className="relative px-3">
@@ -440,31 +490,29 @@ export const Composer: FC<ComposerProps> = ({
 							</div>
 						)}
 
-						{/* Tone Selector - inline pills */}
+						{/* Tone Selector - dropdown */}
 						{showToneSelector && (
-							<div className="flex items-center gap-1.5 ml-2">
+							<div className="flex items-center gap-2 ml-2">
 								<span className="text-xs text-zinc-500 dark:text-zinc-400">Tone:</span>
-								<div className="flex items-center gap-1">
-									{toneOptions.map((toneOption) => (
-										<button
-											key={toneOption.value}
-											type="button"
-											onClick={() => setSelectedTone(toneOption.value)}
-											disabled={disabled || isLoading}
-											className={cn(
-												"flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium transition-all",
-												"cursor-pointer",
-												selectedTone === toneOption.value
-													? "bg-[#00bbff] text-white"
-													: "bg-zinc-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-300 dark:hover:bg-zinc-600",
-												"disabled:cursor-wait disabled:opacity-70",
-											)}
-										>
-											<span className={cn("w-1.5 h-1.5 rounded-full", toneOption.color)} />
-											{toneOption.label}
-										</button>
-									))}
-								</div>
+								<Select
+									value={selectedTone}
+									onValueChange={setSelectedTone}
+									disabled={disabled || isLoading}
+								>
+									<SelectTrigger className="h-7 w-auto min-w-[90px] border-0 bg-zinc-200 dark:bg-zinc-700 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-300 dark:hover:bg-zinc-600 focus:ring-0 focus:ring-offset-0">
+										<SelectValue placeholder="Select tone" />
+									</SelectTrigger>
+									<SelectContent className="min-w-[120px]">
+										{toneOptions.map((toneOption) => (
+											<SelectItem key={toneOption.value} value={toneOption.value} className="text-xs">
+												<div className="flex items-center gap-2">
+													<span className={cn("w-2 h-2 rounded-full", toneOption.color)} />
+													{toneOption.label}
+												</div>
+											</SelectItem>
+										))}
+									</SelectContent>
+								</Select>
 							</div>
 						)}
 					</div>

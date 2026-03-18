@@ -1,6 +1,6 @@
-// Platform type is now defined in @/components/social/PlatformIcon
+// Platform type is now defined in @/components/ui/PlatformIcon
 // We import the colors helper from there
-export { getPlatformColor, getPlatformBgColor, type Platform } from "@/components/social/PlatformIcon";
+export { getPlatformColor, getPlatformBgColor, type Platform } from "@/components/ui/PlatformIcon";
 
 // Legacy emoji icons - kept for backward compatibility, consider removing
 export const platformIcons: Record<string, string> = {

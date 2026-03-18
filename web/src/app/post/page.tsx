@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useCallback, useEffect } from "react";
 import { calendarEvents, type CalendarEvent } from "@/data/mock";
-import { CalendarGrid } from "@/components/calendar/CalendarGrid";
+import { CalendarGrid } from "@/components/post/CalendarGrid";
 import {
     PostHeader,
     PostControls,
@@ -13,7 +13,7 @@ import {
     CreateContentDialog,
   } from "@/components/post";
 import { getDaysInMonth, getFirstDayOfMonth } from "@/lib/constants";
-import { Platform } from "@/components/social/PlatformIcon";
+import { Platform } from "@/components/ui/PlatformIcon";
 
 type ViewMode = "calendar" | "cards";
 type CalendarView = "month" | "week";
@@ -94,11 +94,11 @@ const eventsByDate = useMemo(() => {
     return map;
   }, [events, selectedPlatform]);
 
-  const filteredEvents = useMemo(() => {
-    return selectedPlatform === "all" 
-      ? events 
-      : events.filter((e) => e.platform === selectedPlatform);
-  }, [events, selectedPlatform]);
+      const filteredEvents = useMemo(() => {
+        return selectedPlatform === "all" 
+          ? events 
+          : events.filter((e) => e.platform === selectedPlatform);
+      }, [events, selectedPlatform]);
 
   const handleDragStart = useCallback((e: React.DragEvent, event: CalendarEvent) => {
     setDraggedEvent(event);
@@ -156,22 +156,22 @@ const eventsByDate = useMemo(() => {
   }, [calendarView, firstDay, daysInMonth, year, month, weekRange]);
 
   return (
-      <div className="mx-auto max-w-5xl space-y-6">
+      <div className="mx-auto max-w-6xl space-y-6">
         <PostHeader />
 
-        <PostControls
-          viewMode={viewMode}
-          onViewModeChange={setViewMode}
-          monthName={displayName}
-          onPrevMonth={handlePrev}
-          onNextMonth={handleNext}
-          calendarView={calendarView}
-          onCalendarViewChange={setCalendarView}
-          cardsView={cardsView}
-          onCardsViewChange={setCardsView}
-          selectedPlatform={selectedPlatform}
-          onPlatformChange={setSelectedPlatform}
-        />
+            <PostControls
+              viewMode={viewMode}
+              onViewModeChange={setViewMode}
+              monthName={displayName}
+              onPrevMonth={handlePrev}
+              onNextMonth={handleNext}
+              calendarView={calendarView}
+              onCalendarViewChange={setCalendarView}
+              cardsView={cardsView}
+              onCardsViewChange={setCardsView}
+              selectedPlatform={selectedPlatform}
+              onPlatformChange={setSelectedPlatform}
+            />
 
         {viewMode === "calendar" && (
           <CalendarGrid

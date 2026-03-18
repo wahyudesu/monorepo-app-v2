@@ -28,7 +28,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { publishedPosts, analyticsPlatforms } from "@/data/mock";
-import { PlatformIcon, type Platform } from "@/components/social/PlatformIcon";
+import { PlatformIcon, type Platform } from "@/components/ui/PlatformIcon";
 
 const POSTS_PER_PAGE = 6;
 

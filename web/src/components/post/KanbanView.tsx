@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Badge } from "@/components/reui/badge";
+import { Badge } from "@/components/ui/reui-badge";
 import {
   Kanban,
   KanbanBoard,
@@ -10,9 +10,9 @@ import {
   KanbanItem,
   KanbanItemHandle,
   KanbanOverlay,
-} from "@/components/reui/kanban";
+} from "@/components/ui/reui-kanban";
 import { Card, CardContent } from "@/components/ui/card";
-import { PlatformIcon } from "@/components/social/PlatformIcon";
+import { PlatformIcon } from "@/components/ui/PlatformIcon";
 import { Play, Plus, Calendar, Clock } from "lucide-react";
 import { type CalendarEvent } from "@/data/mock";
 import { cn } from "@/lib/utils";
@@ -70,12 +70,7 @@ function PostCard({ event, asHandle, isOverlay, onClick }: PostCardProps) {
           </div>
         )}
         <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-1.5">
-            <PlatformIcon platform={event.platform} size={14} />
-            <span className="text-xs font-medium capitalize text-muted-foreground">
-              {event.platform}
-            </span>
-          </div>
+          <PlatformIcon platform={event.platform} size={20} />
           <Badge
             variant={
               event.status === "published"

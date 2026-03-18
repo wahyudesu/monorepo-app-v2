@@ -1,7 +1,7 @@
 "use client";
 
 import { CalendarEvent } from "@/data/mock";
-import { PlatformIcon } from "@/components/social/PlatformIcon";
+import { PlatformIcon } from "@/components/ui/PlatformIcon";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -245,7 +245,7 @@ export function ListView({ events, onEventClick }: ListViewProps) {
                 </TableCell>
                 <TableCell onClick={(e) => e.stopPropagation()}>
                   <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
+                    <DropdownMenuTrigger>
                       <Button
                         variant="ghost"
                         size="icon"

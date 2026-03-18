@@ -1,14 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Sparkles } from "lucide-react";
 import { Composer } from "@/components/ui/composer";
-import { GeneratedPostCard } from "@/components/ai";
+import { GeneratedPostCard } from "@/components/post";
 import { Card } from "@/components/ui/card";
 import { TemplateManagerDialog } from "@/components/ui/template-manager-dialog";
 import { generatePost, platforms, tones, goals, contentTypes } from "@/lib/constants/ai-post";
 import type { Platform, ContentType, Tone, ScriptGoal, GeneratedPost } from "@/lib/types/ai-post";
-import { cn } from "@/lib/utils";
 import { getTemplateManager, type ComposerTemplate } from "@/lib/types/template";
 
 export default function AIChatPage() {
@@ -103,7 +102,7 @@ export default function AIChatPage() {
 	});
 
 	return (
-		<div className="mx-auto max-w-2xl space-y-6">
+		<div className="mx-auto max-w-6xl space-y-6">
 			{/* Header */}
 			<div className="flex items-center justify-between">
 				<div>
@@ -115,29 +114,7 @@ export default function AIChatPage() {
 				</div>
 			</div>
 
-			{/* Platform Selector - Compact */}
-			<Card className="border-border/50 p-3">
-				<label className="text-xs font-medium mb-2 block text-muted-foreground">Platform</label>
-				<div className="flex flex-wrap gap-2">
-					{platforms.map((platform) => (
-						<button
-							key={platform.id}
-							onClick={() => setSelectedPlatform(platform.id)}
-							className={cn(
-								"flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-all text-sm",
-								selectedPlatform === platform.id
-									? "border-primary bg-primary/5"
-									: "border-border/50 hover:border-border hover:bg-muted/30"
-							)}
-						>
-							<span>{platform.icon}</span>
-							<span className="font-medium">{platform.name}</span>
-						</button>
-					))}
-				</div>
-			</Card>
-
-			{/* Composer with Tone Selector */}
+			{/* Composer with Tone Selector and Platform Selector */}
 			<Composer
 				placeholder="What do you want to post about?"
 				onSubmit={handleGenerate}
@@ -148,6 +125,13 @@ export default function AIChatPage() {
 				showTemplateButton={true}
 				onTemplateClick={() => setIsTemplateDialogOpen(true)}
 				templateCount={templateManager.templates.length}
+				platformOptions={platforms.map((p) => ({
+					id: p.id,
+					name: p.name,
+					icon: <span>{p.icon}</span>,
+				}))}
+				selectedPlatform={selectedPlatform}
+				onPlatformSelect={(id) => setSelectedPlatform(id as Platform)}
 				contextOptions={[
 					{
 						id: "content-type",

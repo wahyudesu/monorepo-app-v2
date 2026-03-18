@@ -11,7 +11,7 @@ import { SankeyChart } from "@/components/charts/sankey";
 import { SankeyNode } from "@/components/charts/sankey/sankey-node";
 import { SankeyLink } from "@/components/charts/sankey/sankey-link";
 import { contentTypePerformance, publishedPosts } from "@/data/mock";
-import { PlatformIcon } from "@/components/social/PlatformIcon";
+import { PlatformIcon } from "@/components/ui/PlatformIcon";
 import { TrendingUp, MessageCircle, Share2 } from "lucide-react";
 
 export function ContentTab() {

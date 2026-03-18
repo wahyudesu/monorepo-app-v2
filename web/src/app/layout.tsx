@@ -5,7 +5,7 @@ import './globals.css';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { Toaster } from '@/components/ui/sonner';
 import { AppLayoutWrapper } from '@/components/layout/AppLayoutWrapper';
-import { PageSkeleton } from '@/components/loading';
+import { PageSkeleton } from '@/components/ui';
 import { Figtree } from "next/font/google";
 import { cn } from "@/lib/utils";
 

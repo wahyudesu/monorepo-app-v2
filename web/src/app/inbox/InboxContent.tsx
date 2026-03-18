@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Search, Send, Paperclip, Smile, MoreVertical, ArrowLeft } from "lucide-react";
+import { Search, Send, Paperclip, Smile, MoreVertical, ArrowLeft, Bot, MessageSquare, Tag, Check, Clock, ArrowDownAZ } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tabs, TabsList, TabsTab, TabsPanel } from "@/components/ui/tabs";
 import {
   Select,
   SelectContent,
@@ -15,11 +16,31 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-import { Instagram, Twitter, Youtube, Music, MessageSquare, Star } from "lucide-react";
+import { Instagram, Twitter, Youtube, Music, Star } from "lucide-react";
+import { InboxAutomation } from "./InboxAutomation";
+
+type CustomerLabel = "vip" | "lead" | "customer" | "partner" | "none";
+
+const labelConfig: Record<CustomerLabel, { label: string; color: string; bgColor: string }> = {
+  vip: { label: "VIP", color: "text-yellow-600", bgColor: "bg-yellow-500/15 border-yellow-500/30" },
+  lead: { label: "Lead", color: "text-blue-600", bgColor: "bg-blue-500/15 border-blue-500/30" },
+  customer: { label: "Customer", color: "text-green-600", bgColor: "bg-green-500/15 border-green-500/30" },
+  partner: { label: "Partner", color: "text-purple-600", bgColor: "bg-purple-500/15 border-purple-500/30" },
+  none: { label: "No Label", color: "text-muted-foreground", bgColor: "" },
+};
 
 type Platform = "all" | "instagram" | "tiktok" | "twitter" | "youtube";
 type TypeFilter = "message" | "comment";
+type SortBy = "newest" | "name";
 
 interface ChatMessage {
   id: string;
@@ -42,6 +63,7 @@ interface Conversation {
   unreadCount: number;
   messages: ChatMessage[];
   mediaPost?: string;
+  customerLabel?: CustomerLabel;
 }
 
 const platformConfig = {
@@ -90,23 +112,24 @@ const mockConversations: Conversation[] = [
       { id: "m1", content: "This is exactly what I was looking for! 🔥", timestamp: "9:15 AM", isFromMe: false },
     ],
   },
-  {
-    id: "3",
-    platform: "twitter",
-    type: "message",
-    sender: "tech_enthusiast",
-    avatar: "https://i.pravatar.cc/150?u=tech",
-    isOnline: true,
-    isRead: true,
-    isStarred: false,
-    lastMessage: "Great thread! Would love to see more content about this topic.",
-    lastMessageTime: "1h ago",
-    unreadCount: 0,
-    messages: [
-      { id: "m1", content: "Great thread! Would love to see more content about this topic.", timestamp: "8:00 AM", isFromMe: false },
-      { id: "m2", content: "Thanks! I'll definitely make a part 2 soon 👍", timestamp: "8:05 AM", isFromMe: true },
-    ],
-  },
+    {
+      id: "3",
+      platform: "twitter",
+      type: "message",
+      sender: "tech_enthusiast",
+      avatar: "https://i.pravatar.cc/150?u=tech",
+      isOnline: true,
+      isRead: true,
+      isStarred: false,
+      lastMessage: "Great thread! Would love to see more content about this topic.",
+      lastMessageTime: "1h ago",
+      unreadCount: 0,
+      customerLabel: "lead",
+      messages: [
+        { id: "m1", content: "Great thread! Would love to see more content about this topic.", timestamp: "8:00 AM", isFromMe: false },
+        { id: "m2", content: "Thanks! I'll definitely make a part 2 soon 👍", timestamp: "8:05 AM", isFromMe: true },
+      ],
+    },
   {
     id: "4",
     platform: "youtube",
@@ -125,23 +148,24 @@ const mockConversations: Conversation[] = [
       { id: "m2", content: "I use Premiere Pro and After Effects mainly!", timestamp: "Yesterday", isFromMe: true },
     ],
   },
-  {
-    id: "5",
-    platform: "instagram",
-    type: "message",
-    sender: "brand_official",
-    avatar: "https://i.pravatar.cc/150?u=brand",
-    isOnline: false,
-    isRead: false,
-    isStarred: true,
-    lastMessage: "We'd like to discuss a potential partnership. DM us back!",
-    lastMessageTime: "3h ago",
-    unreadCount: 3,
-    messages: [
-      { id: "m1", content: "Hey! We've been following your content and love what you're doing.", timestamp: "2 days ago", isFromMe: false },
-      { id: "m2", content: "We'd like to discuss a potential partnership. DM us back!", timestamp: "3h ago", isFromMe: false },
-    ],
-  },
+    {
+      id: "5",
+      platform: "instagram",
+      type: "message",
+      sender: "brand_official",
+      avatar: "https://i.pravatar.cc/150?u=brand",
+      isOnline: false,
+      isRead: false,
+      isStarred: true,
+      lastMessage: "We'd like to discuss a potential partnership. DM us back!",
+      lastMessageTime: "3h ago",
+      unreadCount: 3,
+      customerLabel: "partner",
+      messages: [
+        { id: "m1", content: "Hey! We've been following your content and love what you're doing.", timestamp: "2 days ago", isFromMe: false },
+        { id: "m2", content: "We'd like to discuss a potential partnership. DM us back!", timestamp: "3h ago", isFromMe: false },
+      ],
+    },
   {
     id: "6",
     platform: "tiktok",
@@ -168,10 +192,11 @@ export function InboxContent() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
   const [messageInput, setMessageInput] = useState("");
+  const [sortBy, setSortBy] = useState<SortBy>("newest");
 
   // Filter conversations
   const filteredConversations = useMemo(() => {
-    return mockConversations.filter((conv) => {
+    let result = mockConversations.filter((conv) => {
       const matchesPlatform = platform === "all" || conv.platform === platform;
       const matchesType = conv.type === typeFilter;
       const matchesSearch =
@@ -180,7 +205,25 @@ export function InboxContent() {
         conv.lastMessage.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesPlatform && matchesType && matchesSearch;
     });
-  }, [platform, typeFilter, searchQuery]);
+
+    // Sort based on sortBy
+    if (sortBy === "newest") {
+      result = [...result].sort((a, b) => {
+        // Simple time comparison - newest first
+        const getTimeValue = (time: string) => {
+          if (time.includes("m ago")) return parseInt(time) * 60;
+          if (time.includes("h ago")) return parseInt(time) * 3600;
+          if (time.includes("d ago")) return parseInt(time) * 86400;
+          return 0;
+        };
+        return getTimeValue(a.lastMessageTime) - getTimeValue(b.lastMessageTime);
+      });
+    } else if (sortBy === "name") {
+      result = [...result].sort((a, b) => a.sender.localeCompare(b.sender));
+    }
+
+    return result;
+  }, [platform, typeFilter, searchQuery, sortBy]);
 
   const handleSendMessage = () => {
     if (!messageInput.trim() || !selectedConversation) return;
@@ -204,58 +247,94 @@ export function InboxContent() {
   };
 
   return (
-    <div className="mx-auto max-w-7xl h-[calc(100vh-8rem)]">
+    <div className="mx-auto max-w-6xl h-[calc(100vh-8rem)]">
       {/* Header */}
-      <div className="mb-4 flex items-center justify-between">
-        <div>
-          <h1 className="font-display text-2xl font-bold tracking-tight">Inbox</h1>
-          <p className="text-sm text-muted-foreground">Manage conversations across all platforms</p>
-        </div>
-
-        {/* Platform Filter - Select */}
-        <div className="flex items-center gap-2">
-          <Select value={platform} onValueChange={(v) => setPlatform(v as Platform)}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="All Platforms" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Platforms</SelectItem>
-              <SelectItem value="instagram">Instagram</SelectItem>
-              <SelectItem value="tiktok">TikTok</SelectItem>
-              <SelectItem value="twitter">Twitter</SelectItem>
-              <SelectItem value="youtube">YouTube</SelectItem>
-            </SelectContent>
-          </Select>
-
-          {/* Type Filter - Select */}
-          <Select value={typeFilter} onValueChange={(v) => setTypeFilter(v as TypeFilter)}>
-            <SelectTrigger className="w-[140px]">
-              <SelectValue placeholder="Select type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="message">Messages</SelectItem>
-              <SelectItem value="comment">Comments</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+      <div className="mb-4">
+        <h1 className="font-display text-2xl font-bold tracking-tight">Inbox</h1>
+        <p className="text-sm text-muted-foreground">Manage conversations and automation</p>
       </div>
 
-      {/* CRM Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 h-[calc(100%-6rem)]">
-        {/* Conversation List */}
-        <Card className="lg:col-span-1 border-border/50 overflow-hidden flex flex-col">
-          {/* Search */}
-          <div className="p-3 border-b border-border/50">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search conversations..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 h-9"
-              />
+      {/* Tabs */}
+      <Tabs defaultValue="inbox">
+        <div className="border-b">
+          <TabsList variant="line">
+            <TabsTab value="inbox">
+              <MessageSquare className="h-4 w-4" />
+              Inbox
+            </TabsTab>
+            <TabsTab value="automation">
+              <Bot className="h-4 w-4" />
+              Automation
+            </TabsTab>
+          </TabsList>
+        </div>
+
+      {/* Content */}
+      <TabsPanel value="inbox">
+            {/* Filters & Sort */}
+            <div className="flex items-center gap-2 mb-4">
+              {/* Sort By */}
+              <div className="flex items-center rounded-lg border border-border/50 bg-card/50 p-1">
+                <Button
+                  variant={sortBy === "newest" ? "default" : "ghost"}
+                  size="sm"
+                  className="h-7 px-3 text-xs font-medium"
+                  onClick={() => setSortBy("newest")}
+                >
+                  <Clock className="mr-1.5 h-3.5 w-3.5" />
+                  Terbaru
+                </Button>
+                <Button
+                  variant={sortBy === "name" ? "default" : "ghost"}
+                  size="sm"
+                  className="h-7 px-3 text-xs font-medium"
+                  onClick={() => setSortBy("name")}
+                >
+                  <ArrowDownAZ className="mr-1.5 h-3.5 w-3.5" />
+                  Nama
+                </Button>
+              </div>
+
+              <Select value={platform} onValueChange={(v) => setPlatform(v as Platform)}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="All Platforms" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Platforms</SelectItem>
+                  <SelectItem value="instagram">Instagram</SelectItem>
+                  <SelectItem value="tiktok">TikTok</SelectItem>
+                  <SelectItem value="twitter">Twitter</SelectItem>
+                  <SelectItem value="youtube">YouTube</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Select value={typeFilter} onValueChange={(v) => setTypeFilter(v as TypeFilter)}>
+                <SelectTrigger className="w-[140px]">
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="message">Messages</SelectItem>
+                  <SelectItem value="comment">Comments</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-          </div>
+
+        {/* CRM Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 h-[calc(100%-6rem)]">
+          {/* Conversation List */}
+          <Card className="lg:col-span-1 border-border/50 overflow-hidden flex flex-col">
+            {/* Search */}
+            <div className="p-3 border-b border-border/50">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search conversations..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 h-9"
+                />
+              </div>
+            </div>
 
           {/* Conversation List */}
           <ScrollArea className="flex-1">
@@ -292,14 +371,19 @@ export function InboxContent() {
                           )}
                         </div>
 
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between mb-1">
-                            <div className="flex items-center gap-1.5">
-                              <span className="font-semibold text-sm truncate">{conv.sender}</span>
-                              {conv.isStarred && <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between mb-1">
+                              <div className="flex items-center gap-1.5">
+                                <span className="font-semibold text-sm truncate">{conv.sender}</span>
+                                {conv.isStarred && <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />}
+                                {conv.type === "message" && conv.customerLabel && conv.customerLabel !== "none" && (
+                                  <Badge variant="outline" className={cn("text-[9px] px-1.5 py-0 h-4 border", labelConfig[conv.customerLabel].bgColor, labelConfig[conv.customerLabel].color)}>
+                                    {labelConfig[conv.customerLabel].label}
+                                  </Badge>
+                                )}
+                              </div>
+                              <span className="text-xs text-muted-foreground whitespace-nowrap">{conv.lastMessageTime}</span>
                             </div>
-                            <span className="text-xs text-muted-foreground whitespace-nowrap">{conv.lastMessageTime}</span>
-                          </div>
 
                           <div className="flex items-center gap-1.5 mb-1">
                             <div className={cn("flex items-center", config.color)}>
@@ -337,51 +421,108 @@ export function InboxContent() {
             </div>
           ) : (
             <>
-              {/* Chat Header */}
-              <div className="p-4 border-b border-border/50">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <Avatar className="h-10 w-10">
-                      <AvatarImage src={selectedConversation.avatar} />
-                      <AvatarFallback>{selectedConversation.sender[0].toUpperCase()}</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-semibold">{selectedConversation.sender}</h3>
-                        {selectedConversation.isOnline && (
-                          <Badge variant="outline" className="text-[10px] bg-green-500/10 text-green-600 border-green-500/20">
-                            Online
-                          </Badge>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        {(() => {
-                          const config = platformConfig[selectedConversation.platform];
-                          const Icon = config.icon;
-                          return (
-                            <>
-                              <Icon className={cn("h-3 w-3", config.color)} />
-                              <span className="text-xs text-muted-foreground">{config.name}</span>
-                            </>
-                          );
-                        })()}
+                {/* Chat Header */}
+                <div className="p-4 border-b border-border/50">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Avatar className="h-10 w-10">
+                        <AvatarImage src={selectedConversation.avatar} />
+                        <AvatarFallback>{selectedConversation.sender[0].toUpperCase()}</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-semibold">{selectedConversation.sender}</h3>
+                          {selectedConversation.isOnline && (
+                            <Badge variant="outline" className="text-[10px] bg-green-500/10 text-green-600 border-green-500/20">
+                              Online
+                            </Badge>
+                          )}
+                          {/* Customer Label - Only for messages */}
+                          {selectedConversation.type === "message" && (
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="sm" className="h-6 px-2 gap-1 text-xs">
+                                  <Tag className="h-3 w-3" />
+                                  {selectedConversation.customerLabel && selectedConversation.customerLabel !== "none" ? (
+                                    <span className={labelConfig[selectedConversation.customerLabel].color}>
+                                      {labelConfig[selectedConversation.customerLabel].label}
+                                    </span>
+                                  ) : (
+                                    <span className="text-muted-foreground">Add Label</span>
+                                  )}
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="start" className="w-40">
+                                <DropdownMenuLabel>Customer Label</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                {(Object.keys(labelConfig) as CustomerLabel[]).filter(l => l !== "none").map((labelKey) => {
+                                  const cfg = labelConfig[labelKey];
+                                  const isSelected = selectedConversation.customerLabel === labelKey;
+                                  return (
+                                    <DropdownMenuItem
+                                      key={labelKey}
+                                      onClick={() => {
+                                        // Update the conversation label
+                                        setSelectedConversation({
+                                          ...selectedConversation,
+                                          customerLabel: labelKey
+                                        });
+                                      }}
+                                      className="flex items-center justify-between"
+                                    >
+                                      <span className={cfg.color}>{cfg.label}</span>
+                                      {isSelected && <Check className="h-3 w-3" />}
+                                    </DropdownMenuItem>
+                                  );
+                                })}
+                                {selectedConversation.customerLabel && selectedConversation.customerLabel !== "none" && (
+                                  <>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem
+                                      onClick={() => {
+                                        setSelectedConversation({
+                                          ...selectedConversation,
+                                          customerLabel: "none"
+                                        });
+                                      }}
+                                      className="text-muted-foreground"
+                                    >
+                                      Remove Label
+                                    </DropdownMenuItem>
+                                  </>
+                                )}
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          {(() => {
+                            const config = platformConfig[selectedConversation.platform];
+                            const Icon = config.icon;
+                            return (
+                              <>
+                                <Icon className={cn("h-3 w-3", config.color)} />
+                                <span className="text-xs text-muted-foreground">{config.name}</span>
+                              </>
+                            );
+                          })()}
+                        </div>
                       </div>
                     </div>
+                    <Button variant="ghost" size="icon">
+                      <MoreVertical className="h-5 w-5" />
+                    </Button>
                   </div>
-                  <Button variant="ghost" size="icon">
-                    <MoreVertical className="h-5 w-5" />
-                  </Button>
+
+                  {selectedConversation.mediaPost && (
+                    <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground bg-muted/50 rounded-lg px-3 py-2">
+                      <MessageSquare className="h-3 w-3" />
+                      <span>On: {selectedConversation.mediaPost}</span>
+                    </div>
+                  )}
                 </div>
 
-                {selectedConversation.mediaPost && (
-                  <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground bg-muted/50 rounded-lg px-3 py-2">
-                    <MessageSquare className="h-3 w-3" />
-                    <span>On: {selectedConversation.mediaPost}</span>
-                  </div>
-                )}
-              </div>
-
-              {/* Messages */}
+                {/* Messages */}
               <ScrollArea className="flex-1 p-4">
                 <div className="space-y-4">
                   {selectedConversation.messages.map((msg) => (
@@ -514,6 +655,12 @@ export function InboxContent() {
           </Card>
         )}
       </div>
+      </TabsPanel>
+
+      <TabsPanel value="automation">
+        <InboxAutomation />
+      </TabsPanel>
+      </Tabs>
     </div>
   );
 }

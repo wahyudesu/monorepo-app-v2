@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Play } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { platformColors, type Platform } from "@/lib/constants";
-import { PlatformIcon } from "@/components/social/PlatformIcon";
+import { PlatformIcon } from "@/components/ui/PlatformIcon";
 import { type CalendarEvent } from "@/data/mock";
 
 const statusBadgeStyles: Record<string, { bg: string; text: string }> = {
@@ -50,7 +50,7 @@ export function ContentCard({ event, onClick }: ContentCardProps) {
               {/* Content on the right */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between mb-1.5">
-                  <PlatformIcon platform={event.platform as Platform} size={16} />
+                  <PlatformIcon platform={event.platform as Platform} size={20} />
                   <Badge
                     variant="secondary"
                     className="text-[10px] capitalize"

@@ -2,7 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { platformStats, analyticsPlatforms } from "@/data/mock";
-import { PlatformIcon, type Platform } from "@/components/social/PlatformIcon";
+import { PlatformIcon, type Platform } from "@/components/ui/PlatformIcon";
 
 export function PlatformsTab() {
   return (

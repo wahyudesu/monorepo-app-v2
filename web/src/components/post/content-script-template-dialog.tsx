@@ -54,6 +54,8 @@ export function ContentScriptTemplateDialog({
 		}
 	}, [isOpen, templateManager.templates]);
 
+	const customTemplates = templates.filter((t) => !t.isPreset);
+
 	const handleSaveTemplate = () => {
 		if (!newTemplateName.trim() || !currentConfig) return;
 
@@ -113,10 +115,10 @@ export function ContentScriptTemplateDialog({
 								className="text-zinc-500 dark:text-zinc-400"
 							/>
 							<h2 className="font-semibold text-zinc-900 dark:text-white">
-								Templates
+								Manage Templates
 							</h2>
 							<span className="text-xs text-zinc-500 dark:text-zinc-400">
-								({templates.length})
+								({customTemplates.length} custom)
 							</span>
 						</div>
 						<button
@@ -133,7 +135,7 @@ export function ContentScriptTemplateDialog({
 					</div>
 
 					{/* Content */}
-					<div className="overflow-y-auto p-4 space-y-2">
+					<div className="overflow-y-auto p-4 space-y-3">
 						{/* Save Current as Template */}
 						{!isCreating && currentConfig && (
 							<button
@@ -150,7 +152,7 @@ export function ContentScriptTemplateDialog({
 								</div>
 								<div className="text-left">
 									<div className="text-sm font-medium text-zinc-900 dark:text-white">
-										Save current as template
+										Create new template
 									</div>
 									<div className="text-xs text-zinc-500 dark:text-zinc-400">
 										Save your current configuration
@@ -203,81 +205,82 @@ export function ContentScriptTemplateDialog({
 							</div>
 						)}
 
-						{/* Templates List */}
-						{templates.length === 0 && !isCreating && (
+						{/* Empty State */}
+						{customTemplates.length === 0 && !isCreating && (
 							<div className="text-center py-8">
 								<p className="text-sm text-zinc-500 dark:text-zinc-400">
-									No templates yet. Create your first template!
+									No custom templates yet
+								</p>
+								<p className="text-xs text-zinc-400 dark:text-zinc-500 mt-1">
+									Create your own template from current configuration
 								</p>
 							</div>
 						)}
 
-						{templates.map((template) => (
-							<div
-								key={template.id}
-								className="group relative p-4 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
-							>
-								<div className="flex items-start justify-between gap-3">
-									<button
-										type="button"
-										onClick={() => handleLoadTemplate(template)}
-										className="flex-1 text-left cursor-pointer"
-									>
-										<div className="font-medium text-zinc-900 dark:text-white">
-											{template.name}
-										</div>
-										{/* Template Details */}
-										<div className="flex flex-wrap gap-1.5 mt-2">
-											<span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">
-												{template.platform}
-											</span>
-											<span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300">
-												{template.framework.toUpperCase()}
-											</span>
-											<span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300">
-												{template.persona}
-											</span>
-											<span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300">
-												{template.tone}
-											</span>
-										</div>
-										{template.topic && (
-											<div className="mt-2 text-xs text-zinc-500 dark:text-zinc-400 line-clamp-1">
-												📝 {template.topic}
-											</div>
-										)}
-									</button>
-
-									{/* Actions */}
-									<div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-										<button
-											type="button"
-											onClick={() => handleDuplicateTemplate(template)}
-											className="h-8 w-8 flex items-center justify-center rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors cursor-pointer"
-											title="Duplicate template"
-										>
-											<HugeiconsIcon
-												icon={Copy02Icon}
-												size={16}
-												className="text-zinc-500 dark:text-zinc-400"
-											/>
-										</button>
-										<button
-											type="button"
-											onClick={() => handleDeleteTemplate(template.id)}
-											className="h-8 w-8 flex items-center justify-center rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors cursor-pointer"
-											title="Delete template"
-										>
-											<HugeiconsIcon
-												icon={Delete02Icon}
-												size={16}
-												className="text-zinc-500 dark:text-zinc-400 hover:text-red-600 dark:hover:text-red-400"
-											/>
-										</button>
-									</div>
+						{/* Custom Templates List */}
+						{customTemplates.length > 0 && (
+							<div className="space-y-2">
+								<div className="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">
+									My Templates
 								</div>
+								{customTemplates.map((template) => (
+									<div
+										key={template.id}
+										className="group relative p-4 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+									>
+										<div className="flex items-start justify-between gap-3">
+											<button
+												type="button"
+												onClick={() => handleLoadTemplate(template)}
+												className="flex-1 text-left cursor-pointer"
+											>
+												<div className="font-medium text-zinc-900 dark:text-white">
+													{template.name}
+												</div>
+												<div className="flex flex-wrap gap-1.5 mt-2">
+													<span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">
+														{template.platform}
+													</span>
+													<span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300">
+														{template.framework.toUpperCase()}
+													</span>
+													<span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300">
+														{template.persona}
+													</span>
+												</div>
+											</button>
+
+											<div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+												<button
+													type="button"
+													onClick={() => handleDuplicateTemplate(template)}
+													className="h-8 w-8 flex items-center justify-center rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors cursor-pointer"
+													title="Duplicate"
+												>
+													<HugeiconsIcon
+														icon={Copy02Icon}
+														size={16}
+														className="text-zinc-500 dark:text-zinc-400"
+													/>
+												</button>
+												<button
+													type="button"
+													onClick={() => handleDeleteTemplate(template.id)}
+													className="h-8 w-8 flex items-center justify-center rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors cursor-pointer"
+													title="Delete"
+												>
+													<HugeiconsIcon
+														icon={Delete02Icon}
+														size={16}
+														className="text-zinc-500 dark:text-zinc-400 hover:text-red-600 dark:hover:text-red-400"
+													/>
+												</button>
+											</div>
+										</div>
+									</div>
+								))}
 							</div>
-						))}
+						)}
 					</div>
 				</div>
 			</div>

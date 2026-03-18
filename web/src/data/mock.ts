@@ -167,6 +167,7 @@ export const recentPosts: RecentPost[] = [
     title: string;
     date: string; // YYYY-MM-DD
     platform: Platform;
+    username?: string; // Account username/handle for this platform
     type: "post" | "story" | "reel" | "video" | "tweet" | "live";
     time?: string;
     description?: string;
@@ -185,40 +186,40 @@ function d(day: number): string {
 
 export const calendarEvents: CalendarEvent[] = [
     // Published posts
-    { id: "e1", title: "Product Launch Reel", date: d(3), platform: "instagram", type: "reel", time: "10:00", description: "30s reel showcasing new product features with trending audio", status: "published", color: "328 70% 55%", thumbnail: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=400&h=300&fit=crop", mediaType: "video" },
-    { id: "e2", title: "BTS TikTok", date: d(3), platform: "tiktok", type: "video", time: "14:00", description: "Behind the scenes of content creation process", status: "published", color: "349 70% 56%", thumbnail: "https://images.unsplash.com/photo-1598550476439-6847785fcea6?w=400&h=300&fit=crop", mediaType: "video" },
-    { id: "e3", title: "Weekly Thread", date: d(5), platform: "twitter", type: "tweet", time: "09:00", description: "Weekly tips thread on social media growth", status: "published", color: "203 89% 53%" },
-    { id: "e4", title: "Tutorial Video", date: d(7), platform: "youtube", type: "video", time: "12:00", description: "Step-by-step tutorial on brand building", status: "published", color: "0 72% 51%", thumbnail: "https://images.unsplash.com/photo-1611162616305-c69b3fa7fbe0?w=400&h=300&fit=crop", mediaType: "video" },
-    { id: "e5", title: "Story Takeover", date: d(8), platform: "instagram", type: "story", time: "11:00", description: "Guest creator takes over our stories for a day", status: "published", color: "328 70% 55%", thumbnail: "https://images.unsplash.com/photo-1611162618071-b39a2ec055fb?w=400&h=300&fit=crop", mediaType: "image" },
-    { id: "e6", title: "Trending Challenge", date: d(10), platform: "tiktok", type: "video", time: "15:00", description: "Participate in trending challenge with brand twist", status: "published", color: "349 70% 56%", thumbnail: "https://images.unsplash.com/photo-1596815064285-45ed8a9c0463?w=400&h=300&fit=crop", mediaType: "video" },
-    { id: "e19", title: "LinkedIn Article", date: d(1), platform: "linkedin", type: "post", time: "08:00", description: "Industry insights and predictions for 2025", status: "published", color: "221 83% 53%", thumbnail: "https://images.unsplash.com/photo-1506784983877-45594efa4cbe?w=400&h=300&fit=crop", mediaType: "image" },
-    { id: "e20", title: "Threads Announcement", date: d(2), platform: "threads", type: "post", time: "12:00", description: "New feature announcement", status: "published", color: "0 0% 0%" },
+    { id: "e1", title: "Product Launch Reel", date: d(3), platform: "instagram", username: "@acme.studio", type: "reel", time: "10:00", description: "30s reel showcasing new product features with trending audio", status: "published", color: "328 70% 55%", thumbnail: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=400&h=300&fit=crop", mediaType: "video" },
+    { id: "e2", title: "BTS TikTok", date: d(3), platform: "tiktok", username: "@acmestudio", type: "video", time: "14:00", description: "Behind the scenes of content creation process", status: "published", color: "349 70% 56%", thumbnail: "https://images.unsplash.com/photo-1598550476439-6847785fcea6?w=400&h=300&fit=crop", mediaType: "video" },
+    { id: "e3", title: "Weekly Thread", date: d(5), platform: "twitter", username: "@AcmeStudio", type: "tweet", time: "09:00", description: "Weekly tips thread on social media growth", status: "published", color: "203 89% 53%" },
+    { id: "e4", title: "Tutorial Video", date: d(7), platform: "youtube", username: "Acme Studio", type: "video", time: "12:00", description: "Step-by-step tutorial on brand building", status: "published", color: "0 72% 51%", thumbnail: "https://images.unsplash.com/photo-1611162616305-c69b3fa7fbe0?w=400&h=300&fit=crop", mediaType: "video" },
+    { id: "e5", title: "Story Takeover", date: d(8), platform: "instagram", username: "@acme.studio", type: "story", time: "11:00", description: "Guest creator takes over our stories for a day", status: "published", color: "328 70% 55%", thumbnail: "https://images.unsplash.com/photo-1611162618071-b39a2ec055fb?w=400&h=300&fit=crop", mediaType: "image" },
+    { id: "e6", title: "Trending Challenge", date: d(10), platform: "tiktok", username: "@acmestudio", type: "video", time: "15:00", description: "Participate in trending challenge with brand twist", status: "published", color: "349 70% 56%", thumbnail: "https://images.unsplash.com/photo-1596815064285-45ed8a9c0463?w=400&h=300&fit=crop", mediaType: "video" },
+    { id: "e19", title: "LinkedIn Article", date: d(1), platform: "linkedin", username: "Acme Corp", type: "post", time: "08:00", description: "Industry insights and predictions for 2025", status: "published", color: "221 83% 53%", thumbnail: "https://images.unsplash.com/photo-1506784983877-45594efa4cbe?w=400&h=300&fit=crop", mediaType: "image" },
+    { id: "e20", title: "Threads Announcement", date: d(2), platform: "threads", username: "@acme.studio", type: "post", time: "12:00", description: "New feature announcement", status: "published", color: "0 0% 0%" },
 
     // Scheduled posts
-    { id: "e7", title: "Engagement Post", date: d(12), platform: "instagram", type: "post", time: "18:00", description: "Carousel post with engagement hooks", status: "scheduled", color: "328 70% 55%", thumbnail: "https://images.unsplash.com/photo-1611162616475-46b635cb6868?w=400&h=300&fit=crop", mediaType: "image" },
-    { id: "e8", title: "Live Q&A Session", date: d(14), platform: "youtube", type: "live", time: "19:00", description: "Monthly live Q&A with the community", status: "scheduled", color: "0 72% 51%", thumbnail: "https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?w=400&h=300&fit=crop", mediaType: "video" },
-    { id: "e9", title: "Product Demo", date: d(15), platform: "tiktok", type: "video", time: "13:00", description: "Quick product demo with voiceover", status: "scheduled", color: "349 70% 56%" },
-    { id: "e10", title: "Twitter Space", date: d(17), platform: "twitter", type: "live", time: "20:00", description: "Twitter Space discussing industry trends", status: "scheduled", color: "203 89% 53%" },
-    { id: "e21", title: "Instagram Story", date: d(13), platform: "instagram", type: "story", time: "09:00", description: "Morning motivation story", status: "scheduled", color: "328 70% 55%", thumbnail: "https://images.unsplash.com/photo-1516961642265-531546e84af2?w=400&h=300&fit=crop", mediaType: "image" },
-    { id: "e22", title: "LinkedIn Carousel", date: d(16), platform: "linkedin", type: "post", time: "10:00", description: "Team introduction carousel", status: "scheduled", color: "221 83% 53%" },
-    { id: "e23", title: "Threads Update", date: d(18), platform: "threads", type: "post", time: "15:00", description: "Product update thread", status: "scheduled", color: "0 0% 0%" },
-    { id: "e24", title: "YouTube Short", date: d(19), platform: "youtube", type: "video", time: "11:00", description: "Quick tip YouTube Short", status: "scheduled", color: "0 72% 51%", thumbnail: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=400&h=300&fit=crop", mediaType: "video" },
+    { id: "e7", title: "Engagement Post", date: d(12), platform: "instagram", username: "@acme.studio", type: "post", time: "18:00", description: "Carousel post with engagement hooks", status: "scheduled", color: "328 70% 55%", thumbnail: "https://images.unsplash.com/photo-1611162616475-46b635cb6868?w=400&h=300&fit=crop", mediaType: "image" },
+    { id: "e8", title: "Live Q&A Session", date: d(14), platform: "youtube", username: "Acme Studio", type: "live", time: "19:00", description: "Monthly live Q&A with the community", status: "scheduled", color: "0 72% 51%", thumbnail: "https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?w=400&h=300&fit=crop", mediaType: "video" },
+    { id: "e9", title: "Product Demo", date: d(15), platform: "tiktok", username: "@acmestudio", type: "video", time: "13:00", description: "Quick product demo with voiceover", status: "scheduled", color: "349 70% 56%" },
+    { id: "e10", title: "Twitter Space", date: d(17), platform: "twitter", username: "@AcmeStudio", type: "live", time: "20:00", description: "Twitter Space discussing industry trends", status: "scheduled", color: "203 89% 53%" },
+    { id: "e21", title: "Instagram Story", date: d(13), platform: "instagram", username: "@acme.studio", type: "story", time: "09:00", description: "Morning motivation story", status: "scheduled", color: "328 70% 55%", thumbnail: "https://images.unsplash.com/photo-1516961642265-531546e84af2?w=400&h=300&fit=crop", mediaType: "image" },
+    { id: "e22", title: "LinkedIn Carousel", date: d(16), platform: "linkedin", username: "Acme Corp", type: "post", time: "10:00", description: "Team introduction carousel", status: "scheduled", color: "221 83% 53%" },
+    { id: "e23", title: "Threads Update", date: d(18), platform: "threads", username: "@acme.studio", type: "post", time: "15:00", description: "Product update thread", status: "scheduled", color: "0 0% 0%" },
+    { id: "e24", title: "YouTube Short", date: d(19), platform: "youtube", username: "Acme Studio", type: "video", time: "11:00", description: "Quick tip YouTube Short", status: "scheduled", color: "0 72% 51%", thumbnail: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=400&h=300&fit=crop", mediaType: "video" },
 
     // Draft posts
-    { id: "e11", title: "Collab Reel", date: d(19), platform: "instagram", type: "reel", time: "10:00", description: "Collaboration reel with partner brand", status: "draft", color: "328 70% 55%", thumbnail: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=400&h=300&fit=crop", mediaType: "video" },
-    { id: "e12", title: "Vlog Episode", date: d(20), platform: "youtube", type: "video", time: "14:00", description: "Weekly vlog episode - office tour", status: "draft", color: "0 72% 51%", thumbnail: "https://images.unsplash.com/photo-1497215728101-856f4ea42174?w=400&h=300&fit=crop", mediaType: "video" },
-    { id: "e13", title: "Meme Post", date: d(21), platform: "twitter", type: "tweet", time: "11:00", description: "Relatable industry meme", status: "draft", color: "203 89% 53%" },
-    { id: "e14", title: "Dance Challenge", date: d(22), platform: "tiktok", type: "video", time: "16:00", description: "Team dance challenge video", status: "draft", color: "349 70% 56%", thumbnail: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=400&h=300&fit=crop", mediaType: "video" },
-    { id: "e15", title: "Carousel Tips", date: d(25), platform: "instagram", type: "post", time: "09:00", description: "5 tips carousel for beginners", status: "draft", color: "328 70% 55%", thumbnail: "https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?w=400&h=300&fit=crop", mediaType: "image" },
-    { id: "e16", title: "Podcast Clip", date: d(26), platform: "youtube", type: "video", time: "12:00", description: "Short clip from latest podcast episode", status: "draft", color: "0 72% 51%" },
-    { id: "e17", title: "Poll Tweet", date: d(27), platform: "twitter", type: "tweet", time: "10:00", description: "Community poll about upcoming features", status: "draft", color: "203 89% 53%" },
-    { id: "e18", title: "Duet Video", date: d(28), platform: "tiktok", type: "video", time: "15:00", description: "Duet with top creator in niche", status: "draft", color: "349 70% 56%", thumbnail: "https://images.unsplash.com/photo-1598550476439-6847785fcea6?w=400&h=300&fit=crop", mediaType: "video" },
-    { id: "e25", title: "User Testimonial", date: d(23), platform: "linkedin", type: "post", time: "08:00", description: "Customer success story", status: "draft", color: "221 83% 53%", thumbnail: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=300&fit=crop", mediaType: "image" },
-    { id: "e26", title: "Before/After", date: d(24), platform: "instagram", type: "post", time: "12:00", description: "Before and after transformation post", status: "draft", color: "328 70% 55%", thumbnail: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=300&fit=crop", mediaType: "image" },
-    { id: "e27", title: "Quick Tip", date: d(29), platform: "threads", type: "post", time: "09:00", description: "Quick productivity tip", status: "draft", color: "0 0% 0%" },
-    { id: "e28", title: "Behind Scenes", date: d(30), platform: "tiktok", type: "video", time: "14:00", description: "Behind the scenes content", status: "draft", color: "349 70% 56%", thumbnail: "https://images.unsplash.com/photo-1531482615713-2afd69097998?w=400&h=300&fit=crop", mediaType: "video" },
-    { id: "e29", title: "Infographic", date: d(31), platform: "linkedin", type: "post", time: "10:00", description: "Industry statistics infographic", status: "draft", color: "221 83% 53%" },
-    { id: "e30", title: "Story Series", date: d(1), platform: "instagram", type: "story", time: "08:00", description: "Day in the life story series", status: "draft", color: "328 70% 55%", thumbnail: "https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=400&h=300&fit=crop", mediaType: "image" },
+    { id: "e11", title: "Collab Reel", date: d(19), platform: "instagram", username: "@acme.studio", type: "reel", time: "10:00", description: "Collaboration reel with partner brand", status: "draft", color: "328 70% 55%", thumbnail: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=400&h=300&fit=crop", mediaType: "video" },
+    { id: "e12", title: "Vlog Episode", date: d(20), platform: "youtube", username: "Acme Studio", type: "video", time: "14:00", description: "Weekly vlog episode - office tour", status: "draft", color: "0 72% 51%", thumbnail: "https://images.unsplash.com/photo-1497215728101-856f4ea42174?w=400&h=300&fit=crop", mediaType: "video" },
+    { id: "e13", title: "Meme Post", date: d(21), platform: "twitter", username: "@AcmeStudio", type: "tweet", time: "11:00", description: "Relatable industry meme", status: "draft", color: "203 89% 53%" },
+    { id: "e14", title: "Dance Challenge", date: d(22), platform: "tiktok", username: "@acmestudio", type: "video", time: "16:00", description: "Team dance challenge video", status: "draft", color: "349 70% 56%", thumbnail: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=400&h=300&fit=crop", mediaType: "video" },
+    { id: "e15", title: "Carousel Tips", date: d(25), platform: "instagram", username: "@acme.studio", type: "post", time: "09:00", description: "5 tips carousel for beginners", status: "draft", color: "328 70% 55%", thumbnail: "https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?w=400&h=300&fit=crop", mediaType: "image" },
+    { id: "e16", title: "Podcast Clip", date: d(26), platform: "youtube", username: "Acme Studio", type: "video", time: "12:00", description: "Short clip from latest podcast episode", status: "draft", color: "0 72% 51%" },
+    { id: "e17", title: "Poll Tweet", date: d(27), platform: "twitter", username: "@AcmeStudio", type: "tweet", time: "10:00", description: "Community poll about upcoming features", status: "draft", color: "203 89% 53%" },
+    { id: "e18", title: "Duet Video", date: d(28), platform: "tiktok", username: "@acmestudio", type: "video", time: "15:00", description: "Duet with top creator in niche", status: "draft", color: "349 70% 56%", thumbnail: "https://images.unsplash.com/photo-1598550476439-6847785fcea6?w=400&h=300&fit=crop", mediaType: "video" },
+    { id: "e25", title: "User Testimonial", date: d(23), platform: "linkedin", username: "Acme Corp", type: "post", time: "08:00", description: "Customer success story", status: "draft", color: "221 83% 53%", thumbnail: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=300&fit=crop", mediaType: "image" },
+    { id: "e26", title: "Before/After", date: d(24), platform: "instagram", username: "@acme.studio", type: "post", time: "12:00", description: "Before and after transformation post", status: "draft", color: "328 70% 55%", thumbnail: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=300&fit=crop", mediaType: "image" },
+    { id: "e27", title: "Quick Tip", date: d(29), platform: "threads", username: "@acme.studio", type: "post", time: "09:00", description: "Quick productivity tip", status: "draft", color: "0 0% 0%" },
+    { id: "e28", title: "Behind Scenes", date: d(30), platform: "tiktok", username: "@acmestudio", type: "video", time: "14:00", description: "Behind the scenes content", status: "draft", color: "349 70% 56%", thumbnail: "https://images.unsplash.com/photo-1531482615713-2afd69097998?w=400&h=300&fit=crop", mediaType: "video" },
+    { id: "e29", title: "Infographic", date: d(31), platform: "linkedin", username: "Acme Corp", type: "post", time: "10:00", description: "Industry statistics infographic", status: "draft", color: "221 83% 53%" },
+    { id: "e30", title: "Story Series", date: d(1), platform: "instagram", username: "@acme.studio", type: "story", time: "08:00", description: "Day in the life story series", status: "draft", color: "328 70% 55%", thumbnail: "https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=400&h=300&fit=crop", mediaType: "image" },
   ];
 
 // ==================== ANALYTICS DATA ====================
@@ -304,6 +305,39 @@ export const brandPerformance: BrandPerformance = {
   avgLikesGrowth: 18,
 };
 
+// Analytics Stats that change by time range
+export interface AnalyticsStats {
+  impressions: { value: number; trend: string };
+  engagements: { value: number; trend: string };
+  likes: { value: number; trend: string };
+  profileVisits: { value: number; trend: string };
+  replies: { value: number; trend: string };
+}
+
+export const analyticsStats7d: AnalyticsStats = {
+  impressions: { value: 156000, trend: "+12.5%" },
+  engagements: { value: 24500, trend: "+8.2%" },
+  likes: { value: 18200, trend: "+15.3%" },
+  profileVisits: { value: 4200, trend: "+6.1%" },
+  replies: { value: 890, trend: "+22.4%" },
+};
+
+export const analyticsStats30d: AnalyticsStats = {
+  impressions: { value: 4580000, trend: "+18.2%" },
+  engagements: { value: 342500, trend: "+14.6%" },
+  likes: { value: 285000, trend: "+19.8%" },
+  profileVisits: { value: 52000, trend: "+11.3%" },
+  replies: { value: 12300, trend: "+25.1%" },
+};
+
+export const analyticsStats90d: AnalyticsStats = {
+  impressions: { value: 12450000, trend: "+24.8%" },
+  engagements: { value: 892000, trend: "+21.2%" },
+  likes: { value: 720000, trend: "+28.5%" },
+  profileVisits: { value: 145000, trend: "+18.9%" },
+  replies: { value: 34500, trend: "+32.7%" },
+};
+
 // Helper function to generate date range
 function generateDateRange(days: number): PostAnalyticsData[] {
   const data: PostAnalyticsData[] = [];
@@ -339,6 +373,77 @@ function generateDateRange(days: number): PostAnalyticsData[] {
 export const analyticsData7d = generateDateRange(7);
 export const analyticsData30d = generateDateRange(30);
 export const analyticsData90d = generateDateRange(90);
+
+// Followers by Platform data
+export interface FollowersData {
+  date: string;
+  displayDate: string;
+  youtube: number;
+  facebook: number;
+  instagram: number;
+  tiktok: number;
+  linkedin: number;
+  twitter: number;
+  pinterest: number;
+  threads: number;
+}
+
+function generateFollowersData(days: number): FollowersData[] {
+  const data: FollowersData[] = [];
+  const today = new Date();
+  
+  // Base follower counts
+  const baseFollowers = {
+    youtube: 125000,
+    facebook: 89000,
+    instagram: 48200,
+    tiktok: 125800,
+    linkedin: 32000,
+    twitter: 28500,
+    pinterest: 15000,
+    threads: 8500,
+  };
+  
+  // Daily growth rates
+  const growthRates = {
+    youtube: 0.003,
+    facebook: 0.001,
+    instagram: 0.005,
+    tiktok: 0.008,
+    linkedin: 0.004,
+    twitter: 0.002,
+    pinterest: 0.001,
+    threads: 0.006,
+  };
+
+  for (let i = days - 1; i >= 0; i--) {
+    const date = new Date(today);
+    date.setDate(date.getDate() - i);
+    const dateStr = date.toISOString().split("T")[0];
+    const displayDate = date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+
+    const daysBack = days - 1 - i;
+    
+    data.push({
+      date: dateStr,
+      displayDate,
+      youtube: Math.floor(baseFollowers.youtube * Math.pow(1 + growthRates.youtube, daysBack) * (1 + (Math.random() - 0.5) * 0.02)),
+      facebook: Math.floor(baseFollowers.facebook * Math.pow(1 + growthRates.facebook, daysBack) * (1 + (Math.random() - 0.5) * 0.01)),
+      instagram: Math.floor(baseFollowers.instagram * Math.pow(1 + growthRates.instagram, daysBack) * (1 + (Math.random() - 0.5) * 0.02)),
+      tiktok: Math.floor(baseFollowers.tiktok * Math.pow(1 + growthRates.tiktok, daysBack) * (1 + (Math.random() - 0.5) * 0.03)),
+      linkedin: Math.floor(baseFollowers.linkedin * Math.pow(1 + growthRates.linkedin, daysBack) * (1 + (Math.random() - 0.5) * 0.02)),
+      twitter: Math.floor(baseFollowers.twitter * Math.pow(1 + growthRates.twitter, daysBack) * (1 + (Math.random() - 0.5) * 0.015)),
+      pinterest: Math.floor(baseFollowers.pinterest * Math.pow(1 + growthRates.pinterest, daysBack) * (1 + (Math.random() - 0.5) * 0.01)),
+      threads: Math.floor(baseFollowers.threads * Math.pow(1 + growthRates.threads, daysBack) * (1 + (Math.random() - 0.5) * 0.025)),
+    });
+  }
+
+  return data;
+}
+
+export const followersData7d = generateFollowersData(7);
+export const followersData30d = generateFollowersData(30);
+export const followersData90d = generateFollowersData(90);
 
 export interface PlatformStats {
   platform: AnalyticsPlatform;

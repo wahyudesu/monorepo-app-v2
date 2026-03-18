@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { AnimatePresence, motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { BrandStatsTabs } from "./components/BrandStatsTabs";
 import { SummaryCards } from "./components/SummaryCards";
@@ -18,11 +19,11 @@ export default function BrandStatsPage() {
       <div className="flex items-center justify-between">
         <div className="space-y-1">
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="sm" className="gap-1.5" asChild>
-              <Link href="/analytics">
+            <Link href="/analytics">
+              <Button variant="ghost" size="sm" className="gap-1.5">
                 Back
-              </Link>
-            </Button>
+              </Button>
+            </Link>
           </div>
           <h1 className="font-display text-2xl font-bold tracking-tight">
             Brand Statistics
@@ -39,10 +40,20 @@ export default function BrandStatsPage() {
       {/* Tabs */}
       <BrandStatsTabs value={activeTab} onChange={setActiveTab} />
 
-      {/* Tab Content */}
-      {activeTab === "overview" && <OverviewTab />}
-      {activeTab === "audience" && <AudienceTab />}
-      {activeTab === "content" && <ContentTab />}
+      {/* Tab Content with Animation */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={activeTab}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.2 }}
+        >
+          {activeTab === "overview" && <OverviewTab />}
+          {activeTab === "audience" && <AudienceTab />}
+          {activeTab === "content" && <ContentTab />}
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }

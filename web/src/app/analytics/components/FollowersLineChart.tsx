@@ -4,12 +4,12 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { BarChart, Bar, CartesianGrid, XAxis, YAxis } from "recharts";
-import type { PostAnalyticsData, AnalyticsPlatformConfig } from "@/data/mock";
+import { LineChart, Line, CartesianGrid, XAxis, YAxis, ResponsiveContainer } from "recharts";
+import type { FollowersData, AnalyticsPlatformConfig } from "@/data/mock";
 import { PlatformIcon } from "@/components/ui/PlatformIcon";
 
-interface StackedBarChartProps {
-  data: PostAnalyticsData[];
+interface FollowersLineChartProps {
+  data: FollowersData[];
   platforms: AnalyticsPlatformConfig[];
 }
 
@@ -19,12 +19,12 @@ function formatChartValue(value: number): string {
   return value.toString();
 }
 
-export function StackedBarChart({ data, platforms }: StackedBarChartProps) {
+export function FollowersLineChart({ data, platforms }: FollowersLineChartProps) {
   // Calculate max value for Y axis
   const maxValue = useMemo(() => {
     return Math.max(
-      ...data.map((d) =>
-        platforms.reduce((sum, p) => sum + ((d as unknown as Record<string, number>)[p.id] || 0), 0)
+      ...data.flatMap((d) =>
+        platforms.map((p) => (d as unknown as Record<string, number>)[p.id] || 0)
       )
     );
   }, [data, platforms]);
@@ -62,7 +62,7 @@ export function StackedBarChart({ data, platforms }: StackedBarChartProps) {
     <div className="space-y-4">
       {/* Chart */}
       <ChartContainer config={chartConfig} className="h-[300px] w-full">
-        <BarChart accessibilityLayer data={chartData}>
+        <LineChart accessibilityLayer data={chartData}>
           <CartesianGrid vertical={false} strokeDasharray="3,3" stroke="hsl(var(--border))" />
           <XAxis
             dataKey="name"
@@ -76,49 +76,52 @@ export function StackedBarChart({ data, platforms }: StackedBarChartProps) {
             tickLine={false}
             axisLine={false}
             tickMargin={8}
+            domain={[0, maxValue * 1.1]}
             tickFormatter={(value) => formatChartValue(value as number)}
           />
-            <ChartTooltip
-              content={
-                <ChartTooltipContent
-                  hideLabel
-                  formatter={(value, name) => (
-                    <div className="flex items-center justify-between gap-4">
-                      <div className="flex items-center gap-2.5">
-                        <PlatformIcon platform={name as AnalyticsPlatformConfig["id"]} size={16} />
-                        <span className="text-sm text-foreground font-medium">
-                          {chartConfig[name as string]?.label}
-                        </span>
-                      </div>
-                      <span className="text-sm font-semibold font-display">
-                        {formatChartValue(value as number)}
+          <ChartTooltip
+            content={
+              <ChartTooltipContent
+                hideLabel
+                formatter={(value, name) => (
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-2.5">
+                      <PlatformIcon platform={name as AnalyticsPlatformConfig["id"]} size={16} />
+                      <span className="text-sm text-foreground font-medium">
+                        {chartConfig[name as string]?.label}
                       </span>
                     </div>
-                  )}
-                />
-              }
-            />
+                    <span className="text-sm font-semibold font-display">
+                      {formatChartValue(value as number)}
+                    </span>
+                  </div>
+                )}
+              />
+            }
+          />
           {platforms.map((platform) => (
-            <Bar
+            <Line
               key={platform.id}
+              type="monotone"
               dataKey={platform.id}
-              stackId="stack"
-              fill={platform.color}
-              radius={[0, 0, 0, 0]}
+              stroke={platform.color}
+              strokeWidth={2}
+              dot={false}
+              activeDot={{ r: 4, fill: platform.color }}
             />
           ))}
-        </BarChart>
+        </LineChart>
       </ChartContainer>
 
-          {/* Legend */}
-          <div className="flex flex-wrap items-center justify-center gap-4 text-xs">
-            {platforms.map((platform) => (
-              <div key={platform.id} className="flex items-center gap-2">
-                <PlatformIcon platform={platform.id} size={22} />
-                <span className="text-muted-foreground">{platform.name}</span>
-              </div>
-            ))}
+      {/* Legend */}
+      <div className="flex flex-wrap items-center justify-center gap-4 text-xs">
+        {platforms.map((platform) => (
+          <div key={platform.id} className="flex items-center gap-2">
+            <PlatformIcon platform={platform.id} size={22} />
+            <span className="text-muted-foreground">{platform.name}</span>
           </div>
+        ))}
+      </div>
     </div>
   );
 }
