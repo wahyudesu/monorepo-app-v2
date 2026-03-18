@@ -13,7 +13,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-const platformNames: Record<Platform, string> = {
+const platformNames: Partial<Record<Platform, string>> = {
   instagram: "Instagram",
   tiktok: "TikTok",
   twitter: "Twitter/X",

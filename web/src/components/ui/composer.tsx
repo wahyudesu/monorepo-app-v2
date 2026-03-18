@@ -30,6 +30,13 @@ export interface ComposerContextOption {
 	onClick?: () => void;
 }
 
+export interface ToneOption {
+	value: string;
+	label: string;
+	color: string;
+	shortDesc?: string;
+}
+
 export interface ComposerProps {
 	/** Placeholder text for the input */
 	placeholder?: string;
@@ -65,6 +72,10 @@ export interface ComposerProps {
 	onRemoveFile?: (id: string) => void;
 	/** Whether the composer is in loading state */
 	isLoading?: boolean;
+	/** Tone selector */
+	tone?: string;
+	onToneChange?: (tone: string) => void;
+	toneOptions?: Array<{ value: string; label: string; color: string; shortDesc?: string }>;
 }
 
 // Primary color matching GAIA: #00bbff
@@ -88,6 +99,9 @@ export const Composer: FC<ComposerProps> = ({
 	attachedFiles = [],
 	onRemoveFile,
 	isLoading = false,
+	tone,
+	onToneChange,
+	toneOptions = [],
 }) => {
 	const [inputValue, setInputValue] = useState(defaultValue);
 	const [isToolsDropdownOpen, setIsToolsDropdownOpen] = useState(false);
@@ -228,9 +242,9 @@ export const Composer: FC<ComposerProps> = ({
 					"bg-zinc-100 dark:bg-zinc-800",
 				)}
 			>
-				{/* Slash Command Dropdown - positioned below composer */}
+				{/* Slash Command Dropdown - positioned above composer */}
 				{showToolsButton && tools.length > 0 && isToolsDropdownOpen && (
-					<div className="absolute top-full left-0 right-0 mt-2 z-50">
+					<div className="absolute bottom-full left-0 right-0 mb-2 z-50">
 						<SlashCommandDropdown
 							matches={toolMatches}
 							selectedIndex={selectedToolIndex}
@@ -377,6 +391,34 @@ export const Composer: FC<ComposerProps> = ({
 									/>
 								)}
 							</button>
+						)}
+
+						{/* Tone Selector */}
+						{toneOptions.length > 0 && onToneChange && (
+							<div className="flex items-center gap-1.5 ml-1">
+								<span className="text-xs text-zinc-500 dark:text-zinc-400">Tone:</span>
+								<div className="flex items-center gap-1">
+									{toneOptions.map((toneOption) => (
+										<button
+											key={toneOption.value}
+											type="button"
+											onClick={() => onToneChange(toneOption.value)}
+											disabled={disabled || isLoading}
+											className={cn(
+												"flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium transition-all",
+												"cursor-pointer",
+												tone === toneOption.value
+													? "bg-[#00bbff] text-white"
+													: "bg-zinc-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-300 dark:hover:bg-zinc-600",
+												"disabled:cursor-wait disabled:opacity-70",
+											)}
+										>
+											<span className={cn("w-1.5 h-1.5 rounded-full", toneOption.color)} />
+											{toneOption.label}
+										</button>
+									))}
+								</div>
+							</div>
 						)}
 					</div>
 
