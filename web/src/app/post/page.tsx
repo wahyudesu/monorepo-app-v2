@@ -159,6 +159,7 @@ export default function PostPage() {
           onDragEnd={handleDragEnd}
           onDragOver={handleDragOver}
           onDrop={handleDrop}
+          calendarView={calendarView}
         />
       )}
 

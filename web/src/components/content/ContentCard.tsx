@@ -2,8 +2,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Play } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { platformIcons, platformColors } from "@/lib/constants";
-import { type CalendarEvent, type Platform } from "@/data/mock";
+import { platformColors, type Platform } from "@/lib/constants";
+import { PlatformIcon } from "@/components/social/PlatformIcon";
+import { type CalendarEvent } from "@/data/mock";
 
 const statusBadgeStyles: Record<string, { bg: string; text: string }> = {
   published: { bg: "var(--badge-published)", text: "var(--badge-published-foreground)" },
@@ -48,7 +49,7 @@ export function ContentCard({ event, onClick }: ContentCardProps) {
         <CardContent className="p-4">
           <div className="flex items-start justify-between mb-3">
             <div className="flex items-center gap-1.5">
-              <span className="text-base">{platformIcons[event.platform]}</span>
+              <PlatformIcon platform={event.platform as Platform} size={18} />
               <span className="text-xs font-medium capitalize text-muted-foreground">
                 {event.platform}
               </span>

@@ -43,7 +43,22 @@ export const weeklyStats = [
 ];
 
 // Social media dashboard data
-export type Platform = "instagram" | "tiktok" | "twitter" | "youtube";
+// Platform type is now exported from @/components/social/PlatformIcon
+export type Platform =
+  | "instagram"
+  | "tiktok"
+  | "twitter"
+  | "youtube"
+  | "facebook"
+  | "linkedin"
+  | "pinterest"
+  | "threads"
+  | "whatsapp"
+  | "reddit"
+  | "bluesky"
+  | "google"
+  | "telegram"
+  | "snapchat";
 
 export interface SocialAccount {
   platform: Platform;

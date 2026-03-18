@@ -20,6 +20,7 @@ import {
 import { Eye, Heart, MessageCircle, Flame, Play, Image as ImageIcon, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { publishedPosts, analyticsPlatforms } from "@/data/mock";
+import { PlatformIcon, type Platform } from "@/components/social/PlatformIcon";
 
 const POSTS_PER_PAGE = 6;
 
@@ -131,7 +132,7 @@ export function PublishedPostsTab() {
               return (
                 <SelectItem key={platformId} value={platformId}>
                   <span className="flex items-center gap-2">
-                    <span>{platform?.icon}</span>
+                    <PlatformIcon platform={platformId as Platform} size={16} />
                     <span>{platform?.name}</span>
                   </span>
                 </SelectItem>
@@ -165,7 +166,7 @@ export function PublishedPostsTab() {
                 {/* Platform & Type */}
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-1.5">
-                    <span className="text-sm">{platform?.icon}</span>
+                    <PlatformIcon platform={post.platform as Platform} size={16} />
                     <span className="text-xs text-muted-foreground">{platform?.name}</span>
                   </div>
                   <div className="flex items-center gap-1">

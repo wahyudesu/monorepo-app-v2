@@ -1,73 +1,65 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { platformStats, analyticsPlatforms } from "@/data/mock";
+import { PlatformIcon, type Platform } from "@/components/social/PlatformIcon";
 
 export function PlatformsTab() {
   return (
-    <div className="grid grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
       {platformStats.map((stats) => {
         const platform = analyticsPlatforms.find((p) => p.id === stats.platform);
         if (!platform) return null;
 
         return (
-          <Card key={stats.platform} className="border-border/50 shadow-sm hover:shadow-md transition-shadow">
+          <Card key={stats.platform} className="border-border/50 overflow-hidden">
             <CardContent className="p-4">
-              <div className="flex items-center gap-4">
-                {/* Platform Icon */}
+              {/* Platform Header */}
+              <div className="flex items-center justify-between mb-3">
                 <div
-                  className="flex h-12 w-12 items-center justify-center rounded-xl text-xl"
+                  className="flex h-10 w-10 items-center justify-center rounded-lg"
                   style={{ backgroundColor: `${platform.color}15` }}
                 >
-                  {platform.icon}
+                  <PlatformIcon platform={stats.platform as Platform} size={20} />
                 </div>
-
-                {/* Platform Info */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-semibold text-sm">{platform.name}</h3>
-                    <Badge
-                      variant="outline"
-                      className={cn(
-                        "text-[10px]",
-                        stats.trend === "up" && "border-success/30 text-success bg-success/5",
-                        stats.trend === "down" && "border-destructive/30 text-destructive bg-destructive/5",
-                        stats.trend === "neutral" && "border-muted-foreground/30 text-muted-foreground bg-muted"
-                      )}
-                    >
-                      {stats.trend === "up" && <TrendingUp className="h-2.5 w-2.5 mr-0.5" />}
-                      {stats.trend === "down" && <TrendingDown className="h-2.5 w-2.5 mr-0.5" />}
-                      {stats.trend === "neutral" && <Minus className="h-2.5 w-2.5 mr-0.5" />}
-                      {stats.trend === "up" ? "Growing" : stats.trend === "down" ? "Declining" : "Stable"}
-                    </Badge>
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    {stats.posts.toLocaleString()} total posts
-                  </p>
+                <div className={cn(
+                  "flex items-center gap-1 text-xs",
+                  stats.trend === "up" && "text-emerald-500",
+                  stats.trend === "down" && "text-rose-500",
+                  stats.trend === "neutral" && "text-muted-foreground"
+                )}>
+                  {stats.trend === "up" && <TrendingUp className="h-3.5 w-3.5" />}
+                  {stats.trend === "down" && <TrendingDown className="h-3.5 w-3.5" />}
+                  {stats.trend === "neutral" && <Minus className="h-3.5 w-3.5" />}
                 </div>
+              </div>
 
-                {/* Stats */}
-                <div className="flex items-center gap-6 text-right">
-                  <div>
-                    <p className="text-[10px] text-muted-foreground">Success Rate</p>
-                    <p className="text-sm font-semibold text-success font-display">
-                      {stats.successRate}%
-                    </p>
+              {/* Platform Name */}
+              <h3 className="font-semibold text-sm mb-3">{platform.name}</h3>
+
+              {/* Stats */}
+              <div className="space-y-2">
+                <div className="flex items-baseline justify-between">
+                  <span className="text-xs text-muted-foreground">Posts</span>
+                  <span className="text-sm font-medium">{stats.posts.toLocaleString()}</span>
+                </div>
+                <div className="flex items-baseline justify-between">
+                  <span className="text-xs text-muted-foreground">Engagement</span>
+                  <span className="text-sm font-medium">{stats.avgEngagement}%</span>
+                </div>
+                <div className="pt-2">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[10px] text-muted-foreground">Success Rate</span>
+                    <span className="text-xs font-semibold">{stats.successRate}%</span>
                   </div>
-                  <div>
-                    <p className="text-[10px] text-muted-foreground">Avg Engagement</p>
-                    <p className="text-sm font-semibold font-display">
-                      {stats.avgEngagement}%
-                    </p>
-                  </div>
-                  <div className="w-16">
-                    <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-success rounded-full"
-                        style={{ width: `${stats.successRate}%` }}
-                      />
-                    </div>
+                  <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                    <div
+                      className="h-full rounded-full transition-all"
+                      style={{
+                        width: `${stats.successRate}%`,
+                        backgroundColor: platform.color
+                      }}
+                    />
                   </div>
                 </div>
               </div>

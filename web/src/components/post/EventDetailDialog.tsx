@@ -1,6 +1,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { PlatformIcon, type Platform } from "@/components/social/PlatformIcon";
 import { type CalendarEvent } from "@/data/mock";
 
 const statusBadgeStyles: Record<string, { bg: string; text: string }> = {
@@ -25,7 +26,7 @@ export function EventDetailDialog({ event, onClose }: EventDetailDialogProps) {
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <div className="flex items-center gap-2">
-            <span className="text-lg">📸</span>
+            <PlatformIcon platform={event.platform as Platform} size={24} />
             <DialogTitle className="font-display">{event.title}</DialogTitle>
           </div>
           <DialogDescription className="sr-only">Event details</DialogDescription>

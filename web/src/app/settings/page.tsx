@@ -14,6 +14,7 @@ import { teamMembers } from "@/data/mock";
 import { cn } from "@/lib/utils";
 import { TeamMemberCard } from "@/components/settings/TeamMemberCard";
 import { IntegrationCard } from "@/components/settings/IntegrationCard";
+import { PlatformIcon, type Platform } from "@/components/social/PlatformIcon";
 
 const tabs = [
   { id: "account", label: "Account", icon: User, title: "Account", description: "Manage your personal information" },
@@ -117,20 +118,20 @@ function TeamTab() {
 
 function ConnectionsTab() {
   const [connections, setConnections] = useState([
-    { id: "instagram", name: "Instagram", icon: "📸", connected: true, handle: "@acme.studio", followers: "48.2K", posts: 342, color: "bg-pink-500" },
-    { id: "tiktok", name: "TikTok", icon: "🎵", connected: true, handle: "@acmestudio", followers: "125.8K", posts: 89, color: "bg-gray-900" },
-    { id: "whatsapp", name: "WhatsApp", icon: "💬", connected: false, handle: null, followers: null, posts: null, color: "bg-green-500" },
-    { id: "facebook", name: "Facebook", icon: "📘", connected: true, handle: "Acme Corp", followers: "23.4K", posts: 156, color: "bg-blue-600" },
-    { id: "youtube", name: "YouTube", icon: "▶️", connected: true, handle: "Acme Studio", followers: "72.1K", posts: 128, color: "bg-red-600" },
-    { id: "linkedin", name: "LinkedIn", icon: "💼", connected: false, handle: null, followers: null, posts: null, color: "bg-blue-700" },
-    { id: "twitter", name: "X (Twitter)", icon: "𝕏", connected: true, handle: "@AcmeStudio", followers: "31.4K", posts: 1204, color: "bg-black" },
-    { id: "threads", name: "Threads", icon: "🧵", connected: false, handle: null, followers: null, posts: null, color: "bg-black" },
-    { id: "reddit", name: "Reddit", icon: "🔴", connected: false, handle: null, followers: null, posts: null, color: "bg-orange-600" },
-    { id: "pinterest", name: "Pinterest", icon: "📌", connected: false, handle: null, followers: null, posts: null, color: "bg-red-700" },
-    { id: "bluesky", name: "Bluesky", icon: "🦋", connected: false, handle: null, followers: null, posts: null, color: "bg-blue-400" },
-    { id: "google", name: "Google Business", icon: "🔵", connected: false, handle: null, followers: null, posts: null, color: "bg-blue-500" },
-    { id: "telegram", name: "Telegram", icon: "✈️", connected: false, handle: null, followers: null, posts: null, color: "bg-blue-500" },
-    { id: "snapchat", name: "Snapchat", icon: "👻", connected: false, handle: null, followers: null, posts: null, color: "bg-yellow-400" },
+    { id: "instagram", name: "Instagram", platform: "instagram" as Platform, connected: true, handle: "@acme.studio", followers: "48.2K", posts: 342, color: "bg-pink-500/10" },
+    { id: "tiktok", name: "TikTok", platform: "tiktok" as Platform, connected: true, handle: "@acmestudio", followers: "125.8K", posts: 89, color: "bg-gray-900/10" },
+    { id: "whatsapp", name: "WhatsApp", platform: "whatsapp" as Platform, connected: false, handle: null, followers: null, posts: null, color: "bg-green-500/10" },
+    { id: "facebook", name: "Facebook", platform: "facebook" as Platform, connected: true, handle: "Acme Corp", followers: "23.4K", posts: 156, color: "bg-blue-600/10" },
+    { id: "youtube", name: "YouTube", platform: "youtube" as Platform, connected: true, handle: "Acme Studio", followers: "72.1K", posts: 128, color: "bg-red-600/10" },
+    { id: "linkedin", name: "LinkedIn", platform: "linkedin" as Platform, connected: false, handle: null, followers: null, posts: null, color: "bg-blue-700/10" },
+    { id: "twitter", name: "X (Twitter)", platform: "twitter" as Platform, connected: true, handle: "@AcmeStudio", followers: "31.4K", posts: 1204, color: "bg-black/10" },
+    { id: "threads", name: "Threads", platform: "threads" as Platform, connected: false, handle: null, followers: null, posts: null, color: "bg-black/10" },
+    { id: "reddit", name: "Reddit", platform: "reddit" as Platform, connected: false, handle: null, followers: null, posts: null, color: "bg-orange-600/10" },
+    { id: "pinterest", name: "Pinterest", platform: "pinterest" as Platform, connected: false, handle: null, followers: null, posts: null, color: "bg-red-700/10" },
+    { id: "bluesky", name: "Bluesky", platform: "bluesky" as Platform, connected: false, handle: null, followers: null, posts: null, color: "bg-blue-400/10" },
+    { id: "google", name: "Google Business", platform: "google" as Platform, connected: false, handle: null, followers: null, posts: null, color: "bg-blue-500/10" },
+    { id: "telegram", name: "Telegram", platform: "telegram" as Platform, connected: false, handle: null, followers: null, posts: null, color: "bg-blue-500/10" },
+    { id: "snapchat", name: "Snapchat", platform: "snapchat" as Platform, connected: false, handle: null, followers: null, posts: null, color: "bg-yellow-400/10" },
   ]);
 
   const [disconnectDialog, setDisconnectDialog] = useState<{ open: boolean; platformId: string; platformName: string }>({
@@ -182,7 +183,7 @@ function ConnectionsTab() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDisconnect} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            <AlertDialogAction onClick={confirmDisconnect} className="bg-destructive hover:bg-destructive/90">
               Disconnect
             </AlertDialogAction>
           </AlertDialogFooter>

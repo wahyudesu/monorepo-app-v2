@@ -3,11 +3,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link2, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { PlatformIcon, type Platform } from "@/components/social/PlatformIcon";
 
 interface IntegrationCardProps {
   id: string;
   name: string;
-  icon: string;
+  platform: Platform;
   color: string;
   handle?: string | null;
   followers?: string | null;
@@ -19,7 +20,7 @@ interface IntegrationCardProps {
 export function IntegrationCard({
   id,
   name,
-  icon,
+  platform,
   color,
   handle,
   followers,
@@ -38,7 +39,7 @@ export function IntegrationCard({
         {/* Header with icon and status */}
         <div className="flex items-start justify-between mb-3">
           <div className={cn("flex h-12 w-12 items-center justify-center rounded-xl", color)}>
-            <span className="text-2xl">{icon}</span>
+            <PlatformIcon platform={platform} size={28} />
           </div>
           {connected && (
             <Badge variant="secondary" className="text-xs bg-success/10 text-success border-success/20">
