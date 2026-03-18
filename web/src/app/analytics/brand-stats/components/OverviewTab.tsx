@@ -15,6 +15,12 @@ import { ChartTooltip } from "@/components/charts/tooltip/chart-tooltip";
 import { engagementTrend7d, engagementTrend30d, engagementTrend90d } from "@/data/mock";
 import type { EngagementTrend } from "@/data/mock";
 
+interface PlatformDataPoint {
+  name: string;
+  followers: number;
+  color: string;
+}
+
 export function OverviewTab() {
   const [dateRange, setDateRange] = useState<"7d" | "30d" | "90d">("30d");
 
@@ -24,7 +30,7 @@ export function OverviewTab() {
     "90d": engagementTrend90d,
   };
 
-  const currentData = engagementData[dateRange] as Record<string, unknown>[];
+  const currentData = engagementData[dateRange] as unknown as Record<string, unknown>[];
 
   const ringData = [
     { label: "YouTube", value: 85, maxValue: 100, color: "#FF0000" },
@@ -36,7 +42,7 @@ export function OverviewTab() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   // Platform data for bar chart
-  const platformData = [
+  const platformData: PlatformDataPoint[] = [
     { name: "TikTok", followers: 125800, color: "#000000" },
     { name: "YouTube", followers: 72100, color: "#FF0000" },
     { name: "Instagram", followers: 48200, color: "#E4405F" },
@@ -135,15 +141,18 @@ export function OverviewTab() {
             <BarYAxis />
             <Bar dataKey="total" fill="hsl(var(--primary))" lineCap={4} />
             <ChartTooltip
-              content={(data): ReactNode => (
-                <div className="space-y-1">
-                  <p className="text-sm font-medium">{data.point.displayDate}</p>
-                  <p className="text-xs text-muted-foreground">Total: {data.point.total.toLocaleString()}</p>
-                  <p className="text-xs">Likes: {data.point.likes.toLocaleString()}</p>
-                  <p className="text-xs">Comments: {data.point.comments.toLocaleString()}</p>
-                  <p className="text-xs">Shares: {data.point.shares.toLocaleString()}</p>
-                </div>
-              )}
+              content={(data): ReactNode => {
+                const point = data.point as unknown as EngagementTrend;
+                return (
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium">{point.displayDate}</p>
+                    <p className="text-xs text-muted-foreground">Total: {point.total.toLocaleString()}</p>
+                    <p className="text-xs">Likes: {point.likes.toLocaleString()}</p>
+                    <p className="text-xs">Comments: {point.comments.toLocaleString()}</p>
+                    <p className="text-xs">Shares: {point.shares.toLocaleString()}</p>
+                  </div>
+                );
+              }}
             />
           </BarChart>
         </CardContent>
@@ -172,14 +181,17 @@ export function OverviewTab() {
             <BarYAxis />
             <Bar dataKey="followers" fill="hsl(var(--primary))" lineCap={4} />
             <ChartTooltip
-              content={(data): ReactNode => (
-                <div className="space-y-1">
-                  <p className="text-sm font-medium">{data.point.name}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {data.point.followers.toLocaleString()} followers
-                  </p>
-                </div>
-              )}
+              content={(data): ReactNode => {
+                const point = data.point as unknown as PlatformDataPoint;
+                return (
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium">{point.name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {point.followers.toLocaleString()} followers
+                    </p>
+                  </div>
+                );
+              }}
             />
           </BarChart>
         </CardContent>
