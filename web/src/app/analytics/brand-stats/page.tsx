@@ -18,7 +18,7 @@ export default function BrandStatsPage() {
       <div className="flex items-center justify-between">
         <div className="space-y-1">
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="sm" className="gap-1.5">
+            <Button variant="ghost" size="sm" className="gap-1.5" asChild>
               <Link href="/analytics">
                 Back
               </Link>
