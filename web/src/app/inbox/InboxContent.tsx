@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { Search, Send, Paperclip, Smile, MoreVertical, ArrowLeft, Bot, MessageSquare, Tag, Check, Clock, ArrowDownAZ } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -440,17 +440,21 @@ export function InboxContent() {
                           {/* Customer Label - Only for messages */}
                           {selectedConversation.type === "message" && (
                             <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="sm" className="h-6 px-2 gap-1 text-xs">
-                                  <Tag className="h-3 w-3" />
-                                  {selectedConversation.customerLabel && selectedConversation.customerLabel !== "none" ? (
-                                    <span className={labelConfig[selectedConversation.customerLabel].color}>
-                                      {labelConfig[selectedConversation.customerLabel].label}
-                                    </span>
-                                  ) : (
-                                    <span className="text-muted-foreground">Add Label</span>
-                                  )}
-                                </Button>
+                              <DropdownMenuTrigger
+                                className={buttonVariants({
+                                  variant: "ghost",
+                                  size: "sm",
+                                  className: "h-6 px-2 gap-1 text-xs",
+                                })}
+                              >
+                                <Tag className="h-3 w-3" />
+                                {selectedConversation.customerLabel && selectedConversation.customerLabel !== "none" ? (
+                                  <span className={labelConfig[selectedConversation.customerLabel].color}>
+                                    {labelConfig[selectedConversation.customerLabel].label}
+                                  </span>
+                                ) : (
+                                  <span className="text-muted-foreground">Add Label</span>
+                                )}
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="start" className="w-40">
                                 <DropdownMenuLabel>Customer Label</DropdownMenuLabel>

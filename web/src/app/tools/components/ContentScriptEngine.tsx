@@ -398,9 +398,8 @@ export function ContentScriptEngine() {
           <div className="space-y-2">
             <Label>Jumlah Variasi</Label>
             <ToggleGroup
-              type="single"
-              value={String(quantity)}
-              onValueChange={(val) => val && setQuantity(Number(val))}
+              value={[String(quantity)]}
+              onValueChange={(val) => val && val.length > 0 && setQuantity(Number(val[0]))}
               className="gap-1"
             >
               <ToggleGroupItem

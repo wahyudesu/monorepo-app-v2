@@ -311,11 +311,15 @@ function AiCopyButton({
 
       {/* Dropdown trigger */}
       <DropdownMenu.Root>
-        <DropdownMenu.Trigger render={<button type="button" className={cn(
+        <DropdownMenu.Trigger asChild>
+          <button type="button" className={cn(
                             "inline-flex h-full items-center justify-center rounded-r-md outline-none transition-colors",
                             "hover:bg-black/5 dark:hover:bg-white/5",
                             s.trigger
-                          )} aria-label="More options" />}><ChevronDown /></DropdownMenu.Trigger>
+                          )} aria-label="More options">
+            <ChevronDown />
+          </button>
+        </DropdownMenu.Trigger>
 
         <DropdownMenu.Portal>
           <DropdownMenu.Content

@@ -1,4 +1,5 @@
 import type { LucideIcon } from "lucide-react";
+import { FileText, UserCheck } from "lucide-react";
 
 // Content purpose options
 export const contentPurposes = [
@@ -89,8 +90,8 @@ export interface Tool {
 }
 
 export const tools: Tool[] = [
-  { id: "script-engine", label: "Content Script Engine", icon: "FileText" as any, description: "Generate AI system prompts for content creation" },
-  { id: "branding", label: "Personal Branding Builder", icon: "UserCheck" as any, description: "Build your personal brand identity" },
+  { id: "script-engine", label: "Content Script Engine", icon: FileText, description: "Generate AI system prompts for content creation" },
+  { id: "branding", label: "Personal Branding Builder", icon: UserCheck, description: "Build your personal brand identity" },
 ] as const;
 
 export type ToolId = (typeof tools)[number]["id"];

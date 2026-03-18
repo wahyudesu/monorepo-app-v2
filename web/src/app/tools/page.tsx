@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { FileText, UserCheck } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { PersonalBrandingBuilder } from "@/components/post/PersonalBrandingBuilder";
@@ -37,8 +36,7 @@ export default function ToolsPage() {
                 activeTool === tool.id ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"
               )}
             >
-              {tool.icon === "FileText" && <FileText className="h-4 w-4" />}
-              {tool.icon === "UserCheck" && <UserCheck className="h-4 w-4" />}
+              <tool.icon className="h-4 w-4" />
             </div>
             <div>
               <p className="text-sm font-semibold">{tool.label}</p>
