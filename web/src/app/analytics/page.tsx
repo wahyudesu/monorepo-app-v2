@@ -200,7 +200,7 @@ export default function AnalyticsPage() {
             <CardTitle className="font-display text-base font-semibold">
               Published Posts
             </CardTitle>
-            <Badge variant="outline" className="text-xs">
+            <Badge variant="destructive" className="text-xs">
               {publishedPosts.length} posts
             </Badge>
           </div>

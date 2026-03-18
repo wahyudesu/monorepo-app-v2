@@ -1,16 +1,14 @@
 "use client";
 
-import { Copy, Check, Settings, Users, Puzzle, User, Link2, Trash2 } from "lucide-react";
+import { Users, Puzzle, User } from "lucide-react";
 import { useState, Suspense } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { teamMembers } from "@/data/mock";
 import { cn } from "@/lib/utils";
@@ -18,88 +16,12 @@ import { TeamMemberCard } from "@/components/settings/TeamMemberCard";
 import { IntegrationCard } from "@/components/settings/IntegrationCard";
 
 const tabs = [
-  { id: "general", label: "General", icon: Settings, title: "General Settings", description: "Manage your project settings" },
   { id: "account", label: "Account", icon: User, title: "Account", description: "Manage your personal information" },
-  { id: "team", label: "Team", icon: Users, title: "Team Members", description: "Manage your team and permissions" },
   { id: "connections", label: "Connections", icon: Puzzle, title: "Connections", description: "Manage your social media connections" },
+  { id: "team", label: "Team", icon: Users, title: "Team Members", description: "Manage your team and permissions" },
 ] as const;
 
 type TabId = (typeof tabs)[number]["id"];
-
-function GeneralTab() {
-  const [copied, setCopied] = useState(false);
-  const token = "proj_ak7x9m2nQ4wLpR8sT1vZ";
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(token);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  return (
-    <div className="space-y-6">
-      <Card className="border-border/50">
-        <CardContent className="p-6 space-y-1">
-          <p className="font-display font-semibold">Project name</p>
-          <p className="text-xs text-muted-foreground">The name of your project.</p>
-          <Input defaultValue="Acme Corp" className="mt-2" />
-          <div className="flex items-center justify-between pt-3">
-            <p className="text-xs text-muted-foreground">Maximum of 30 characters</p>
-            <Button size="sm">Save</Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="border-border/50">
-        <CardContent className="p-6 space-y-1">
-          <p className="font-display font-semibold">Project token</p>
-          <p className="text-xs text-muted-foreground">A unique token assigned to your project.</p>
-          <Input value={token} readOnly className="mt-2 font-mono text-xs" />
-          <div className="flex items-center justify-between pt-3">
-            <p className="text-xs text-muted-foreground">Used to identify your project</p>
-            <Button variant="outline" size="sm" onClick={handleCopy}>
-              {copied ? <Check className="mr-1.5 h-3.5 w-3.5 text-success" /> : <Copy className="mr-1.5 h-3.5 w-3.5" />}
-              Copy
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="border-border/50">
-        <CardContent className="p-6 space-y-1">
-          <p className="font-display font-semibold">Currency</p>
-          <p className="text-xs text-muted-foreground">The currency used to display revenue on your dashboard.<br />We handle the conversion automatically for you.</p>
-          <Select defaultValue="usd">
-            <SelectTrigger className="mt-2 w-[140px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="usd">🇺🇸 USD</SelectItem>
-              <SelectItem value="eur">🇪🇺 EUR</SelectItem>
-              <SelectItem value="gbp">🇬🇧 GBP</SelectItem>
-              <SelectItem value="idr">🇮🇩 IDR</SelectItem>
-            </SelectContent>
-          </Select>
-          <div className="flex items-center justify-between pt-3">
-            <p className="text-xs text-muted-foreground">Used for displaying revenue across your dashboard.</p>
-            <Button size="sm">Save</Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="border-border/50">
-        <CardContent className="p-6 space-y-1">
-          <p className="font-display font-semibold">Public stats</p>
-          <p className="text-xs text-muted-foreground">Share your project statistics with the public.</p>
-          <div className="flex items-center gap-3 pt-3">
-            <Switch />
-            <span className="text-sm text-muted-foreground">Currently private</span>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
 
 function AccountTab() {
   return (
@@ -271,7 +193,7 @@ function ConnectionsTab() {
 }
 
 export default function SettingsPage() {
-  const [activeTab, setActiveTab] = useState<TabId>("general");
+  const [activeTab, setActiveTab] = useState<TabId>("account");
   const activeTabData = tabs.find((tab) => tab.id === activeTab);
 
   return (
@@ -298,14 +220,13 @@ export default function SettingsPage() {
           ))}
         </nav>
 
-        <div className="flex-1 min-w-0">
-          <Suspense fallback={<SettingsTabSkeleton />}>
-            {activeTab === "general" && <GeneralTab />}
-            {activeTab === "account" && <AccountTab />}
-            {activeTab === "team" && <TeamTab />}
-            {activeTab === "connections" && <ConnectionsTab />}
-          </Suspense>
-        </div>
+          <div className="flex-1 min-w-0">
+            <Suspense fallback={<SettingsTabSkeleton />}>
+              {activeTab === "account" && <AccountTab />}
+              {activeTab === "connections" && <ConnectionsTab />}
+              {activeTab === "team" && <TeamTab />}
+            </Suspense>
+          </div>
       </div>
     </div>
   );

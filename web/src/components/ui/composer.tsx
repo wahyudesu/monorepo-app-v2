@@ -228,9 +228,9 @@ export const Composer: FC<ComposerProps> = ({
 					"bg-zinc-100 dark:bg-zinc-800",
 				)}
 			>
-				{/* Slash Command Dropdown - positioned above composer */}
+				{/* Slash Command Dropdown - positioned below composer */}
 				{showToolsButton && tools.length > 0 && isToolsDropdownOpen && (
-					<div className="absolute bottom-full left-0 right-0 mb-2 z-50">
+					<div className="absolute top-full left-0 right-0 mt-2 z-50">
 						<SlashCommandDropdown
 							matches={toolMatches}
 							selectedIndex={selectedToolIndex}

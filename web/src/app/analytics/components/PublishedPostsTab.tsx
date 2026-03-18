@@ -121,7 +121,7 @@ export function PublishedPostsTab() {
       {/* Platform Filter */}
       <div className="flex items-center gap-2">
         <span className="text-xs font-medium text-muted-foreground">Filter by platform:</span>
-        <Select value={selectedPlatform} onValueChange={setSelectedPlatform}>
+        <Select value={selectedPlatform} onValueChange={(val) => setSelectedPlatform(val ?? "")}>
           <SelectTrigger className="w-[180px] h-8">
             <SelectValue placeholder="Select platform" />
           </SelectTrigger>

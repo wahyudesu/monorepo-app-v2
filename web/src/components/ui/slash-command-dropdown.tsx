@@ -189,7 +189,7 @@ export const SlashCommandDropdown: React.FC<SlashCommandDropdownProps> = ({
 				"border border-zinc-200 bg-white/95 dark:border-zinc-800 dark:bg-zinc-900/95",
 				"backdrop-blur-xl shadow-2xl",
 				// Animation
-				"animate-in fade-in-0 slide-in-from-bottom-2 duration-200",
+				"animate-in fade-in-0 slide-in-from-top-2 duration-200",
 				className,
 			)}
 			style={{

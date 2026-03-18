@@ -20,21 +20,35 @@ export function SummaryCard({ title, value, trend, icon }: SummaryCardProps) {
       {/* Title + small icon */}
       <div className="flex items-center gap-1.5">
         {icon && <span className="text-sm">{icon}</span>}
-        <span className="text-xs font-medium text-muted-foreground">{title}</span>
+        <span className="text-xs font-medium text-muted-foreground">
+          {title}
+        </span>
       </div>
 
       {/* Large value */}
       <span className="text-xl font-bold font-display text-foreground">
-        {typeof value === "number" && value > 1000 ? value.toLocaleString() : value}
+        {typeof value === "number" && value > 1000
+          ? value.toLocaleString()
+          : value}
       </span>
 
-      {/* Percentage badge */}
-      {trend && (
-        <Badge variant="secondary" className={cn("text-xs font-medium px-2 py-0.5", badgeVariants[trend.direction])}>
-          {trend.direction === "up" && "+"}{trend.value}
-          {typeof trend.value === "number" || /^[0-9]+$/.test(trend.value) ? "%" : ""}
-        </Badge>
-      )}
+        {/* Percentage badge */}
+        {trend && (
+          <Badge
+            variant="destructive"
+            className={cn(
+              "text-xs font-medium px-2 py-0.5",
+              badgeVariants[trend.direction],
+            )}
+          >
+            {trend.direction === "up" && !String(trend.value).startsWith("+") && "+"}
+            {trend.direction === "down" && !String(trend.value).startsWith("-") && "-"}
+            {trend.value}
+            {typeof trend.value === "number" || /^[0-9.]+$/.test(String(trend.value))
+              ? "%"
+              : ""}
+          </Badge>
+        )}
     </div>
   );
 }

@@ -19,7 +19,7 @@ import { cn } from "@/lib/utils";
 import { Instagram, Twitter, Youtube, Music, MessageSquare, Star } from "lucide-react";
 
 type Platform = "all" | "instagram" | "tiktok" | "twitter" | "youtube";
-type TypeFilter = "all" | "message" | "comment";
+type TypeFilter = "message" | "comment";
 
 interface ChatMessage {
   id: string;
@@ -164,7 +164,7 @@ const mockConversations: Conversation[] = [
 
 export function InboxContent() {
   const [platform, setPlatform] = useState<Platform>("all");
-  const [typeFilter, setTypeFilter] = useState<TypeFilter>("all");
+  const [typeFilter, setTypeFilter] = useState<TypeFilter>("message");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
   const [messageInput, setMessageInput] = useState("");
@@ -173,7 +173,7 @@ export function InboxContent() {
   const filteredConversations = useMemo(() => {
     return mockConversations.filter((conv) => {
       const matchesPlatform = platform === "all" || conv.platform === platform;
-      const matchesType = typeFilter === "all" || conv.type === typeFilter;
+      const matchesType = conv.type === typeFilter;
       const matchesSearch =
         searchQuery === "" ||
         conv.sender.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -230,10 +230,9 @@ export function InboxContent() {
           {/* Type Filter - Select */}
           <Select value={typeFilter} onValueChange={(v) => setTypeFilter(v as TypeFilter)}>
             <SelectTrigger className="w-[140px]">
-              <SelectValue placeholder="All Types" />
+              <SelectValue placeholder="Select type" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Types</SelectItem>
               <SelectItem value="message">Messages</SelectItem>
               <SelectItem value="comment">Comments</SelectItem>
             </SelectContent>

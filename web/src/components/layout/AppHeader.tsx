@@ -38,7 +38,8 @@ export function AppHeader() {
         <DropdownMenuTrigger
           className={buttonVariants({
             variant: "ghost",
-            className: "gap-2 px-2 font-display text-base font-semibold hover:bg-muted/50",
+            className:
+              "gap-2 px-2 font-display text-base font-semibold hover:bg-muted/50",
           })}
         >
           <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-xs font-bold text-primary-foreground">
@@ -71,7 +72,8 @@ export function AppHeader() {
           className={buttonVariants({
             variant: "ghost",
             size: "icon",
-            className: "rounded-full border border-border/60 bg-card/90 shadow-sm backdrop-blur-xl",
+            className:
+              "rounded-full border border-border/60 bg-card/90 shadow-sm backdrop-blur-xl",
           })}
         >
           <Avatar className="h-8 w-8">
@@ -81,32 +83,48 @@ export function AppHeader() {
             </AvatarFallback>
           </Avatar>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-72 p-0" sideOffset={8}>
+        <DropdownMenuContent align="end" className="w-56 p-0" sideOffset={8}>
           {/* Profile Section */}
           <div className="border-b border-border/50 bg-muted/30 px-4 py-3">
             <div className="flex items-center gap-3">
-              <Avatar className="h-10 w-10">
+              <Avatar>
                 <AvatarImage src="https://i.pravatar.cc/150?u=admin" />
                 <AvatarFallback>
-                  <User className="h-5 w-5" />
+                  <User />
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 overflow-hidden">
-                <p className="truncate text-sm font-semibold">Wahyu Ikbal Maulana</p>
-                <p className="truncate text-xs text-muted-foreground">wahyu@example.com</p>
+                <p className="truncate text-xs font-semibold">
+                  Wahyu Ikbal Maulana
+                </p>
+                <p className="truncate text-xs text-muted-foreground">
+                  wahyu@example.com
+                </p>
               </div>
             </div>
           </div>
 
           {/* Menu Items */}
           <div className="p-1">
-            <DropdownMenuItem className="flex cursor-pointer items-center justify-between px-3 py-2.5">
-              <span className="text-sm">Profile</span>
+            <DropdownMenuItem className="flex cursor-pointer items-center justify-between px-3">
+              <span className="text-sm font-medium">Account</span>
               <UserCircle className="h-4 w-4 text-muted-foreground" />
             </DropdownMenuItem>
 
-            <DropdownMenuItem className="flex cursor-pointer items-center justify-between px-3 py-2.5">
-              <span className="text-sm">Preferences</span>
+            <DropdownMenuSeparator className="my-1" />
+
+            <DropdownMenuItem className="flex cursor-pointer items-center justify-between px-3">
+              <span className="text-sm font-medium">Docs</span>
+              <Settings className="h-4 w-4 text-muted-foreground" />
+            </DropdownMenuItem>
+
+            <DropdownMenuItem className="flex cursor-pointer items-center justify-between px-3">
+              <span className="text-sm font-medium">Blog</span>
+              <Settings className="h-4 w-4 text-muted-foreground" />
+            </DropdownMenuItem>
+
+            <DropdownMenuItem className="flex cursor-pointer items-center justify-between px-3">
+              <span className="text-sm font-medium">Contact</span>
               <Settings className="h-4 w-4 text-muted-foreground" />
             </DropdownMenuItem>
 
@@ -132,7 +150,8 @@ export function AppHeader() {
           <AlertDialogHeader>
             <AlertDialogTitle>Sign out</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to sign out? You will need to sign in again to access your account.
+              Are you sure you want to sign out? You will need to sign in again
+              to access your account.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

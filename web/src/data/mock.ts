@@ -146,18 +146,20 @@ export const recentPosts: RecentPost[] = [
   { id: "5", platform: "instagram", title: "Team photo from our offsite 🏔️", likes: 6300, comments: 198, shares: 120, time: "2d ago" },
 ];
 
-// Calendar events
-export interface CalendarEvent {
-  id: string;
-  title: string;
-  date: string; // YYYY-MM-DD
-  platform: Platform;
-  type: "post" | "story" | "reel" | "video" | "tweet" | "live";
-  time?: string;
-  description?: string;
-  status: "scheduled" | "published" | "draft";
-  color: string;
-}
+  // Calendar events
+  export interface CalendarEvent {
+    id: string;
+    title: string;
+    date: string; // YYYY-MM-DD
+    platform: Platform;
+    type: "post" | "story" | "reel" | "video" | "tweet" | "live";
+    time?: string;
+    description?: string;
+    status: "scheduled" | "published" | "draft";
+    color: string;
+    thumbnail?: string;
+    mediaType?: "image" | "video";
+  }
 
 const currentYear = new Date().getFullYear();
 const currentMonth = new Date().getMonth(); // 0-indexed
@@ -167,25 +169,25 @@ function d(day: number): string {
 }
 
 export const calendarEvents: CalendarEvent[] = [
-  { id: "e1", title: "Product Launch Reel", date: d(3), platform: "instagram", type: "reel", time: "10:00", description: "30s reel showcasing new product features with trending audio", status: "published", color: "328 70% 55%" },
-  { id: "e2", title: "BTS TikTok", date: d(3), platform: "tiktok", type: "video", time: "14:00", description: "Behind the scenes of content creation process", status: "published", color: "349 70% 56%" },
-  { id: "e3", title: "Weekly Thread", date: d(5), platform: "twitter", type: "tweet", time: "09:00", description: "Weekly tips thread on social media growth", status: "published", color: "203 89% 53%" },
-  { id: "e4", title: "Tutorial Video", date: d(7), platform: "youtube", type: "video", time: "12:00", description: "Step-by-step tutorial on brand building", status: "published", color: "0 72% 51%" },
-  { id: "e5", title: "Story Takeover", date: d(8), platform: "instagram", type: "story", time: "11:00", description: "Guest creator takes over our stories for a day", status: "published", color: "328 70% 55%" },
-  { id: "e6", title: "Trending Challenge", date: d(10), platform: "tiktok", type: "video", time: "15:00", description: "Participate in trending challenge with brand twist", status: "published", color: "349 70% 56%" },
-  { id: "e7", title: "Engagement Post", date: d(12), platform: "instagram", type: "post", time: "18:00", description: "Carousel post with engagement hooks", status: "scheduled", color: "328 70% 55%" },
-  { id: "e8", title: "Live Q&A Session", date: d(14), platform: "youtube", type: "live", time: "19:00", description: "Monthly live Q&A with the community", status: "scheduled", color: "0 72% 51%" },
-  { id: "e9", title: "Product Demo", date: d(15), platform: "tiktok", type: "video", time: "13:00", description: "Quick product demo with voiceover", status: "scheduled", color: "349 70% 56%" },
-  { id: "e10", title: "Twitter Space", date: d(17), platform: "twitter", type: "live", time: "20:00", description: "Twitter Space discussing industry trends", status: "scheduled", color: "203 89% 53%" },
-  { id: "e11", title: "Collab Reel", date: d(19), platform: "instagram", type: "reel", time: "10:00", description: "Collaboration reel with partner brand", status: "draft", color: "328 70% 55%" },
-  { id: "e12", title: "Vlog Episode", date: d(20), platform: "youtube", type: "video", time: "14:00", description: "Weekly vlog episode - office tour", status: "draft", color: "0 72% 51%" },
-  { id: "e13", title: "Meme Post", date: d(21), platform: "twitter", type: "tweet", time: "11:00", description: "Relatable industry meme", status: "draft", color: "203 89% 53%" },
-  { id: "e14", title: "Dance Challenge", date: d(22), platform: "tiktok", type: "video", time: "16:00", description: "Team dance challenge video", status: "draft", color: "349 70% 56%" },
-  { id: "e15", title: "Carousel Tips", date: d(25), platform: "instagram", type: "post", time: "09:00", description: "5 tips carousel for beginners", status: "draft", color: "328 70% 55%" },
-  { id: "e16", title: "Podcast Clip", date: d(26), platform: "youtube", type: "video", time: "12:00", description: "Short clip from latest podcast episode", status: "draft", color: "0 72% 51%" },
-  { id: "e17", title: "Poll Tweet", date: d(27), platform: "twitter", type: "tweet", time: "10:00", description: "Community poll about upcoming features", status: "draft", color: "203 89% 53%" },
-  { id: "e18", title: "Duet Video", date: d(28), platform: "tiktok", type: "video", time: "15:00", description: "Duet with top creator in niche", status: "draft", color: "349 70% 56%" },
-];
+    { id: "e1", title: "Product Launch Reel", date: d(3), platform: "instagram", type: "reel", time: "10:00", description: "30s reel showcasing new product features with trending audio", status: "published", color: "328 70% 55%", thumbnail: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=400&h=300&fit=crop", mediaType: "video" },
+    { id: "e2", title: "BTS TikTok", date: d(3), platform: "tiktok", type: "video", time: "14:00", description: "Behind the scenes of content creation process", status: "published", color: "349 70% 56%", thumbnail: "https://images.unsplash.com/photo-1598550476439-6847785fcea6?w=400&h=300&fit=crop", mediaType: "video" },
+    { id: "e3", title: "Weekly Thread", date: d(5), platform: "twitter", type: "tweet", time: "09:00", description: "Weekly tips thread on social media growth", status: "published", color: "203 89% 53%" },
+    { id: "e4", title: "Tutorial Video", date: d(7), platform: "youtube", type: "video", time: "12:00", description: "Step-by-step tutorial on brand building", status: "published", color: "0 72% 51%", thumbnail: "https://images.unsplash.com/photo-1611162616305-c69b3fa7fbe0?w=400&h=300&fit=crop", mediaType: "video" },
+    { id: "e5", title: "Story Takeover", date: d(8), platform: "instagram", type: "story", time: "11:00", description: "Guest creator takes over our stories for a day", status: "published", color: "328 70% 55%", thumbnail: "https://images.unsplash.com/photo-1611162618071-b39a2ec055fb?w=400&h=300&fit=crop", mediaType: "image" },
+    { id: "e6", title: "Trending Challenge", date: d(10), platform: "tiktok", type: "video", time: "15:00", description: "Participate in trending challenge with brand twist", status: "published", color: "349 70% 56%", thumbnail: "https://images.unsplash.com/photo-1596815064285-45ed8a9c0463?w=400&h=300&fit=crop", mediaType: "video" },
+    { id: "e7", title: "Engagement Post", date: d(12), platform: "instagram", type: "post", time: "18:00", description: "Carousel post with engagement hooks", status: "scheduled", color: "328 70% 55%", thumbnail: "https://images.unsplash.com/photo-1611162616475-46b635cb6868?w=400&h=300&fit=crop", mediaType: "image" },
+    { id: "e8", title: "Live Q&A Session", date: d(14), platform: "youtube", type: "live", time: "19:00", description: "Monthly live Q&A with the community", status: "scheduled", color: "0 72% 51%", thumbnail: "https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?w=400&h=300&fit=crop", mediaType: "video" },
+    { id: "e9", title: "Product Demo", date: d(15), platform: "tiktok", type: "video", time: "13:00", description: "Quick product demo with voiceover", status: "scheduled", color: "349 70% 56%" },
+    { id: "e10", title: "Twitter Space", date: d(17), platform: "twitter", type: "live", time: "20:00", description: "Twitter Space discussing industry trends", status: "scheduled", color: "203 89% 53%" },
+    { id: "e11", title: "Collab Reel", date: d(19), platform: "instagram", type: "reel", time: "10:00", description: "Collaboration reel with partner brand", status: "draft", color: "328 70% 55%", thumbnail: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=400&h=300&fit=crop", mediaType: "video" },
+    { id: "e12", title: "Vlog Episode", date: d(20), platform: "youtube", type: "video", time: "14:00", description: "Weekly vlog episode - office tour", status: "draft", color: "0 72% 51%", thumbnail: "https://images.unsplash.com/photo-1497215728101-856f4ea42174?w=400&h=300&fit=crop", mediaType: "video" },
+    { id: "e13", title: "Meme Post", date: d(21), platform: "twitter", type: "tweet", time: "11:00", description: "Relatable industry meme", status: "draft", color: "203 89% 53%" },
+    { id: "e14", title: "Dance Challenge", date: d(22), platform: "tiktok", type: "video", time: "16:00", description: "Team dance challenge video", status: "draft", color: "349 70% 56%", thumbnail: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=400&h=300&fit=crop", mediaType: "video" },
+    { id: "e15", title: "Carousel Tips", date: d(25), platform: "instagram", type: "post", time: "09:00", description: "5 tips carousel for beginners", status: "draft", color: "328 70% 55%", thumbnail: "https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?w=400&h=300&fit=crop", mediaType: "image" },
+    { id: "e16", title: "Podcast Clip", date: d(26), platform: "youtube", type: "video", time: "12:00", description: "Short clip from latest podcast episode", status: "draft", color: "0 72% 51%" },
+    { id: "e17", title: "Poll Tweet", date: d(27), platform: "twitter", type: "tweet", time: "10:00", description: "Community poll about upcoming features", status: "draft", color: "203 89% 53%" },
+    { id: "e18", title: "Duet Video", date: d(28), platform: "tiktok", type: "video", time: "15:00", description: "Duet with top creator in niche", status: "draft", color: "349 70% 56%", thumbnail: "https://images.unsplash.com/photo-1598550476439-6847785fcea6?w=400&h=300&fit=crop", mediaType: "video" },
+  ];
 
 // ==================== ANALYTICS DATA ====================
 

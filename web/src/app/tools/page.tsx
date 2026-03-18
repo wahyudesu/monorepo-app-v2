@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Wand2, UserCheck, FileText, Sparkles, Copy, Check } from "lucide-react";
+import { Wand2, UserCheck, FileText, Sparkles, Copy, Check, ChevronDown, ChevronUp } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,7 +11,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-import { toast } from "sonner";
+import { toast as sooner } from "sonner";
+
+interface GeneratedOutput {
+  id: string;
+  prompt: string;
+  variation: number;
+}
 
 const tools = [
   { id: "script-engine", label: "Content Script Engine", icon: FileText, description: "Generate AI system prompts for content creation" },
@@ -119,7 +125,8 @@ function generateSystemPrompt(
   persona: string,
   framework: string,
   topic: string,
-  tone: string
+  tone: string,
+  variation: number = 1
 ): string {
   const purposeInfo = contentPurposes.find(p => p.value === purpose);
   const platformInfo = platforms.find(p => p.value === platform);
@@ -143,6 +150,20 @@ function generateSystemPrompt(
     "engagement": "Prioritize two-way communication. Ask questions, invite responses, create shareable moments. Build community.",
   };
 
+  // Variation modifiers
+  const variationModifiers: Record<number, string> = {
+    1: "",
+    2: "Take a more direct and punchy approach. Focus on immediate impact.",
+    3: "Add more emotional storytelling elements. Make it personal and relatable.",
+    4: "Focus on data-driven, educational content. Include statistics and facts.",
+    5: "Create urgency and FOMO. Use time-sensitive language.",
+  };
+
+  const variationNote = variation > 1 ? `\n## VARIATION NOTE
+This is Variation #${variation}. ${variationModifiers[variation]}
+
+Make this version distinctly different from other variations while maintaining the same core message and framework.\n` : "";
+
   return `# CONTENT GENERATION SYSTEM PROMPT
 
 ## ROLE
@@ -153,6 +174,7 @@ You are creating content for: ${platformInfo?.label || platform}
 Content Purpose: ${purposeInfo?.label || purpose} (${purposeInfo?.description || ""})
 Topic: ${topic}
 Tone: ${toneInfo?.label || tone}
+${variation > 1 ? `Variation: #${variation} of the set` : ""}
 
 ## FRAMEWORK: ${frameworkInfo?.label} (${frameworkInfo?.description})
 ${frameworkInfo?.guidance || ""}
@@ -162,7 +184,7 @@ ${purposeGuidance[purpose] || ""}
 
 ## PLATFORM-SPECIFIC GUIDELINES
 ${getPlatformGuidance(platform)}
-
+${variationNote}
 ## OUTPUT REQUIREMENTS
 1. Follow the ${frameworkInfo?.label} framework strictly
 2. Maintain ${toneInfo?.label} tone throughout
@@ -235,166 +257,375 @@ function ContentScriptEngine() {
   const [persona, setPersona] = useState("expert-mentor");
   const [framework, setFramework] = useState("pas");
   const [topic, setTopic] = useState("");
+  const [format, setFormat] = useState("reels");
   const [tone, setTone] = useState("casual");
-  const [output, setOutput] = useState("");
-  const [copied, setCopied] = useState(false);
+  const [quantity, setQuantity] = useState(1);
+  const [outputs, setOutputs] = useState<GeneratedOutput[]>([]);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [expandedOutputId, setExpandedOutputId] = useState<string | null>(null);
 
   const handleGenerate = () => {
     if (!topic.trim()) {
-      toast.error("Please enter a topic");
+      sooner.error("Please enter a topic");
       return;
     }
-    const prompt = generateSystemPrompt(purpose, platform, persona, framework, topic, tone);
-    setOutput(prompt);
+
+    const newOutputs: GeneratedOutput[] = [];
+    for (let i = 1; i <= quantity; i++) {
+      const prompt = generateSystemPrompt(purpose, platform, persona, framework, topic, tone, i);
+      newOutputs.push({
+        id: `${Date.now()}-${i}`,
+        prompt,
+        variation: i,
+      });
+    }
+    setOutputs(newOutputs);
+    // Auto-expand first output
+    setExpandedOutputId(newOutputs[0]?.id || null);
   };
 
-  const handleCopy = async () => {
-    if (!output) return;
-    await navigator.clipboard.writeText(output);
-    setCopied(true);
-    toast.success("System prompt copied!");
-    setTimeout(() => setCopied(false), 2000);
+  const handleCopy = async (id: string, content: string) => {
+    await navigator.clipboard.writeText(content);
+    setCopiedId(id);
+    sooner.success("System prompt copied!");
+    setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const toggleExpand = (id: string) => {
+    setExpandedOutputId(expandedOutputId === id ? null : id);
   };
 
   return (
-    <div className="space-y-5">
-      {/* Form Inputs */}
-      <div className="grid gap-4 sm:grid-cols-2">
-        {/* Tujuan Konten */}
-        <div className="space-y-2">
-          <Label>Tujuan Konten</Label>
-          <Select value={purpose} onValueChange={setPurpose}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {contentPurposes.map((p) => (
-                <SelectItem key={p.value} value={p.value}>
-                  {p.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <p className="text-[11px] text-muted-foreground">
-            {contentPurposes.find(p => p.value === purpose)?.description}
-          </p>
+    <div className="space-y-6">
+      {/* Section 1: Konteks & Platform */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-2">
+          <div className="flex size-7 items-center justify-center rounded-lg bg-primary text-xs font-bold text-primary-foreground">1</div>
+          <h3 className="font-semibold">Konteks & Platform</h3>
         </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          {/* Tujuan Utama */}
+          <div className="space-y-2">
+            <Label>Tujuan Utama</Label>
+            <Select value={purpose} onValueChange={(val) => setPurpose(val ?? "")}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Pilih tujuan" />
+              </SelectTrigger>
+              <SelectContent>
+                {contentPurposes.map((p) => (
+                  <SelectItem key={p.value} value={p.value}>
+                    {p.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-[11px] text-muted-foreground">
+              {contentPurposes.find(p => p.value === purpose)?.description}
+            </p>
+          </div>
 
-        {/* Platform */}
-        <div className="space-y-2">
-          <Label>Platform</Label>
-          <Select value={platform} onValueChange={setPlatform}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {platforms.map((p) => (
-                <SelectItem key={p.value} value={p.value}>
-                  {p.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <p className="text-[11px] text-muted-foreground">
-            {platforms.find(p => p.value === platform)?.description}
-          </p>
-        </div>
+          {/* Role Pengguna */}
+          <div className="space-y-2">
+            <Label>Role Pengguna</Label>
+            <Select value={persona} onValueChange={(val) => setPersona(val ?? "")}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Pilih role" />
+              </SelectTrigger>
+              <SelectContent>
+                {personas.map((p) => (
+                  <SelectItem key={p.value} value={p.value}>
+                    {p.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-[11px] text-muted-foreground">
+              {personas.find(p => p.value === persona)?.description}
+            </p>
+          </div>
 
-        {/* Persona */}
-        <div className="space-y-2">
-          <Label>Persona</Label>
-          <Select value={persona} onValueChange={setPersona}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {personas.map((p) => (
-                <SelectItem key={p.value} value={p.value}>
-                  {p.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <p className="text-[11px] text-muted-foreground">
-            {personas.find(p => p.value === persona)?.description}
-          </p>
-        </div>
+          {/* Platform Target */}
+          <div className="space-y-2">
+            <Label>Platform Target</Label>
+            <Select value={platform} onValueChange={(val) => setPlatform(val ?? "")}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Pilih platform" />
+              </SelectTrigger>
+              <SelectContent>
+                {platforms.map((p) => (
+                  <SelectItem key={p.value} value={p.value}>
+                    {p.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-[11px] text-muted-foreground">
+              {platforms.find(p => p.value === platform)?.description}
+            </p>
+          </div>
 
-        {/* Strategi Copywriting */}
-        <div className="space-y-2">
-          <Label>Strategi Copywriting</Label>
-          <Select value={framework} onValueChange={setFramework}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {frameworks.map((f) => (
-                <SelectItem key={f.value} value={f.value}>
-                  {f.label} - {f.description}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <p className="text-[11px] text-muted-foreground">
-            {frameworks.find(f => f.value === framework)?.description}
-          </p>
-        </div>
-
-        {/* Topic */}
-        <div className="space-y-2 sm:col-span-2">
-          <Label>Topik / Keyword</Label>
-          <Input
-            placeholder="e.g. Tips produktivitas untuk freelancer"
-            value={topic}
-            onChange={(e) => setTopic(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleGenerate()}
-          />
-        </div>
-
-        {/* Tone */}
-        <div className="space-y-2 sm:col-span-2">
-          <Label>Tone</Label>
-          <Select value={tone} onValueChange={setTone}>
-            <SelectTrigger className="w-full sm:w-[200px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {tones.map((t) => (
-                <SelectItem key={t.value} value={t.value}>
-                  {t.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          {/* Tone */}
+          <div className="space-y-2">
+            <Label>Tone</Label>
+            <Select value={tone} onValueChange={(val) => setTone(val ?? "")}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Pilih tone" />
+              </SelectTrigger>
+              <SelectContent>
+                {tones.map((t) => (
+                  <SelectItem key={t.value} value={t.value}>
+                    {t.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </div>
 
-      {/* Generate Button */}
-      <Button onClick={handleGenerate} disabled={!topic.trim()} className="gap-2">
-        <Sparkles className="h-4 w-4" />
-        Generate System Prompt
-      </Button>
+      <Separator />
+
+      {/* Section 2: Spesifikasi Konten */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-2">
+          <div className="flex size-7 items-center justify-center rounded-lg bg-primary text-xs font-bold text-primary-foreground">2</div>
+          <h3 className="font-semibold">Spesifikasi Konten</h3>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-3">
+          {/* Topik */}
+          <div className="space-y-2 sm:col-span-2">
+            <Label>Topik / Keyword</Label>
+            <Input
+              placeholder="e.g. Tips produktivitas untuk freelancer"
+              value={topic}
+              onChange={(e) => setTopic(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleGenerate()}
+            />
+          </div>
+
+          {/* Format Konten */}
+          <div className="space-y-2">
+            <Label>Format Konten</Label>
+            <Select value={format} onValueChange={(val) => setFormat(val ?? "")}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Pilih format" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="reels">🎬 Video/Reels</SelectItem>
+                <SelectItem value="carousel">📱 Carousel</SelectItem>
+                <SelectItem value="thread">🧵 Thread</SelectItem>
+                <SelectItem value="story">📖 Story</SelectItem>
+                <SelectItem value="post">📝 Post/Article</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </div>
+
+      <Separator />
+
+      {/* Section 3: Strategi Copywriting */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-2">
+          <div className="flex size-7 items-center justify-center rounded-lg bg-primary text-xs font-bold text-primary-foreground">3</div>
+          <h3 className="font-semibold">Strategi Copywriting</h3>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          {/* Framework */}
+          <div className="space-y-2">
+            <Label>Framework</Label>
+            <Select value={framework} onValueChange={(val) => setFramework(val ?? "")}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Pilih framework" />
+              </SelectTrigger>
+              <SelectContent>
+                {frameworks.map((f) => (
+                  <SelectItem key={f.value} value={f.value}>
+                    {f.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-[11px] text-muted-foreground">
+              {frameworks.find(f => f.value === framework)?.description}
+            </p>
+          </div>
+
+          {/* CTA Type */}
+          <div className="space-y-2">
+            <Label>Jenis CTA</Label>
+            <Select defaultValue="save">
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Pilih CTA" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="save">💾 Save this post</SelectItem>
+                <SelectItem value="share">📤 Share to friend</SelectItem>
+                <SelectItem value="follow">➕ Follow for more</SelectItem>
+                <SelectItem value="comment">💬 Comment below</SelectItem>
+                <SelectItem value="link">🔗 Link in bio</SelectItem>
+                <SelectItem value="dm">📩 DM for info</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </div>
+
+      <Separator />
+
+      {/* Section 4: Target Audience */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-2">
+          <div className="flex size-7 items-center justify-center rounded-lg bg-primary text-xs font-bold text-primary-foreground">4</div>
+          <h3 className="font-semibold">Target Audience</h3>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          {/* Demografis */}
+          <div className="space-y-2">
+            <Label>Demografis</Label>
+            <Input
+              placeholder="e.g. Pria/Wanita 25-35 tahun, profesional"
+            />
+          </div>
+
+          {/* Pain Points */}
+          <div className="space-y-2">
+            <Label>Pain Points / Masalah</Label>
+            <Input
+              placeholder="e.g. Kesulitan manajemen waktu, burnout"
+            />
+          </div>
+        </div>
+      </div>
+
+      <Separator />
+
+      {/* Section 5: Quantity & Generate */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-2">
+          <div className="flex size-7 items-center justify-center rounded-lg bg-primary text-xs font-bold text-primary-foreground">5</div>
+          <h3 className="font-semibold">Generate Variasi</h3>
+        </div>
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="space-y-2">
+            <Label>Jumlah Variasi</Label>
+            <div className="flex gap-1">
+              {[1, 2, 3, 5].map((q) => (
+                <button
+                  key={q}
+                  onClick={() => setQuantity(q)}
+                  className={cn(
+                    "px-4 py-2 rounded-lg text-sm font-medium transition-all",
+                    quantity === q
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted text-muted-foreground hover:bg-muted/80"
+                  )}
+                >
+                  {q}
+                </button>
+              ))}
+            </div>
+            <p className="text-[11px] text-muted-foreground">
+              {quantity === 1 ? "Single output" : `${quantity} variasi berbeda`}
+            </p>
+          </div>
+
+          <Button onClick={handleGenerate} disabled={!topic.trim()} className="gap-2">
+            <Sparkles className="h-4 w-4" />
+            Generate {quantity > 1 ? `${quantity} Variasi` : "System Prompt"}
+          </Button>
+        </div>
+      </div>
 
       {/* Output Panel */}
-      {output && (
+      {outputs.length > 0 && (
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <Label className="text-sm font-medium">📋 Generated System Prompt</Label>
-            <div className="flex gap-2">
-              <Button onClick={handleCopy} variant="outline" size="sm" className="gap-1.5">
-                {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-                {copied ? "Copied!" : "Copy"}
-              </Button>
-              <Button onClick={handleGenerate} variant="outline" size="sm" className="gap-1.5">
-                🔄 Regenerate
-              </Button>
-            </div>
+            <Label className="text-sm font-medium">
+              📋 Generated Output{outputs.length > 1 ? `s (${outputs.length})` : ""}
+            </Label>
+            <Button onClick={handleGenerate} variant="outline" size="sm" className="gap-1.5">
+              🔄 Regenerate
+            </Button>
           </div>
-          <div className="rounded-lg border border-border/50 bg-muted/30 p-4">
-            <pre className="whitespace-pre-wrap text-sm leading-relaxed font-mono">
-              {output}
-            </pre>
+
+          {/* Variation Cards */}
+          <div className="space-y-3">
+            {outputs.map((output) => (
+              <div
+                key={output.id}
+                className="rounded-lg border border-border/50 bg-muted/30 overflow-hidden"
+              >
+                <button
+                  onClick={() => toggleExpand(output.id)}
+                  className="w-full px-4 py-3 flex items-center justify-between hover:bg-muted/50 transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="text-xs">
+                      #{output.variation}
+                    </Badge>
+                    <span className="text-sm font-medium">
+                      {output.variation === 1
+                        ? "Original Version"
+                        : `Variation ${output.variation}`}
+                    </span>
+                  </div>
+                  {expandedOutputId === output.id ? (
+                    <ChevronUp className="h-4 w-4 text-muted-foreground" />
+                  ) : (
+                    <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                  )}
+                </button>
+
+                {expandedOutputId === output.id && (
+                  <div className="px-4 pb-4">
+                    <div className="rounded-lg border border-border/50 bg-background p-4">
+                      <pre className="whitespace-pre-wrap text-sm leading-relaxed font-mono">
+                        {output.prompt}
+                      </pre>
+                    </div>
+                    <div className="mt-3 flex justify-end">
+                      <Button
+                        onClick={() => handleCopy(output.id, output.prompt)}
+                        variant="outline"
+                        size="sm"
+                        className="gap-1.5"
+                      >
+                        {copiedId === output.id ? (
+                          <>
+                            <Check className="h-3.5 w-3.5" />
+                            Copied!
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="h-3.5 w-3.5" />
+                            Copy
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
+
+          {/* Copy All Button */}
+          {outputs.length > 1 && (
+            <Button
+              onClick={() => {
+                const allContent = outputs.map((o) => `=== VARIATION ${o.variation} ===\n\n${o.prompt}\n\n`).join("\n");
+                navigator.clipboard.writeText(allContent);
+                sooner.success("All variations copied!");
+              }}
+              variant="outline"
+              size="sm"
+              className="w-full gap-1.5"
+            >
+              <Copy className="h-3.5 w-3.5" />
+              Copy All Variations
+            </Button>
+          )}
         </div>
       )}
     </div>
@@ -422,7 +653,7 @@ function BrandingTool() {
         </div>
         <div className="space-y-2">
           <Label>Niche</Label>
-          <Select value={niche} onValueChange={setNiche}>
+          <Select value={niche} onValueChange={(val) => setNiche(val ?? "")}>
             <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="tech">💻 Tech</SelectItem>
