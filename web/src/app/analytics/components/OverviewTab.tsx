@@ -41,7 +41,7 @@ export function OverviewTab({
 
   return (
     <div className="space-y-6">
-      <Card className="border-border/50 shadow-sm">
+i      <Card className="border-border/50 shadow-sm">
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
             <Select
@@ -56,13 +56,13 @@ export function OverviewTab({
                   }
                 </SelectValue>
               </SelectTrigger>
-              <SelectContent className="min-w-60 text-2xl font-medium">
-                {chartOptions.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
+                <SelectContent className="min-w-60">
+                  {chartOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value} className="text-base font-medium">
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
             </Select>
           </div>
         </CardHeader>

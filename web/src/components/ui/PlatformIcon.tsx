@@ -58,20 +58,21 @@ export function PlatformIcon({
 }
 
 export function getPlatformColor(platform: Platform): string {
+  // Warna dibuat sangat berbeda untuk memudahkan distinguo visual
   const colors: Record<Platform, string> = {
-    instagram: "#E4405F", // Pink/Red
-    tiktok: "#00F2EA", // Cyan
-    twitter: "#657786", // Gray Blue
-    youtube: "#FF0000", // Red
+    instagram: "#E1306C", // Magenta Pink
+    tiktok: "#00C7B7", // Teal
+    twitter: "#1DA1F2", // Sky Blue
+    youtube: "#FF0000", // Pure Red
     facebook: "#1877F2", // Blue
-    linkedin: "#0077B5", // Dark Blue
-    pinterest: "#E60023", // Red-Pink
-    threads: "#A0A0A0", // Gray
+    linkedin: "#0A66C2", // Navy Blue
+    pinterest: "#E60023", // Dark Red
+    threads: "#000000", // Black
     whatsapp: "#25D366", // Green
     reddit: "#FF4500", // Orange
     bluesky: "#0085FF", // Light Blue
-    google: "#EA4335", // Red-ish (Google's red)
-    telegram: "#229ED9", // Sky Blue
+    google: "#FBBC05", // Yellow
+    telegram: "#0088CC", // Telegram Blue
     snapchat: "#FFFC00", // Yellow
   };
   return colors[platform] || "#666";

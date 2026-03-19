@@ -23,21 +23,24 @@ interface KanbanViewProps {
   onEventsChange?: (events: CalendarEvent[]) => void;
 }
 
-const COLUMN_CONFIG: Record<string, { title: string; colorClass: string; badgeClass: string }> = {
+const COLUMN_CONFIG: Record<string, { title: string; colorClass: string; badgeClass: string; cardBorderClass: string }> = {
   draft: {
     title: "Draft",
-    colorClass: "bg-gray-100 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700",
-    badgeClass: "bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300",
+    colorClass: "bg-slate-100 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700",
+    badgeClass: "bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300",
+    cardBorderClass: "ring-slate-300 dark:ring-slate-600",
   },
   scheduled: {
     title: "Scheduled",
-    colorClass: "bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800",
-    badgeClass: "bg-yellow-200 text-yellow-800 dark:bg-yellow-800/50 dark:text-yellow-200",
+    colorClass: "bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800",
+    badgeClass: "bg-amber-200 text-amber-800 dark:bg-amber-800/50 dark:text-amber-200",
+    cardBorderClass: "ring-amber-300 dark:ring-amber-600",
   },
   published: {
     title: "Posted",
-    colorClass: "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800",
-    badgeClass: "bg-green-200 text-green-800 dark:bg-green-800/50 dark:text-green-200",
+    colorClass: "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800",
+    badgeClass: "bg-emerald-200 text-emerald-800 dark:bg-emerald-800/50 dark:text-emerald-200",
+    cardBorderClass: "ring-emerald-300 dark:ring-emerald-600",
   },
 };
 
@@ -46,20 +49,21 @@ interface PostCardProps {
   asHandle?: boolean;
   isOverlay?: boolean;
   onClick?: () => void;
+  cardBorderClass?: string;
 }
 
-function PostCard({ event, asHandle, isOverlay, onClick }: PostCardProps) {
+function PostCard({ event, asHandle, isOverlay, onClick, cardBorderClass }: PostCardProps) {
   const cardContent = (
     <ContentCard
       event={event}
       variant="vertical"
       onClick={onClick}
-      className={cn(isOverlay && "shadow-2xl")}
+      className={cn(isOverlay && "shadow-2xl", cardBorderClass && `ring-1 ${cardBorderClass}`)}
     />
   );
 
   return (
-    <KanbanItem value={event.id}>
+    <KanbanItem value={event.id} disabled={true}>
       {asHandle && !isOverlay ? (
         <KanbanItemHandle>{cardContent}</KanbanItemHandle>
       ) : (
@@ -81,7 +85,7 @@ function PostColumn({ value, events, isOverlay, onEventClick, onCreateClick }: P
   const config = COLUMN_CONFIG[value];
 
   return (
-    <KanbanColumn value={value}>
+    <KanbanColumn value={value} disabled={true}>
       <Card className="h-full">
         <div className={cn("flex items-center p-4 border-b", config.colorClass)}>
           <div className="flex items-center gap-2.5">
@@ -99,6 +103,7 @@ function PostColumn({ value, events, isOverlay, onEventClick, onCreateClick }: P
                 event={event}
                 asHandle={!isOverlay}
                 onClick={() => onEventClick(event)}
+                cardBorderClass={config.cardBorderClass}
               />
             ))}
             {value === "draft" && onCreateClick && (

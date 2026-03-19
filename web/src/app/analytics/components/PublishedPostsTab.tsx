@@ -1,7 +1,6 @@
 import { useState, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { PlatformFilterSelect } from "@/components/ui/platform-filter";
 import {
   Pagination,
   PaginationContent,
@@ -26,16 +25,11 @@ import { PlatformIcon, type Platform } from "@/components/ui/PlatformIcon";
 
 const POSTS_PER_PAGE = 6;
 
-export function PublishedPostsTab() {
-  // Get unique platforms from posts
-  const availablePlatforms = useMemo(() => {
-    const platforms = new Set(publishedPosts.map((p) => p.platform));
-    return Array.from(platforms);
-  }, []);
+interface PublishedPostsTabProps {
+  selectedPlatform: Platform;
+}
 
-  const [selectedPlatform, setSelectedPlatform] = useState<string>(
-    availablePlatforms[0] || "",
-  );
+export function PublishedPostsTab({ selectedPlatform }: PublishedPostsTabProps) {
   const [currentPage, setCurrentPage] = useState(1);
 
   // Sort posts: viral first, then by viral score
@@ -141,24 +135,10 @@ export function PublishedPostsTab() {
     );
   };
 
-  return (
-    <div className="space-y-4">
-      {/* Platform Filter */}
-      <div className="flex items-center gap-2">
-        <span className="text-sm font-medium text-muted-foreground">
-          Filter by platform:
-        </span>
-        <PlatformFilterSelect
-          value={selectedPlatform as Platform}
-          onChange={(val) => setSelectedPlatform(val)}
-        />
-        <span className="text-xs text-muted-foreground">
-          ({filteredPosts.length} posts)
-        </span>
-      </div>
-
-      {/* Posts Grid with visual assets */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+    return (
+      <div className="space-y-4">
+        {/* Posts Grid with visual assets */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
         {paginatedPosts.map((post) => {
           const platform = analyticsPlatforms.find(
             (pl) => pl.id === post.platform,
@@ -265,8 +245,10 @@ export function PublishedPostsTab() {
 
               {getPaginationItems().map((item, index) => {
                 if (item === "...") {
+                  // Use a more semantic key based on ellipsis position
+                  const ellipsisPosition = index === 1 ? "start" : "end";
                   return (
-                    <PaginationItem key={`ellipsis-${index}`}>
+                    <PaginationItem key={`pagination-ellipsis-${ellipsisPosition}`}>
                       <PaginationEllipsis />
                     </PaginationItem>
                   );

@@ -81,26 +81,26 @@ export function AnimatedTabs({
     [tabs, handleTabChange, layoutId]
   );
 
-  const baseContainerStyles = cn(
-    "relative inline-flex",
-    variant === "underline" && "gap-3",
+    const baseContainerStyles = cn(
+      "relative inline-flex",
+      variant === "underline" && "gap-1 border-b border-border",
     variant === "pill" && "",
     variant === "segment" && ""
   );
 
-          const getTabStyles = (isActive: boolean) =>
-            cn(
-              "relative z-10 flex items-center justify-center font-medium transition-colors",
-              variant === "underline" 
-                ? "text-sm gap-2 px-3 py-2" 
-                : iconOnly ? "text-sm px-2.5 py-2" : "text-sm gap-2 px-3 py-2",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-          variant === "underline" && [
-            "rounded-t-md",
-            isActive
-              ? "text-foreground"
-              : "text-muted-foreground hover:text-foreground",
-          ],
+        const getTabStyles = (isActive: boolean) =>
+              cn(
+                "relative z-10 flex items-center justify-center font-medium transition-colors",
+                variant === "underline"
+                  ? "text-base gap-2 px-4 py-3"
+                  : iconOnly ? "text-sm px-2.5 py-2" : "text-sm gap-2 px-3 py-2",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+            variant === "underline" && [
+              "rounded-t-lg border-b-2 mb-[-1px]",
+              isActive
+                ? "text-foreground border-foreground"
+                : "text-muted-foreground border-transparent hover:text-foreground hover:border-muted-foreground/50",
+            ],
           variant === "pill" && [
             "rounded-md",
             isActive
@@ -115,10 +115,10 @@ export function AnimatedTabs({
           ]
         );
 
-      const getIndicatorStyles = () =>
-        cn(
-          "absolute",
-          variant === "underline" && "right-0 -bottom-px left-0 h-[2px] bg-brand",
+        const getIndicatorStyles = () =>
+          cn(
+            "absolute",
+            variant === "underline" && "hidden",
         variant === "pill" &&
           "inset-0 rounded-md border border-border bg-background shadow-sm",
         variant === "segment" &&

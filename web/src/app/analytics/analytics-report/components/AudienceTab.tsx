@@ -92,204 +92,230 @@ export function AudienceTab() {
 
   return (
     <div className="space-y-6">
-      {/* World Map - Visitor Distribution */}
-      <Card className="border-border/50 shadow-sm">
-        <CardHeader className="pb-3">
-          <CardTitle className="font-display text-base font-semibold">
-            Visitor Distribution by Country
-          </CardTitle>
-          <p className="text-xs text-muted-foreground">
-            Global audience reach and engagement
-          </p>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <ChoroplethChart data={geoJsonWithVisitors} aspectRatio="2 / 1">
-              <ChoroplethGraticule />
-              <ChoroplethFeature
-                getFeatureColor={(feature: ChoroplethFeatureType) => {
-                  const visitors = feature.properties?.visitors as number | undefined;
-                  return getVisitorColorDiscrete(visitors);
-                }}
-              />
-              <ChoroplethTooltip
-                getFeatureValue={(feature: ChoroplethFeatureType) => {
-                  return feature.properties?.visitors as number | undefined;
-                }}
-                valueLabel="Visitors"
-              />
-            </ChoroplethChart>
+        {/* World Map - Visitor Distribution */}
+        <Card className="border-border/50 shadow-sm">
+          <CardHeader className="pb-2">
+            <CardTitle className="font-display text-sm font-semibold">
+              Visitor Distribution by Country
+            </CardTitle>
+            <p className="text-xs text-muted-foreground">
+              Global audience reach and engagement
+            </p>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="space-y-3">
+              <ChoroplethChart data={geoJsonWithVisitors} aspectRatio="2.5 / 1">
+                <ChoroplethGraticule />
+                <ChoroplethFeature
+                  getFeatureColor={(feature: ChoroplethFeatureType) => {
+                    const visitors = feature.properties?.visitors as number | undefined;
+                    return getVisitorColorDiscrete(visitors);
+                  }}
+                />
+                <ChoroplethTooltip
+                  getFeatureValue={(feature: ChoroplethFeatureType) => {
+                    return feature.properties?.visitors as number | undefined;
+                  }}
+                  valueLabel="Visitors"
+                />
+              </ChoroplethChart>
 
-            {/* Color Scale Legend */}
-            <div className="flex items-center justify-center gap-2 flex-wrap text-xs">
-              <span className="text-muted-foreground mr-2">Visitors:</span>
-              {colorScale.map((item) => (
-                <div key={item.label} className="flex items-center gap-1.5">
-                  <div
-                    className="h-3 w-3 rounded-sm border border-border/50"
-                    style={{ backgroundColor: item.color }}
-                  />
-                  <span className="text-muted-foreground">{item.label}</span>
-                </div>
-              ))}
+              {/* Color Scale Legend */}
+              <div className="flex items-center justify-center gap-2 flex-wrap text-xs">
+                <span className="text-muted-foreground mr-2">Visitors:</span>
+                {colorScale.map((item) => (
+                  <div key={item.label} className="flex items-center gap-1.5">
+                    <div
+                      className="h-2.5 w-2.5 rounded-sm border border-border/50"
+                      style={{ backgroundColor: item.color }}
+                    />
+                    <span className="text-muted-foreground">{item.label}</span>
+                  </div>
+                ))}
+              </div>
             </div>
+          </CardContent>
+        </Card>
+        {/* Age, Gender, Location Distribution - 3 columns */}
+          <div className="grid gap-4 md:grid-cols-3">
+            {/* Age Distribution */}
+            <Card className="border-border/50 shadow-sm">
+              <CardHeader className="pb-2">
+                <CardTitle className="font-display text-sm font-semibold">
+                  Age Distribution
+                </CardTitle>
+                <p className="text-xs text-muted-foreground">
+                  Follower age groups
+                </p>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <BarChart
+                  data={audienceAgeDistribution as unknown as Record<string, unknown>[]}
+                  xDataKey="ageGroup"
+                  margin={{ top: 5, right: 5, bottom: 20, left: 30 }}
+                  barGap={0.1}
+                  barWidth={12}
+                  aspectRatio="4 / 3"
+                >
+                  <BarXAxis maxLabels={6} />
+                  <Bar dataKey="count" fill="hsl(var(--primary))" lineCap="butt" />
+                  <ChartTooltip
+                    content={(data): ReactNode => (
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium">{data.point.ageGroup as string}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {(data.point.count as number).toLocaleString()} ({data.point.percentage as number}%)
+                        </p>
+                      </div>
+                    )}
+                  />
+                </BarChart>
+              </CardContent>
+            </Card>
+
+            {/* Gender Breakdown */}
+            <Card className="border-border/50 shadow-sm">
+              <CardHeader className="pb-2">
+                <CardTitle className="font-display text-sm font-semibold">
+                  Gender Breakdown
+                </CardTitle>
+                <p className="text-xs text-muted-foreground">
+                  Follower gender distribution
+                </p>
+              </CardHeader>
+              <CardContent className="flex flex-col items-center gap-2 pt-0">
+                <PieChart
+                  data={audienceGender.map((item, index) => ({
+                    label: item.gender,
+                    value: item.count,
+                  }))}
+                  size={140}
+                >
+                  {audienceGender.map((item, index) => (
+                    <PieSlice hoverEffect="grow" index={index} key={item.gender} />
+                  ))}
+                </PieChart>
+
+                <div className="grid grid-cols-3 gap-2 w-full">
+                  {audienceGender.map((item, index) => (
+                    <div
+                      key={item.gender}
+                      className="flex flex-col items-center gap-0.5"
+                    >
+                      <div className="flex items-center gap-1.5">
+                        <div
+                          className="h-2.5 w-2.5 rounded-full"
+                          style={{ backgroundColor: `var(--chart-${index + 1})` }}
+                        />
+                        <span className="text-xs font-medium">{item.gender}</span>
+                      </div>
+                      <span className="text-xs text-muted-foreground">
+                        {item.percentage}%
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Top Locations */}
+            <Card className="border-border/50 shadow-sm">
+              <CardHeader className="pb-2">
+                <CardTitle className="font-display text-sm font-semibold">
+                  Top Locations
+                </CardTitle>
+                <p className="text-xs text-muted-foreground">
+                  By follower count
+                </p>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <div className="space-y-2">
+                  {[
+                    { country: "Indonesia", count: 87500, percent: 35 },
+                    { country: "USA", count: 98500, percent: 28 },
+                    { country: "UK", count: 72000, percent: 15 },
+                    { country: "Japan", count: 65000, percent: 10 },
+                    { country: "Germany", count: 58000, percent: 7 },
+                  ].map((item, index) => (
+                    <div key={item.country} className="flex items-center gap-2">
+                      <span className="text-xs font-medium w-20 truncate">{item.country}</span>
+                      <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-primary rounded-full"
+                          style={{ width: `${item.percent}%` }}
+                        />
+                      </div>
+                      <span className="text-xs text-muted-foreground w-10 text-right">{item.percent}%</span>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
           </div>
-        </CardContent>
-      </Card>
-        {/* Age Distribution & Gender Breakdown - 3 columns */}
-        <div className="grid gap-6 md:grid-cols-3">
-          <Card className="border-border/50 shadow-sm">
-            <CardHeader className="pb-3">
-              <CardTitle className="font-display text-base font-semibold">
-                Age Distribution
-              </CardTitle>
-              <p className="text-xs text-muted-foreground">
-                Follower age groups
-              </p>
-            </CardHeader>
-            <CardContent>
-              <BarChart
-                data={audienceAgeDistribution as unknown as Record<string, unknown>[]}
-                xDataKey="ageGroup"
-                margin={{ top: 10, right: 10, bottom: 30, left: 40 }}
-                barGap={0.1}
-                barWidth={16}
-                aspectRatio="3 / 2"
-              >
-                <BarXAxis maxLabels={6} />
-                <Bar dataKey="count" fill="hsl(var(--primary))" lineCap="butt" />
-                <ChartTooltip
-                  content={(data): ReactNode => (
-                    <div className="space-y-1">
-                      <p className="text-sm font-medium">{data.point.ageGroup as string}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {(data.point.count as number).toLocaleString()} ({data.point.percentage as number}%)
-                      </p>
-                    </div>
-                  )}
-                />
-              </BarChart>
-            </CardContent>
-          </Card>
 
-          {/* Gender Breakdown - Pie Chart */}
-          <Card className="border-border/50 shadow-sm md:col-span-2">
-            <CardHeader className="pb-3">
-              <CardTitle className="font-display text-base font-semibold">
-                Gender Breakdown
-              </CardTitle>
-              <p className="text-xs text-muted-foreground">
-                Follower gender distribution
-              </p>
-            </CardHeader>
-            <CardContent className="flex flex-col items-center gap-3">
-              <PieChart
-                data={audienceGender.map((item, index) => ({
-                  label: item.gender,
-                  value: item.count,
-                }))}
-                size={200}
-              >
-                {audienceGender.map((item, index) => (
-                  <PieSlice hoverEffect="grow" index={index} key={item.gender} />
-                ))}
-              </PieChart>
+          {/* Active Hours - 2 columns compact */}
+          <div className="grid gap-4 md:grid-cols-2">
+            <Card className="border-border/50 shadow-sm">
+              <CardHeader className="pb-1 pt-4">
+                <CardTitle className="font-display text-sm font-semibold">
+                  Active Hours
+                </CardTitle>
+                <p className="text-xs text-muted-foreground">
+                  Engagement by hour of day
+                </p>
+              </CardHeader>
+              <CardContent className="pt-0 pb-4">
+                <BarChart
+                  data={audienceActiveHours as unknown as Record<string, unknown>[]}
+                  xDataKey="label"
+                  margin={{ top: 5, right: 5, bottom: 15, left: 25 }}
+                  barGap={0.05}
+                  barWidth={8}
+                  aspectRatio="4 / 1"
+                >
+                  <BarXAxis maxLabels={8} />
+                  <Bar dataKey="engagement" fill="hsl(var(--primary))" lineCap="butt" />
+                  <ChartTooltip
+                    content={(data): ReactNode => (
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium">{data.point.label as string}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {(data.point.engagement as number).toLocaleString()} engagements
+                        </p>
+                      </div>
+                    )}
+                  />
+                </BarChart>
+              </CardContent>
+            </Card>
 
-              <div className="grid grid-cols-3 gap-x-6 gap-y-2 w-full">
-                {audienceGender.map((item, index) => (
-                  <div
-                    key={item.gender}
-                    className="flex flex-col items-center gap-1"
-                  >
-                    <div className="flex items-center gap-2">
-                      <div
-                        className="h-3 w-3 rounded-full"
-                        style={{ backgroundColor: `var(--chart-${index + 1})` }}
-                      />
-                      <span className="text-sm font-medium">{item.gender}</span>
-                    </div>
-                    <span className="text-xs text-muted-foreground">
-                      {item.percentage}%
-                    </span>
+            <Card className="border-border/50 shadow-sm">
+              <CardHeader className="pb-1 pt-4">
+                <CardTitle className="font-display text-sm font-semibold">
+                  Best Time to Post
+                </CardTitle>
+                <p className="text-xs text-muted-foreground">
+                  Optimal posting times
+                </p>
+              </CardHeader>
+              <CardContent className="pt-0 pb-4">
+                <div className="grid grid-cols-3 gap-2">
+                  <div className="flex flex-col items-center justify-center p-2 rounded-lg bg-primary/10 text-center">
+                    <p className="text-sm font-semibold">19-21</p>
+                    <p className="text-xs text-muted-foreground">Peak</p>
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Active Hours - 3 columns */}
-        <div className="grid gap-6 md:grid-cols-3">
-          <Card className="border-border/50 shadow-sm md:col-span-2">
-            <CardHeader className="pb-3">
-              <CardTitle className="font-display text-base font-semibold">
-                Active Hours
-              </CardTitle>
-              <p className="text-xs text-muted-foreground">
-                Engagement by hour of day
-              </p>
-            </CardHeader>
-            <CardContent>
-              <BarChart
-                data={audienceActiveHours as unknown as Record<string, unknown>[]}
-                xDataKey="label"
-                margin={{ top: 10, right: 10, bottom: 30, left: 40 }}
-                barGap={0.1}
-                barWidth={12}
-                aspectRatio="3 / 1"
-              >
-                <BarXAxis maxLabels={8} />
-                <Bar dataKey="engagement" fill="hsl(var(--primary))" lineCap="butt" />
-                <ChartTooltip
-                  content={(data): ReactNode => (
-                    <div className="space-y-1">
-                      <p className="text-sm font-medium">{data.point.label as string}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {(data.point.engagement as number).toLocaleString()} engagements
-                      </p>
-                    </div>
-                  )}
-                />
-              </BarChart>
-            </CardContent>
-          </Card>
-
-          <Card className="border-border/50 shadow-sm">
-            <CardHeader className="pb-3">
-              <CardTitle className="font-display text-base font-semibold">
-                Best Time to Post
-              </CardTitle>
-              <p className="text-xs text-muted-foreground">
-                Optimal posting times
-              </p>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between p-2 rounded-lg bg-primary/10">
-                  <div>
-                    <p className="text-sm font-medium">Peak</p>
-                    <p className="text-xs text-muted-foreground">Highest</p>
+                  <div className="flex flex-col items-center justify-center p-2 rounded-lg bg-muted/50 text-center">
+                    <p className="text-sm font-semibold">12-14</p>
+                    <p className="text-xs text-muted-foreground">Good</p>
                   </div>
-                  <p className="text-sm font-semibold">19-21</p>
+                  <div className="flex flex-col items-center justify-center p-2 rounded-lg bg-muted/50 text-center">
+                    <p className="text-sm font-semibold">02-06</p>
+                    <p className="text-xs text-muted-foreground">Avoid</p>
+                  </div>
                 </div>
-                <div className="flex items-center justify-between p-2 rounded-lg bg-muted/50">
-                  <div>
-                    <p className="text-sm font-medium">Good</p>
-                    <p className="text-xs text-muted-foreground">Above avg</p>
-                  </div>
-                  <p className="text-sm font-semibold">12-14</p>
-                </div>
-                <div className="flex items-center justify-between p-2 rounded-lg bg-muted/50">
-                  <div>
-                    <p className="text-sm font-medium">Avoid</p>
-                    <p className="text-xs text-muted-foreground">Low</p>
-                  </div>
-                  <p className="text-sm font-semibold">02-06</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+              </CardContent>
+            </Card>
+            </div>
     </div>
   );
 }

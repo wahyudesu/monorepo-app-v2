@@ -98,25 +98,25 @@ export function PlatformFilterDropdown({
           )}
         </Button>
       </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="w-48 p-1.5">
-          {PLATFORM_OPTIONS.map((platform) => (
-            <DropdownMenuItem
-              key={platform.value}
-              onClick={() => onChange(platform.value)}
-              className="flex items-center justify-between py-1.5 text-xs rounded-lg"
-            >
-              <span className="flex items-center gap-2">
-                {platform.value !== "all" && (
-                  <PlatformIcon platform={platform.value} size={16} />
+          <DropdownMenuContent align="start" className="w-56 p-2">
+            {PLATFORM_OPTIONS.map((platform) => (
+              <DropdownMenuItem
+                key={platform.value}
+                onClick={() => onChange(platform.value)}
+                className="flex items-center justify-between py-2 text-sm rounded-lg"
+              >
+                <span className="flex items-center gap-2.5">
+                  {platform.value !== "all" && (
+                    <PlatformIcon platform={platform.value} size={20} />
+                  )}
+                  <span className="font-medium">{platform.label}</span>
+                </span>
+                {value === platform.value && (
+                  <Check className="h-4 w-4 text-primary" />
                 )}
-                <span className="font-medium">{platform.label}</span>
-              </span>
-              {value === platform.value && (
-                <Check className="h-3.5 w-3.5 text-primary" />
-              )}
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
     </DropdownMenu>
   );
 }

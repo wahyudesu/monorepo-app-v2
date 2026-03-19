@@ -1,4 +1,16 @@
-*menerapkan animasi pada tab dan di beberapa micro interaction kecil
+checklist sebelum launch
+
+* item content social media post
+* finishing inbox
+* ai chat configuration [masih beta]
+* finishing tools content
+
+
+
+
+
+
+
 
 di mobile dock nya dibikin satu baris
 

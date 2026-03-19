@@ -27,6 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { PlatformFilterDropdown, type PlatformFilterValue } from "@/components/ui/platform-filter";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -69,7 +70,7 @@ const labelConfig: Record<
   none: { label: "No Label", color: "text-muted-foreground", bgColor: "" },
 };
 
-type Platform = "all" | "instagram" | "tiktok" | "twitter" | "youtube";
+type Platform = PlatformFilterValue;
 type TypeFilter = "message" | "comment";
 type SortBy = "newest" | "name";
 type MessageFilter = "all" | "unread" | "favorites";
@@ -429,35 +430,25 @@ return result;
         </p>
       </div>
 
-      {/* Tabs */}
-      <AnimatedTabs
-        tabs={tabs}
-        activeTab={activeTab}
-        onChange={setActiveTab}
-        variant="underline"
-        className="mb-4"
-      />
+        {/* Tabs */}
+        <AnimatedTabs
+          tabs={tabs}
+          activeTab={activeTab}
+          onChange={setActiveTab}
+          variant="underline"
+          className="mb-6"
+        />
 
       {/* Content */}
       {activeTab === "inbox" && (
         <>
           {/* Filters */}
           <div className="flex items-center gap-2 mb-4">
-            <Select
+            <PlatformFilterDropdown
               value={platform}
-              onValueChange={(v) => setPlatform(v as Platform)}
-            >
-              <SelectTrigger className="w-[180px] font-medium">
-                <SelectValue placeholder="All Platforms" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Platforms</SelectItem>
-                <SelectItem value="instagram">Instagram</SelectItem>
-                <SelectItem value="tiktok">TikTok</SelectItem>
-                <SelectItem value="twitter">Twitter</SelectItem>
-                <SelectItem value="youtube">YouTube</SelectItem>
-              </SelectContent>
-            </Select>
+              onChange={setPlatform}
+              size="default"
+            />
 
             <Select
               value={typeFilter}

@@ -243,14 +243,14 @@ export interface AnalyticsPlatformConfig {
 }
 
 export const analyticsPlatforms: AnalyticsPlatformConfig[] = [
-  { id: "youtube", name: "YouTube", color: "#FF0000", icon: "▶️" },
-  { id: "facebook", name: "Facebook", color: "#1877F2", icon: "📘" },
-  { id: "instagram", name: "Instagram", color: "#E4405F", icon: "📸" },
-  { id: "tiktok", name: "TikTok", color: "#000000", icon: "🎵" },
-  { id: "linkedin", name: "LinkedIn", color: "#0A66C2", icon: "💼" },
-  { id: "twitter", name: "Twitter", color: "#1DA1F2", icon: "𝕏" },
-  { id: "pinterest", name: "Pinterest", color: "#BD081C", icon: "📌" },
-  { id: "threads", name: "Threads", color: "#000000", icon: "🧵" },
+  { id: "youtube", name: "YouTube", color: "#FF3B30", icon: "▶️" },
+  { id: "facebook", name: "Facebook", color: "#007AFF", icon: "📘" },
+  { id: "instagram", name: "Instagram", color: "#FF2D92", icon: "📸" },
+  { id: "tiktok", name: "TikTok", color: "#FF9500", icon: "🎵" },
+  { id: "linkedin", name: "LinkedIn", color: "#AF52DE", icon: "💼" },
+  { id: "twitter", name: "Twitter", color: "#5AC8FA", icon: "𝕏" },
+  { id: "pinterest", name: "Pinterest", color: "#FFCC00", icon: "📌" },
+  { id: "threads", name: "Threads", color: "#5856D6", icon: "🧵" },
 ];
 
 export interface PostAnalyticsData {
