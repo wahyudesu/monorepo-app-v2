@@ -1,7 +1,7 @@
 "use client";
 
 import type { FC, ReactNode } from "react";
-import { Cancel01Icon, HugeiconsIcon } from "@/components/icons";
+import { Cancel01Icon, HugeiconsIcon } from "@/components/layout/icons";
 import { cn } from "@/lib/utils";
 
 export interface UploadedFile {
@@ -10,6 +10,8 @@ export interface UploadedFile {
 	url?: string;
 	type?: string;
 	size?: number;
+	/** Preview URL for image files created with URL.createObjectURL */
+	preview?: string;
 }
 
 export interface FilePreviewProps {

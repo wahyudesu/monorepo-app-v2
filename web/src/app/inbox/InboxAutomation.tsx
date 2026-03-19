@@ -6,13 +6,12 @@ import {
   Plus,
   Trash2,
   Edit2,
-  Check,
-  X,
   Clock,
   MessageSquare,
   AtSign,
   Hash,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -34,15 +33,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { AutomationRule, AutomationType, TriggerType } from "@/lib/types/inbox-automation";
-import { cn } from "@/lib/utils";
-
-const platformOptions = [
-  { value: "instagram", label: "Instagram", color: "text-pink-500" },
-  { value: "tiktok", label: "TikTok", color: "text-gray-100" },
-  { value: "twitter", label: "Twitter", color: "text-blue-400" },
-  { value: "youtube", label: "YouTube", color: "text-red-500" },
-  { value: "linkedin", label: "LinkedIn", color: "text-blue-600" },
-];
+import { PlatformFilterMulti, PLATFORM_MULTI_OPTIONS, type PlatformMultiValue } from "@/components/ui/platform-filter";
 
 const mockRules: AutomationRule[] = [
   {
@@ -87,7 +78,7 @@ interface AutomationRuleForm {
   type: AutomationType;
   trigger: TriggerType;
   keywords: string;
-  platforms: string[];
+  platforms: PlatformMultiValue[];
   response: string;
   delaySeconds: number;
 }
@@ -121,7 +112,7 @@ export function InboxAutomation() {
       type: rule.type,
       trigger: rule.trigger,
       keywords: rule.keywords?.join(", ") || "",
-      platforms: rule.platforms,
+      platforms: rule.platforms as PlatformMultiValue[],
       response: rule.response,
       delaySeconds: rule.delaySeconds,
     });
@@ -187,15 +178,6 @@ export function InboxAutomation() {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
-  const togglePlatform = (platform: string) => {
-    setForm((prev) => ({
-      ...prev,
-      platforms: prev.platforms.includes(platform)
-        ? prev.platforms.filter((p) => p !== platform)
-        : [...prev.platforms, platform],
-    }));
-  };
-
   const activeRules = rules.filter((r) => r.enabled).length;
 
   return (
@@ -236,6 +218,7 @@ export function InboxAutomation() {
                   placeholder="e.g., Welcome DM, Thank you comment..."
                   value={form.name}
                   onChange={(e) => updateForm("name", e.target.value)}
+                  className="font-medium"
                 />
               </div>
 
@@ -246,7 +229,7 @@ export function InboxAutomation() {
                   value={form.type}
                   onValueChange={(v) => updateForm("type", v as AutomationType)}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="font-medium">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -273,7 +256,7 @@ export function InboxAutomation() {
                   value={form.trigger}
                   onValueChange={(v) => updateForm("trigger", v as TriggerType)}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="font-medium">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -304,6 +287,7 @@ export function InboxAutomation() {
                     placeholder="love, amazing, awesome, great"
                     value={form.keywords}
                     onChange={(e) => updateForm("keywords", e.target.value)}
+                    className="font-medium"
                   />
                   <p className="text-xs text-muted-foreground mt-1">
                     Separate keywords with commas
@@ -312,25 +296,11 @@ export function InboxAutomation() {
               )}
 
               {/* Platforms */}
-              <div>
-                <label className="text-sm font-medium mb-2 block">Platforms</label>
-                <div className="flex flex-wrap gap-2">
-                  {platformOptions.map((platform) => (
-                    <button
-                      key={platform.value}
-                      onClick={() => togglePlatform(platform.value)}
-                      className={cn(
-                        "px-3 py-1.5 rounded-lg text-sm font-medium transition-all",
-                        form.platforms.includes(platform.value)
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-muted text-muted-foreground hover:bg-muted/70"
-                      )}
-                    >
-                      {platform.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
+              <PlatformFilterMulti
+                values={form.platforms}
+                onChange={(values) => updateForm("platforms", values)}
+                label="Platforms"
+              />
 
               {/* Response */}
               <div>
@@ -340,7 +310,7 @@ export function InboxAutomation() {
                   value={form.response}
                   onChange={(e) => updateForm("response", e.target.value)}
                   rows={4}
-                  className="resize-none"
+                  className="resize-none font-medium"
                 />
               </div>
 
@@ -357,7 +327,7 @@ export function InboxAutomation() {
                     max={3600}
                     value={form.delaySeconds}
                     onChange={(e) => updateForm("delaySeconds", parseInt(e.target.value) || 0)}
-                    className="w-24"
+                    className="w-24 font-medium"
                   />
                   <span className="text-sm text-muted-foreground">seconds</span>
                 </div>
@@ -432,9 +402,9 @@ export function InboxAutomation() {
                     <div className="flex items-center gap-1">
                       <span>Platforms:</span>
                       {rule.platforms.map((p) => {
-                        const platform = platformOptions.find((opt) => opt.value === p);
+                        const platform = PLATFORM_MULTI_OPTIONS.find((opt) => opt.value === p);
                         return (
-                          <span key={p} className={cn("font-medium", platform?.color)}>
+                          <span key={p} className="font-medium">
                             {platform?.label}
                           </span>
                         );

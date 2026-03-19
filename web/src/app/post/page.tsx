@@ -2,16 +2,16 @@
 
 import { useState, useMemo, useCallback, useEffect } from "react";
 import { calendarEvents, type CalendarEvent } from "@/data/mock";
-import { CalendarGrid } from "@/components/post/CalendarGrid";
+import { CalendarGrid } from "@/components/features/post/CalendarGrid";
 import {
-    PostHeader,
-    PostControls,
-    PostCardsView,
-    KanbanView,
-    ListView,
-    EventDetailDialog,
-    CreateContentDialog,
-  } from "@/components/post";
+  PostHeader,
+  PostControls,
+  PostCardsView,
+  KanbanView,
+  ListView,
+  EventDetailDialog,
+  CreateContentDialog,
+} from "@/components/features/post";
 import { getDaysInMonth, getFirstDayOfMonth } from "@/lib/constants";
 import { Platform } from "@/components/ui/PlatformIcon";
 
@@ -25,18 +25,26 @@ export default function PostPage() {
   const [cardsView, setCardsView] = useState<CardsView>("grid");
   // Use a fixed date for initial render to prevent hydration mismatch
   // The same date renders on server and client, then updates to real date on client
-  const [currentDate, setCurrentDate] = useState<Date>(() => new Date("2026-01-01T00:00:00"));
+  const [currentDate, setCurrentDate] = useState<Date>(
+    () => new Date("2026-01-01T00:00:00"),
+  );
 
   useEffect(() => {
     // Update to actual date on client mount only (after hydration)
     setCurrentDate(new Date());
   }, []);
-  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(
+    null,
+  );
   const [events, setEvents] = useState(calendarEvents);
   const [draggedEvent, setDraggedEvent] = useState<CalendarEvent | null>(null);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [selectedDateForCreate, setSelectedDateForCreate] = useState<string | null>(null);
-  const [selectedPlatform, setSelectedPlatform] = useState<Platform | "all">("all" as const);
+  const [selectedDateForCreate, setSelectedDateForCreate] = useState<
+    string | null
+  >(null);
+  const [selectedPlatform, setSelectedPlatform] = useState<Platform | "all">(
+    "all" as const,
+  );
 
   const openCreateDialog = (dateStr?: string) => {
     setSelectedDateForCreate(dateStr || null);
@@ -47,7 +55,10 @@ export default function PostPage() {
   const month = currentDate.getMonth();
   const daysInMonth = getDaysInMonth(year, month);
   const firstDay = getFirstDayOfMonth(year, month);
-  const monthName = currentDate.toLocaleString("default", { month: "long", year: "numeric" });
+  const monthName = currentDate.toLocaleString("default", {
+    month: "long",
+    year: "numeric",
+  });
 
   // Calculate week range for week view
   const getWeekRange = (date: Date) => {
@@ -82,11 +93,12 @@ export default function PostPage() {
   const handleNext = calendarView === "week" ? nextWeek : nextMonth;
   const displayName = calendarView === "week" ? weekName : monthName;
 
-const eventsByDate = useMemo(() => {
+  const eventsByDate = useMemo(() => {
     const map: Record<string, CalendarEvent[]> = {};
-    const filtered = selectedPlatform === "all" 
-      ? events 
-      : events.filter((e) => e.platform === selectedPlatform);
+    const filtered =
+      selectedPlatform === "all"
+        ? events
+        : events.filter((e) => e.platform === selectedPlatform);
     filtered.forEach((e) => {
       if (!map[e.date]) map[e.date] = [];
       map[e.date].push(e);
@@ -94,20 +106,25 @@ const eventsByDate = useMemo(() => {
     return map;
   }, [events, selectedPlatform]);
 
-      const filteredEvents = useMemo(() => {
-        return selectedPlatform === "all" 
-          ? events 
-          : events.filter((e) => e.platform === selectedPlatform);
-      }, [events, selectedPlatform]);
+  const filteredEvents = useMemo(() => {
+    return selectedPlatform === "all"
+      ? events
+      : events.filter((e) => e.platform === selectedPlatform);
+  }, [events, selectedPlatform]);
 
-  const handleDragStart = useCallback((e: React.DragEvent, event: CalendarEvent) => {
-    setDraggedEvent(event);
-    e.dataTransfer.effectAllowed = "move";
-    if (e.currentTarget instanceof HTMLElement) e.currentTarget.style.opacity = "0.5";
-  }, []);
+  const handleDragStart = useCallback(
+    (e: React.DragEvent, event: CalendarEvent) => {
+      setDraggedEvent(event);
+      e.dataTransfer.effectAllowed = "move";
+      if (e.currentTarget instanceof HTMLElement)
+        e.currentTarget.style.opacity = "0.5";
+    },
+    [],
+  );
 
   const handleDragEnd = useCallback((e: React.DragEvent) => {
-    if (e.currentTarget instanceof HTMLElement) e.currentTarget.style.opacity = "1";
+    if (e.currentTarget instanceof HTMLElement)
+      e.currentTarget.style.opacity = "1";
     setDraggedEvent(null);
   }, []);
 
@@ -120,10 +137,14 @@ const eventsByDate = useMemo(() => {
     (e: React.DragEvent, targetDate: string) => {
       e.preventDefault();
       if (!draggedEvent) return;
-      setEvents((prev) => prev.map((ev) => (ev.id === draggedEvent.id ? { ...ev, date: targetDate } : ev)));
+      setEvents((prev) =>
+        prev.map((ev) =>
+          ev.id === draggedEvent.id ? { ...ev, date: targetDate } : ev,
+        ),
+      );
       setDraggedEvent(null);
     },
-    [draggedEvent]
+    [draggedEvent],
   );
 
   const today = currentDate;
@@ -133,11 +154,16 @@ const eventsByDate = useMemo(() => {
   const cells: { day: number | null; dateStr: string }[] = useMemo(() => {
     if (calendarView === "month") {
       const monthCells: { day: number | null; dateStr: string }[] = [];
-      for (let i = 0; i < firstDay; i++) monthCells.push({ day: null, dateStr: "" });
+      for (let i = 0; i < firstDay; i++)
+        monthCells.push({ day: null, dateStr: "" });
       for (let d = 1; d <= daysInMonth; d++) {
-        monthCells.push({ day: d, dateStr: `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}` });
+        monthCells.push({
+          day: d,
+          dateStr: `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`,
+        });
       }
-      while (monthCells.length % 7 !== 0) monthCells.push({ day: null, dateStr: "" });
+      while (monthCells.length % 7 !== 0)
+        monthCells.push({ day: null, dateStr: "" });
       return monthCells;
     } else {
       // Week view - show 7 days of the current week
@@ -156,76 +182,73 @@ const eventsByDate = useMemo(() => {
   }, [calendarView, firstDay, daysInMonth, year, month, weekRange]);
 
   return (
-      <div className="mx-auto max-w-6xl space-y-6">
-        <PostHeader />
+    <div className="mx-auto max-w-6xl space-y-6">
+      <PostHeader />
 
-            <PostControls
-              viewMode={viewMode}
-              onViewModeChange={setViewMode}
-              monthName={displayName}
-              onPrevMonth={handlePrev}
-              onNextMonth={handleNext}
-              calendarView={calendarView}
-              onCalendarViewChange={setCalendarView}
-              cardsView={cardsView}
-              onCardsViewChange={setCardsView}
-              selectedPlatform={selectedPlatform}
-              onPlatformChange={setSelectedPlatform}
-            />
+      <PostControls
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+        monthName={displayName}
+        onPrevMonth={handlePrev}
+        onNextMonth={handleNext}
+        calendarView={calendarView}
+        onCalendarViewChange={setCalendarView}
+        cardsView={cardsView}
+        onCardsViewChange={setCardsView}
+        selectedPlatform={selectedPlatform}
+        onPlatformChange={setSelectedPlatform}
+      />
 
-        {viewMode === "calendar" && (
-          <CalendarGrid
-            cells={cells}
-            eventsByDate={eventsByDate}
-            todayStr={todayStr}
-            draggedEvent={draggedEvent}
-            onDateClick={openCreateDialog}
-            onEventClick={setSelectedEvent}
-            onDragStart={handleDragStart}
-            onDragEnd={handleDragEnd}
-            onDragOver={handleDragOver}
-            onDrop={handleDrop}
-            calendarView={calendarView}
-          />
-        )}
-
-        {viewMode === "cards" && cardsView === "grid" && (
-          <PostCardsView
-            events={filteredEvents}
-            onEventClick={setSelectedEvent}
-            onCreateClick={() => openCreateDialog()}
-          />
-        )}
-
-          {viewMode === "cards" && cardsView === "kanban" && (
-            <KanbanView
-              events={filteredEvents}
-              onEventClick={setSelectedEvent}
-              onCreateClick={() => openCreateDialog()}
-              onEventsChange={setEvents}
-            />
-          )}
-
-          {viewMode === "cards" && cardsView === "list" && (
-            <ListView
-              events={filteredEvents}
-              onEventClick={setSelectedEvent}
-            />
-          )}
-
-        <EventDetailDialog
-          event={selectedEvent}
-          onClose={() => setSelectedEvent(null)}
+      {viewMode === "calendar" && (
+        <CalendarGrid
+          cells={cells}
+          eventsByDate={eventsByDate}
+          todayStr={todayStr}
+          draggedEvent={draggedEvent}
+          onDateClick={openCreateDialog}
+          onEventClick={setSelectedEvent}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
+          calendarView={calendarView}
         />
+      )}
 
-        <CreateContentDialog
-          open={isCreateDialogOpen}
-          onOpenChange={(open) => {
-            setIsCreateDialogOpen(open);
-            if (!open) setSelectedDateForCreate(null);
-          }}
-          selectedDate={selectedDateForCreate}
+      {viewMode === "cards" && cardsView === "grid" && (
+        <PostCardsView
+          events={filteredEvents}
+          onEventClick={setSelectedEvent}
+          onCreateClick={() => openCreateDialog()}
         />
-      </div>
-    );
-  }
+      )}
+
+      {viewMode === "cards" && cardsView === "kanban" && (
+        <KanbanView
+          events={filteredEvents}
+          onEventClick={setSelectedEvent}
+          onCreateClick={() => openCreateDialog()}
+          onEventsChange={setEvents}
+        />
+      )}
+
+      {viewMode === "cards" && cardsView === "list" && (
+        <ListView events={filteredEvents} onEventClick={setSelectedEvent} />
+      )}
+
+      <EventDetailDialog
+        event={selectedEvent}
+        onClose={() => setSelectedEvent(null)}
+      />
+
+      <CreateContentDialog
+        open={isCreateDialogOpen}
+        onOpenChange={(open) => {
+          setIsCreateDialogOpen(open);
+          if (!open) setSelectedDateForCreate(null);
+        }}
+        selectedDate={selectedDateForCreate}
+      />
+    </div>
+  );
+}

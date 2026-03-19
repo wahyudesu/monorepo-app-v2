@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { PersonalBrandingBuilder } from "@/components/post/PersonalBrandingBuilder";
+import { PersonalBrandingBuilder } from "@/components/features/post/PersonalBrandingBuilder";
 import { ContentScriptEngine } from "./components/ContentScriptEngine";
 import { tools, type ToolId } from "./constants";
 

@@ -1,14 +1,25 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Search, Send, Paperclip, Smile, MoreVertical, ArrowLeft, Bot, MessageSquare, Tag, Check, Clock, ArrowDownAZ } from "lucide-react";
+import {
+  Search,
+  Send,
+  Paperclip,
+  Smile,
+  MoreVertical,
+  ArrowLeft,
+  Bot,
+  MessageSquare,
+  Tag,
+  Check,
+} from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Tabs, TabsList, TabsTab, TabsPanel } from "@/components/ui/tabs";
+import { AnimatedTabs } from "@/components/ui/animated-tabs";
 import {
   Select,
   SelectContent,
@@ -30,11 +41,30 @@ import { InboxAutomation } from "./InboxAutomation";
 
 type CustomerLabel = "vip" | "lead" | "customer" | "partner" | "none";
 
-const labelConfig: Record<CustomerLabel, { label: string; color: string; bgColor: string }> = {
-  vip: { label: "VIP", color: "text-yellow-600", bgColor: "bg-yellow-500/15 border-yellow-500/30" },
-  lead: { label: "Lead", color: "text-blue-600", bgColor: "bg-blue-500/15 border-blue-500/30" },
-  customer: { label: "Customer", color: "text-green-600", bgColor: "bg-green-500/15 border-green-500/30" },
-  partner: { label: "Partner", color: "text-purple-600", bgColor: "bg-purple-500/15 border-purple-500/30" },
+const labelConfig: Record<
+  CustomerLabel,
+  { label: string; color: string; bgColor: string }
+> = {
+  vip: {
+    label: "VIP",
+    color: "text-yellow-600",
+    bgColor: "bg-yellow-500/15 border-yellow-500/30",
+  },
+  lead: {
+    label: "Lead",
+    color: "text-blue-600",
+    bgColor: "bg-blue-500/15 border-blue-500/30",
+  },
+  customer: {
+    label: "Customer",
+    color: "text-green-600",
+    bgColor: "bg-green-500/15 border-green-500/30",
+  },
+  partner: {
+    label: "Partner",
+    color: "text-purple-600",
+    bgColor: "bg-purple-500/15 border-purple-500/30",
+  },
   none: { label: "No Label", color: "text-muted-foreground", bgColor: "" },
 };
 
@@ -67,10 +97,30 @@ interface Conversation {
 }
 
 const platformConfig = {
-  instagram: { icon: Instagram, color: "text-pink-500", bg: "bg-pink-500/10", name: "Instagram" },
-  tiktok: { icon: Music, color: "text-gray-100", bg: "bg-gray-100/10 dark:bg-gray-800/50", name: "TikTok" },
-  twitter: { icon: Twitter, color: "text-blue-400", bg: "bg-blue-500/10", name: "Twitter" },
-  youtube: { icon: Youtube, color: "text-red-500", bg: "bg-red-500/10", name: "YouTube" },
+  instagram: {
+    icon: Instagram,
+    color: "text-pink-500",
+    bg: "bg-pink-500/10",
+    name: "Instagram",
+  },
+  tiktok: {
+    icon: Music,
+    color: "text-gray-100",
+    bg: "bg-gray-100/10 dark:bg-gray-800/50",
+    name: "TikTok",
+  },
+  twitter: {
+    icon: Twitter,
+    color: "text-blue-400",
+    bg: "bg-blue-500/10",
+    name: "Twitter",
+  },
+  youtube: {
+    icon: Youtube,
+    color: "text-red-500",
+    bg: "bg-red-500/10",
+    name: "YouTube",
+  },
 };
 
 const mockConversations: Conversation[] = [
@@ -88,11 +138,39 @@ const mockConversations: Conversation[] = [
     unreadCount: 2,
     mediaPost: "Product Launch Reel",
     messages: [
-      { id: "m1", content: "Hi! I love your content. Can we collaborate on a project?", timestamp: "10:30 AM", isFromMe: false },
-      { id: "m2", content: "Hey Sarah! Thanks for reaching out. I'd love to hear more about your idea!", timestamp: "10:32 AM", isFromMe: true },
-      { id: "m3", content: "Basically I'm a fashion designer and I think your aesthetic would be perfect for my new collection launch", timestamp: "10:33 AM", isFromMe: false },
-      { id: "m4", content: "That sounds amazing! Let's schedule a call to discuss details.", timestamp: "10:35 AM", isFromMe: true },
-      { id: "m5", content: "That sounds great! When can we start?", timestamp: "10:36 AM", isFromMe: false },
+      {
+        id: "m1",
+        content: "Hi! I love your content. Can we collaborate on a project?",
+        timestamp: "10:30 AM",
+        isFromMe: false,
+      },
+      {
+        id: "m2",
+        content:
+          "Hey Sarah! Thanks for reaching out. I'd love to hear more about your idea!",
+        timestamp: "10:32 AM",
+        isFromMe: true,
+      },
+      {
+        id: "m3",
+        content:
+          "Basically I'm a fashion designer and I think your aesthetic would be perfect for my new collection launch",
+        timestamp: "10:33 AM",
+        isFromMe: false,
+      },
+      {
+        id: "m4",
+        content:
+          "That sounds amazing! Let's schedule a call to discuss details.",
+        timestamp: "10:35 AM",
+        isFromMe: true,
+      },
+      {
+        id: "m5",
+        content: "That sounds great! When can we start?",
+        timestamp: "10:36 AM",
+        isFromMe: false,
+      },
     ],
   },
   {
@@ -109,27 +187,44 @@ const mockConversations: Conversation[] = [
     unreadCount: 1,
     mediaPost: "Behind the scenes of our new campaign",
     messages: [
-      { id: "m1", content: "This is exactly what I was looking for! 🔥", timestamp: "9:15 AM", isFromMe: false },
+      {
+        id: "m1",
+        content: "This is exactly what I was looking for! 🔥",
+        timestamp: "9:15 AM",
+        isFromMe: false,
+      },
     ],
   },
-    {
-      id: "3",
-      platform: "twitter",
-      type: "message",
-      sender: "tech_enthusiast",
-      avatar: "https://i.pravatar.cc/150?u=tech",
-      isOnline: true,
-      isRead: true,
-      isStarred: false,
-      lastMessage: "Great thread! Would love to see more content about this topic.",
-      lastMessageTime: "1h ago",
-      unreadCount: 0,
-      customerLabel: "lead",
-      messages: [
-        { id: "m1", content: "Great thread! Would love to see more content about this topic.", timestamp: "8:00 AM", isFromMe: false },
-        { id: "m2", content: "Thanks! I'll definitely make a part 2 soon 👍", timestamp: "8:05 AM", isFromMe: true },
-      ],
-    },
+  {
+    id: "3",
+    platform: "twitter",
+    type: "message",
+    sender: "tech_enthusiast",
+    avatar: "https://i.pravatar.cc/150?u=tech",
+    isOnline: true,
+    isRead: true,
+    isStarred: false,
+    lastMessage:
+      "Great thread! Would love to see more content about this topic.",
+    lastMessageTime: "1h ago",
+    unreadCount: 0,
+    customerLabel: "lead",
+    messages: [
+      {
+        id: "m1",
+        content:
+          "Great thread! Would love to see more content about this topic.",
+        timestamp: "8:00 AM",
+        isFromMe: false,
+      },
+      {
+        id: "m2",
+        content: "Thanks! I'll definitely make a part 2 soon 👍",
+        timestamp: "8:05 AM",
+        isFromMe: true,
+      },
+    ],
+  },
   {
     id: "4",
     platform: "youtube",
@@ -144,28 +239,49 @@ const mockConversations: Conversation[] = [
     unreadCount: 0,
     mediaPost: "How We Built Our Brand in 6 Months",
     messages: [
-      { id: "m1", content: "The editing quality is amazing! What software do you use?", timestamp: "Yesterday", isFromMe: false },
-      { id: "m2", content: "I use Premiere Pro and After Effects mainly!", timestamp: "Yesterday", isFromMe: true },
+      {
+        id: "m1",
+        content: "The editing quality is amazing! What software do you use?",
+        timestamp: "Yesterday",
+        isFromMe: false,
+      },
+      {
+        id: "m2",
+        content: "I use Premiere Pro and After Effects mainly!",
+        timestamp: "Yesterday",
+        isFromMe: true,
+      },
     ],
   },
-    {
-      id: "5",
-      platform: "instagram",
-      type: "message",
-      sender: "brand_official",
-      avatar: "https://i.pravatar.cc/150?u=brand",
-      isOnline: false,
-      isRead: false,
-      isStarred: true,
-      lastMessage: "We'd like to discuss a potential partnership. DM us back!",
-      lastMessageTime: "3h ago",
-      unreadCount: 3,
-      customerLabel: "partner",
-      messages: [
-        { id: "m1", content: "Hey! We've been following your content and love what you're doing.", timestamp: "2 days ago", isFromMe: false },
-        { id: "m2", content: "We'd like to discuss a potential partnership. DM us back!", timestamp: "3h ago", isFromMe: false },
-      ],
-    },
+  {
+    id: "5",
+    platform: "instagram",
+    type: "message",
+    sender: "brand_official",
+    avatar: "https://i.pravatar.cc/150?u=brand",
+    isOnline: false,
+    isRead: false,
+    isStarred: true,
+    lastMessage: "We'd like to discuss a potential partnership. DM us back!",
+    lastMessageTime: "3h ago",
+    unreadCount: 3,
+    customerLabel: "partner",
+    messages: [
+      {
+        id: "m1",
+        content:
+          "Hey! We've been following your content and love what you're doing.",
+        timestamp: "2 days ago",
+        isFromMe: false,
+      },
+      {
+        id: "m2",
+        content: "We'd like to discuss a potential partnership. DM us back!",
+        timestamp: "3h ago",
+        isFromMe: false,
+      },
+    ],
+  },
   {
     id: "6",
     platform: "tiktok",
@@ -180,19 +296,44 @@ const mockConversations: Conversation[] = [
     unreadCount: 0,
     mediaPost: "Trending Challenge Video",
     messages: [
-      { id: "m1", content: "Teach me this dance pleeease! 🙏", timestamp: "5h ago", isFromMe: false },
-      { id: "m2", content: "Haha I'll make a tutorial soon! 😄", timestamp: "4h ago", isFromMe: true },
+      {
+        id: "m1",
+        content: "Teach me this dance pleeease! 🙏",
+        timestamp: "5h ago",
+        isFromMe: false,
+      },
+      {
+        id: "m2",
+        content: "Haha I'll make a tutorial soon! 😄",
+        timestamp: "4h ago",
+        isFromMe: true,
+      },
     ],
   },
 ];
 
 export function InboxContent() {
+  const [activeTab, setActiveTab] = useState("inbox");
   const [platform, setPlatform] = useState<Platform>("all");
   const [typeFilter, setTypeFilter] = useState<TypeFilter>("message");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
+  const [selectedConversation, setSelectedConversation] =
+    useState<Conversation | null>(null);
   const [messageInput, setMessageInput] = useState("");
   const [sortBy, setSortBy] = useState<SortBy>("newest");
+
+  const tabs = [
+    {
+      id: "inbox",
+      label: "Inbox",
+      icon: <MessageSquare className="h-5 w-5" />,
+    },
+    {
+      id: "automation",
+      label: "Automation",
+      icon: <Bot className="h-5 w-5" />,
+    },
+  ];
 
   // Filter conversations
   const filteredConversations = useMemo(() => {
@@ -216,7 +357,9 @@ export function InboxContent() {
           if (time.includes("d ago")) return parseInt(time) * 86400;
           return 0;
         };
-        return getTimeValue(a.lastMessageTime) - getTimeValue(b.lastMessageTime);
+        return (
+          getTimeValue(a.lastMessageTime) - getTimeValue(b.lastMessageTime)
+        );
       });
     } else if (sortBy === "name") {
       result = [...result].sort((a, b) => a.sender.localeCompare(b.sender));
@@ -250,421 +393,523 @@ export function InboxContent() {
     <div className="mx-auto max-w-6xl h-[calc(100vh-8rem)]">
       {/* Header */}
       <div className="mb-4">
-        <h1 className="font-display text-2xl font-bold tracking-tight">Inbox</h1>
-        <p className="text-sm text-muted-foreground">Manage conversations and automation</p>
+        <h1 className="font-display text-2xl font-bold tracking-tight">
+          Inbox
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          Manage conversations and automation
+        </p>
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue="inbox">
-        <div className="border-b">
-          <TabsList variant="line">
-            <TabsTab value="inbox">
-              <MessageSquare className="h-4 w-4" />
-              Inbox
-            </TabsTab>
-            <TabsTab value="automation">
-              <Bot className="h-4 w-4" />
-              Automation
-            </TabsTab>
-          </TabsList>
-        </div>
+      <AnimatedTabs
+        tabs={tabs}
+        activeTab={activeTab}
+        onChange={setActiveTab}
+        variant="underline"
+        className="mb-4"
+      />
 
       {/* Content */}
-      <TabsPanel value="inbox">
-            {/* Filters & Sort */}
-            <div className="flex items-center gap-2 mb-4">
-              {/* Sort By */}
-              <div className="flex items-center rounded-lg border border-border/50 bg-card/50 p-1">
-                <Button
-                  variant={sortBy === "newest" ? "default" : "ghost"}
-                  size="sm"
-                  className="h-7 px-3 text-xs font-medium"
-                  onClick={() => setSortBy("newest")}
-                >
-                  <Clock className="mr-1.5 h-3.5 w-3.5" />
-                  Terbaru
-                </Button>
-                <Button
-                  variant={sortBy === "name" ? "default" : "ghost"}
-                  size="sm"
-                  className="h-7 px-3 text-xs font-medium"
-                  onClick={() => setSortBy("name")}
-                >
-                  <ArrowDownAZ className="mr-1.5 h-3.5 w-3.5" />
-                  Nama
-                </Button>
-              </div>
+      {activeTab === "inbox" && (
+        <>
+          {/* Filters */}
+          <div className="flex items-center gap-2 mb-4">
+            <Select
+              value={platform}
+              onValueChange={(v) => setPlatform(v as Platform)}
+            >
+              <SelectTrigger className="w-[180px] font-medium">
+                <SelectValue placeholder="All Platforms" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Platforms</SelectItem>
+                <SelectItem value="instagram">Instagram</SelectItem>
+                <SelectItem value="tiktok">TikTok</SelectItem>
+                <SelectItem value="twitter">Twitter</SelectItem>
+                <SelectItem value="youtube">YouTube</SelectItem>
+              </SelectContent>
+            </Select>
 
-              <Select value={platform} onValueChange={(v) => setPlatform(v as Platform)}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="All Platforms" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Platforms</SelectItem>
-                  <SelectItem value="instagram">Instagram</SelectItem>
-                  <SelectItem value="tiktok">TikTok</SelectItem>
-                  <SelectItem value="twitter">Twitter</SelectItem>
-                  <SelectItem value="youtube">YouTube</SelectItem>
-                </SelectContent>
-              </Select>
+            <Select
+              value={typeFilter}
+              onValueChange={(v) => setTypeFilter(v as TypeFilter)}
+            >
+              <SelectTrigger className="w-[140px]">
+                <SelectValue placeholder="Select type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="message">Messages</SelectItem>
+                <SelectItem value="comment">Comments</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-              <Select value={typeFilter} onValueChange={(v) => setTypeFilter(v as TypeFilter)}>
-                <SelectTrigger className="w-[140px]">
-                  <SelectValue placeholder="Select type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="message">Messages</SelectItem>
-                  <SelectItem value="comment">Comments</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-        {/* CRM Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 h-[calc(100%-6rem)]">
-          {/* Conversation List */}
-          <Card className="lg:col-span-1 border-border/50 overflow-hidden flex flex-col">
-            {/* Search */}
-            <div className="p-3 border-b border-border/50">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search conversations..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 h-9"
-                />
-              </div>
-            </div>
-
-          {/* Conversation List */}
-          <ScrollArea className="flex-1">
-            <div className="p-2 space-y-1">
-              {filteredConversations.length === 0 ? (
-                <div className="text-center py-8">
-                  <p className="text-sm text-muted-foreground">No conversations found</p>
+          {/* CRM Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 h-[calc(100%-6rem)]">
+            {/* Conversation List */}
+            <Card className="lg:col-span-1 border-border/50 overflow-hidden flex flex-col">
+              {/* Search & Sort */}
+              <div className="p-3 border-b border-border/50 space-y-2">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search conversations..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10 h-9 font-medium"
+                  />
                 </div>
-              ) : (
-                filteredConversations.map((conv) => {
-                  const config = platformConfig[conv.platform];
-                  const Icon = config.icon;
-                  const isSelected = selectedConversation?.id === conv.id;
+                <Select
+                  value={sortBy}
+                  onValueChange={(v) => setSortBy(v as SortBy)}
+                >
+                  <SelectTrigger className="w-full h-8 text-xs">
+                    <SelectValue placeholder="Sort by" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="newest">Terbaru</SelectItem>
+                    <SelectItem value="name">Nama</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-                  return (
-                    <button
-                      key={conv.id}
-                      onClick={() => setSelectedConversation(conv)}
-                      className={cn(
-                        "w-full text-left p-3 rounded-xl transition-all",
-                        "hover:bg-muted/50",
-                        isSelected ? "bg-muted" : "",
-                        !conv.isRead && "bg-primary/5"
-                      )}
-                    >
-                      <div className="flex items-start gap-3">
-                        <div className="relative">
-                          <Avatar className="h-12 w-12">
-                            <AvatarImage src={conv.avatar} />
-                            <AvatarFallback>{conv.sender[0].toUpperCase()}</AvatarFallback>
-                          </Avatar>
-                          {conv.isOnline && (
-                            <div className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-background" />
+              {/* Conversation List */}
+              <ScrollArea className="flex-1">
+                <div className="p-2 space-y-1">
+                  {filteredConversations.length === 0 ? (
+                    <div className="text-center py-8">
+                      <p className="text-sm text-muted-foreground">
+                        No conversations found
+                      </p>
+                    </div>
+                  ) : (
+                    filteredConversations.map((conv) => {
+                      const config = platformConfig[conv.platform];
+                      const Icon = config.icon;
+                      const isSelected = selectedConversation?.id === conv.id;
+
+                      return (
+                        <button
+                          key={conv.id}
+                          onClick={() => setSelectedConversation(conv)}
+                          className={cn(
+                            "w-full text-left p-3 rounded-xl transition-all",
+                            "hover:bg-muted/50",
+                            isSelected ? "bg-muted" : "",
+                            !conv.isRead && "bg-primary/5",
                           )}
-                        </div>
-
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between mb-1">
-                              <div className="flex items-center gap-1.5">
-                                <span className="font-semibold text-sm truncate">{conv.sender}</span>
-                                {conv.isStarred && <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />}
-                                {conv.type === "message" && conv.customerLabel && conv.customerLabel !== "none" && (
-                                  <Badge variant="outline" className={cn("text-[9px] px-1.5 py-0 h-4 border", labelConfig[conv.customerLabel].bgColor, labelConfig[conv.customerLabel].color)}>
-                                    {labelConfig[conv.customerLabel].label}
-                                  </Badge>
-                                )}
-                              </div>
-                              <span className="text-xs text-muted-foreground whitespace-nowrap">{conv.lastMessageTime}</span>
+                        >
+                          <div className="flex items-start gap-3">
+                            <div className="relative">
+                              <Avatar className="h-12 w-12">
+                                <AvatarImage src={conv.avatar} />
+                                <AvatarFallback>
+                                  {conv.sender[0].toUpperCase()}
+                                </AvatarFallback>
+                              </Avatar>
+                              {conv.isOnline && (
+                                <div className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-background" />
+                              )}
                             </div>
 
-                          <div className="flex items-center gap-1.5 mb-1">
-                            <div className={cn("flex items-center", config.color)}>
-                              <Icon className="h-3 w-3" />
-                            </div>
-                            <span className="text-[10px] text-muted-foreground capitalize">{config.name}</span>
-                          </div>
-
-                          <p className="text-xs text-muted-foreground truncate">{conv.lastMessage}</p>
-                        </div>
-
-                        {conv.unreadCount > 0 && (
-                          <Badge className="h-5 min-w-5 px-1 flex items-center justify-center bg-primary text-primary-foreground text-[10px]">
-                            {conv.unreadCount}
-                          </Badge>
-                        )}
-                      </div>
-                    </button>
-                  );
-                })
-              )}
-            </div>
-          </ScrollArea>
-        </Card>
-
-        {/* Chat View */}
-        <Card className={cn(
-          "hidden lg:flex lg:col-span-2 border-border/50 overflow-hidden flex-col",
-          !selectedConversation && "items-center justify-center"
-        )}>
-          {!selectedConversation ? (
-            <div className="text-center p-8">
-              <MessageSquare className="h-16 w-16 text-muted-foreground/30 mx-auto mb-4" />
-              <p className="text-muted-foreground">Select a conversation to start messaging</p>
-            </div>
-          ) : (
-            <>
-                {/* Chat Header */}
-                <div className="p-4 border-b border-border/50">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Avatar className="h-10 w-10">
-                        <AvatarImage src={selectedConversation.avatar} />
-                        <AvatarFallback>{selectedConversation.sender[0].toUpperCase()}</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-semibold">{selectedConversation.sender}</h3>
-                          {selectedConversation.isOnline && (
-                            <Badge variant="outline" className="text-[10px] bg-green-500/10 text-green-600 border-green-500/20">
-                              Online
-                            </Badge>
-                          )}
-                          {/* Customer Label - Only for messages */}
-                          {selectedConversation.type === "message" && (
-                            <DropdownMenu>
-                              <DropdownMenuTrigger
-                                className={buttonVariants({
-                                  variant: "ghost",
-                                  size: "sm",
-                                  className: "h-6 px-2 gap-1 text-xs",
-                                })}
-                              >
-                                <Tag className="h-3 w-3" />
-                                {selectedConversation.customerLabel && selectedConversation.customerLabel !== "none" ? (
-                                  <span className={labelConfig[selectedConversation.customerLabel].color}>
-                                    {labelConfig[selectedConversation.customerLabel].label}
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center justify-between mb-1">
+                                <div className="flex items-center gap-1.5">
+                                  <span className="font-semibold text-sm truncate">
+                                    {conv.sender}
                                   </span>
-                                ) : (
-                                  <span className="text-muted-foreground">Add Label</span>
-                                )}
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="start" className="w-40">
-                                <DropdownMenuLabel>Customer Label</DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                {(Object.keys(labelConfig) as CustomerLabel[]).filter(l => l !== "none").map((labelKey) => {
-                                  const cfg = labelConfig[labelKey];
-                                  const isSelected = selectedConversation.customerLabel === labelKey;
-                                  return (
-                                    <DropdownMenuItem
-                                      key={labelKey}
-                                      onClick={() => {
-                                        // Update the conversation label
-                                        setSelectedConversation({
-                                          ...selectedConversation,
-                                          customerLabel: labelKey
-                                        });
-                                      }}
-                                      className="flex items-center justify-between"
-                                    >
-                                      <span className={cfg.color}>{cfg.label}</span>
-                                      {isSelected && <Check className="h-3 w-3" />}
-                                    </DropdownMenuItem>
-                                  );
-                                })}
-                                {selectedConversation.customerLabel && selectedConversation.customerLabel !== "none" && (
-                                  <>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem
-                                      onClick={() => {
-                                        setSelectedConversation({
-                                          ...selectedConversation,
-                                          customerLabel: "none"
-                                        });
-                                      }}
-                                      className="text-muted-foreground"
-                                    >
-                                      Remove Label
-                                    </DropdownMenuItem>
-                                  </>
-                                )}
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          {(() => {
-                            const config = platformConfig[selectedConversation.platform];
-                            const Icon = config.icon;
-                            return (
-                              <>
-                                <Icon className={cn("h-3 w-3", config.color)} />
-                                <span className="text-xs text-muted-foreground">{config.name}</span>
-                              </>
-                            );
-                          })()}
-                        </div>
-                      </div>
-                    </div>
-                    <Button variant="ghost" size="icon">
-                      <MoreVertical className="h-5 w-5" />
-                    </Button>
-                  </div>
+                                  {conv.isStarred && (
+                                    <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                                  )}
+                                  {conv.type === "message" &&
+                                    conv.customerLabel &&
+                                    conv.customerLabel !== "none" && (
+                                      <Badge
+                                        variant="outline"
+                                        className={cn(
+                                          "text-[9px] px-1.5 py-0 h-4 border",
+                                          labelConfig[conv.customerLabel]
+                                            .bgColor,
+                                          labelConfig[conv.customerLabel].color,
+                                        )}
+                                      >
+                                        {labelConfig[conv.customerLabel].label}
+                                      </Badge>
+                                    )}
+                                </div>
+                                <span className="text-xs text-muted-foreground whitespace-nowrap">
+                                  {conv.lastMessageTime}
+                                </span>
+                              </div>
 
-                  {selectedConversation.mediaPost && (
-                    <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground bg-muted/50 rounded-lg px-3 py-2">
-                      <MessageSquare className="h-3 w-3" />
-                      <span>On: {selectedConversation.mediaPost}</span>
-                    </div>
+                              <div className="flex items-center gap-1.5 mb-1">
+                                <div
+                                  className={cn(
+                                    "flex items-center",
+                                    config.color,
+                                  )}
+                                >
+                                  <Icon className="h-3 w-3" />
+                                </div>
+                                <span className="text-[10px] text-muted-foreground capitalize">
+                                  {config.name}
+                                </span>
+                              </div>
+
+                              <p className="text-xs text-muted-foreground truncate">
+                                {conv.lastMessage}
+                              </p>
+                            </div>
+
+                            {conv.unreadCount > 0 && (
+                              <Badge className="h-5 min-w-5 px-1 flex items-center justify-center bg-primary text-primary-foreground text-[10px]">
+                                {conv.unreadCount}
+                              </Badge>
+                            )}
+                          </div>
+                        </button>
+                      );
+                    })
                   )}
                 </div>
+              </ScrollArea>
+            </Card>
 
-                {/* Messages */}
-              <ScrollArea className="flex-1 p-4">
-                <div className="space-y-4">
-                  {selectedConversation.messages.map((msg) => (
-                    <div
-                      key={msg.id}
-                      className={cn(
-                        "flex",
-                        msg.isFromMe ? "justify-end" : "justify-start"
-                      )}
-                    >
+            {/* Chat View */}
+            <Card
+              className={cn(
+                "hidden lg:flex lg:col-span-2 border-border/50 overflow-hidden flex-col",
+                !selectedConversation && "items-center justify-center",
+              )}
+            >
+              {!selectedConversation ? (
+                <div className="text-center p-8">
+                  <MessageSquare className="h-16 w-16 text-muted-foreground/30 mx-auto mb-4" />
+                  <p className="text-muted-foreground">
+                    Select a conversation to start messaging
+                  </p>
+                </div>
+              ) : (
+                <>
+                  {/* Chat Header */}
+                  <div className="p-4 border-b border-border/50">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <Avatar className="h-10 w-10">
+                          <AvatarImage src={selectedConversation.avatar} />
+                          <AvatarFallback>
+                            {selectedConversation.sender[0].toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <h3 className="font-semibold">
+                              {selectedConversation.sender}
+                            </h3>
+                            {selectedConversation.isOnline && (
+                              <Badge
+                                variant="outline"
+                                className="text-[10px] bg-green-500/10 text-green-600 border-green-500/20"
+                              >
+                                Online
+                              </Badge>
+                            )}
+                            {/* Customer Label - Only for messages */}
+                            {selectedConversation.type === "message" && (
+                              <DropdownMenu>
+                                <DropdownMenuTrigger
+                                  className={buttonVariants({
+                                    variant: "ghost",
+                                    size: "sm",
+                                    className: "h-6 px-2 gap-1 text-xs",
+                                  })}
+                                >
+                                  <Tag className="h-3 w-3" />
+                                  {selectedConversation.customerLabel &&
+                                  selectedConversation.customerLabel !==
+                                    "none" ? (
+                                    <span
+                                      className={
+                                        labelConfig[
+                                          selectedConversation.customerLabel
+                                        ].color
+                                      }
+                                    >
+                                      {
+                                        labelConfig[
+                                          selectedConversation.customerLabel
+                                        ].label
+                                      }
+                                    </span>
+                                  ) : (
+                                    <span className="text-muted-foreground">
+                                      Add Label
+                                    </span>
+                                  )}
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent
+                                  align="start"
+                                  className="w-40"
+                                >
+                                  <DropdownMenuLabel>
+                                    Customer Label
+                                  </DropdownMenuLabel>
+                                  <DropdownMenuSeparator />
+                                  {(Object.keys(labelConfig) as CustomerLabel[])
+                                    .filter((l) => l !== "none")
+                                    .map((labelKey) => {
+                                      const cfg = labelConfig[labelKey];
+                                      const isSelected =
+                                        selectedConversation.customerLabel ===
+                                        labelKey;
+                                      return (
+                                        <DropdownMenuItem
+                                          key={labelKey}
+                                          onClick={() => {
+                                            // Update the conversation label
+                                            setSelectedConversation({
+                                              ...selectedConversation,
+                                              customerLabel: labelKey,
+                                            });
+                                          }}
+                                          className="flex items-center justify-between"
+                                        >
+                                          <span className={cfg.color}>
+                                            {cfg.label}
+                                          </span>
+                                          {isSelected && (
+                                            <Check className="h-3 w-3" />
+                                          )}
+                                        </DropdownMenuItem>
+                                      );
+                                    })}
+                                  {selectedConversation.customerLabel &&
+                                    selectedConversation.customerLabel !==
+                                      "none" && (
+                                      <>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem
+                                          onClick={() => {
+                                            setSelectedConversation({
+                                              ...selectedConversation,
+                                              customerLabel: "none",
+                                            });
+                                          }}
+                                          className="text-muted-foreground"
+                                        >
+                                          Remove Label
+                                        </DropdownMenuItem>
+                                      </>
+                                    )}
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            {(() => {
+                              const config =
+                                platformConfig[selectedConversation.platform];
+                              const Icon = config.icon;
+                              return (
+                                <>
+                                  <Icon
+                                    className={cn("h-3 w-3", config.color)}
+                                  />
+                                  <span className="text-xs text-muted-foreground">
+                                    {config.name}
+                                  </span>
+                                </>
+                              );
+                            })()}
+                          </div>
+                        </div>
+                      </div>
+                      <Button variant="ghost" size="icon">
+                        <MoreVertical className="h-5 w-5" />
+                      </Button>
+                    </div>
+
+                    {selectedConversation.mediaPost && (
+                      <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground bg-muted/50 rounded-lg px-3 py-2">
+                        <MessageSquare className="h-3 w-3" />
+                        <span>On: {selectedConversation.mediaPost}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Messages */}
+                  <ScrollArea className="flex-1 p-4">
+                    <div className="space-y-4">
+                      {selectedConversation.messages.map((msg) => (
+                        <div
+                          key={msg.id}
+                          className={cn(
+                            "flex",
+                            msg.isFromMe ? "justify-end" : "justify-start",
+                          )}
+                        >
+                          <div
+                            className={cn(
+                              "max-w-[70%] rounded-2xl px-4 py-2.5",
+                              msg.isFromMe
+                                ? "bg-primary text-primary-foreground rounded-br-sm"
+                                : "bg-muted rounded-bl-sm",
+                            )}
+                          >
+                            <p className="text-sm whitespace-pre-wrap">
+                              {msg.content}
+                            </p>
+                            <p
+                              className={cn(
+                                "text-[10px] mt-1",
+                                msg.isFromMe
+                                  ? "text-primary-foreground/70"
+                                  : "text-muted-foreground",
+                              )}
+                            >
+                              {msg.timestamp}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </ScrollArea>
+
+                  {/* Message Input */}
+                  <div className="p-4 border-t border-border/50">
+                    <div className="flex items-end gap-2">
+                      <div className="flex-1 relative">
+                        <Input
+                          placeholder="Type a message..."
+                          value={messageInput}
+                          onChange={(e) => setMessageInput(e.target.value)}
+                          onKeyDown={handleKeyPress}
+                          className="pr-10 min-h-[44px] resize-none"
+                        />
+                        <div className="absolute right-2 bottom-2 flex items-center gap-1">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7"
+                          >
+                            <Paperclip className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7"
+                          >
+                            <Smile className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                      <Button
+                        onClick={handleSendMessage}
+                        disabled={!messageInput.trim()}
+                        size="icon"
+                        className="h-11 w-11 shrink-0"
+                      >
+                        <Send className="h-5 w-5" />
+                      </Button>
+                    </div>
+                  </div>
+                </>
+              )}
+            </Card>
+
+            {/* Mobile Chat View */}
+            {selectedConversation && (
+              <Card className="lg:hidden fixed inset-0 z-50 flex flex-col rounded-none">
+                {/* Mobile Header */}
+                <div className="p-4 border-b border-border/50 flex items-center gap-3">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setSelectedConversation(null)}
+                  >
+                    <ArrowLeft className="h-5 w-5" />
+                  </Button>
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage src={selectedConversation.avatar} />
+                    <AvatarFallback>
+                      {selectedConversation.sender[0].toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1">
+                    <h3 className="font-semibold">
+                      {selectedConversation.sender}
+                    </h3>
+                    <p className="text-xs text-muted-foreground capitalize">
+                      {selectedConversation.platform}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Mobile Messages */}
+                <ScrollArea className="flex-1 p-4">
+                  <div className="space-y-4">
+                    {selectedConversation.messages.map((msg) => (
                       <div
+                        key={msg.id}
                         className={cn(
-                          "max-w-[70%] rounded-2xl px-4 py-2.5",
-                          msg.isFromMe
-                            ? "bg-primary text-primary-foreground rounded-br-sm"
-                            : "bg-muted rounded-bl-sm"
+                          "flex",
+                          msg.isFromMe ? "justify-end" : "justify-start",
                         )}
                       >
-                        <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
-                        <p className={cn(
-                          "text-[10px] mt-1",
-                          msg.isFromMe ? "text-primary-foreground/70" : "text-muted-foreground"
-                        )}>
-                          {msg.timestamp}
-                        </p>
+                        <div
+                          className={cn(
+                            "max-w-[70%] rounded-2xl px-4 py-2.5",
+                            msg.isFromMe
+                              ? "bg-primary text-primary-foreground rounded-br-sm"
+                              : "bg-muted rounded-bl-sm",
+                          )}
+                        >
+                          <p className="text-sm whitespace-pre-wrap">
+                            {msg.content}
+                          </p>
+                          <p
+                            className={cn(
+                              "text-[10px] mt-1",
+                              msg.isFromMe
+                                ? "text-primary-foreground/70"
+                                : "text-muted-foreground",
+                            )}
+                          >
+                            {msg.timestamp}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              </ScrollArea>
+                    ))}
+                  </div>
+                </ScrollArea>
 
-              {/* Message Input */}
-              <div className="p-4 border-t border-border/50">
-                <div className="flex items-end gap-2">
-                  <div className="flex-1 relative">
+                {/* Mobile Input */}
+                <div className="p-4 border-t border-border/50">
+                  <div className="flex items-end gap-2">
                     <Input
                       placeholder="Type a message..."
                       value={messageInput}
                       onChange={(e) => setMessageInput(e.target.value)}
                       onKeyDown={handleKeyPress}
-                      className="pr-10 min-h-[44px] resize-none"
+                      className="flex-1"
                     />
-                    <div className="absolute right-2 bottom-2 flex items-center gap-1">
-                      <Button variant="ghost" size="icon" className="h-7 w-7">
-                        <Paperclip className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="icon" className="h-7 w-7">
-                        <Smile className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                  <Button
-                    onClick={handleSendMessage}
-                    disabled={!messageInput.trim()}
-                    size="icon"
-                    className="h-11 w-11 shrink-0"
-                  >
-                    <Send className="h-5 w-5" />
-                  </Button>
-                </div>
-              </div>
-            </>
-          )}
-        </Card>
-
-        {/* Mobile Chat View */}
-        {selectedConversation && (
-          <Card className="lg:hidden fixed inset-0 z-50 flex flex-col rounded-none">
-            {/* Mobile Header */}
-            <div className="p-4 border-b border-border/50 flex items-center gap-3">
-              <Button variant="ghost" size="icon" onClick={() => setSelectedConversation(null)}>
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
-              <Avatar className="h-10 w-10">
-                <AvatarImage src={selectedConversation.avatar} />
-                <AvatarFallback>{selectedConversation.sender[0].toUpperCase()}</AvatarFallback>
-              </Avatar>
-              <div className="flex-1">
-                <h3 className="font-semibold">{selectedConversation.sender}</h3>
-                <p className="text-xs text-muted-foreground capitalize">{selectedConversation.platform}</p>
-              </div>
-            </div>
-
-            {/* Mobile Messages */}
-            <ScrollArea className="flex-1 p-4">
-              <div className="space-y-4">
-                {selectedConversation.messages.map((msg) => (
-                  <div
-                    key={msg.id}
-                    className={cn("flex", msg.isFromMe ? "justify-end" : "justify-start")}
-                  >
-                    <div
-                      className={cn(
-                        "max-w-[70%] rounded-2xl px-4 py-2.5",
-                        msg.isFromMe
-                          ? "bg-primary text-primary-foreground rounded-br-sm"
-                          : "bg-muted rounded-bl-sm"
-                      )}
+                    <Button
+                      onClick={handleSendMessage}
+                      disabled={!messageInput.trim()}
+                      size="icon"
                     >
-                      <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
-                      <p
-                        className={cn(
-                          "text-[10px] mt-1",
-                          msg.isFromMe ? "text-primary-foreground/70" : "text-muted-foreground"
-                        )}
-                      >
-                        {msg.timestamp}
-                      </p>
-                    </div>
+                      <Send className="h-5 w-5" />
+                    </Button>
                   </div>
-                ))}
-              </div>
-            </ScrollArea>
+                </div>
+              </Card>
+            )}
+          </div>
+        </>
+      )}
 
-            {/* Mobile Input */}
-            <div className="p-4 border-t border-border/50">
-              <div className="flex items-end gap-2">
-                <Input
-                  placeholder="Type a message..."
-                  value={messageInput}
-                  onChange={(e) => setMessageInput(e.target.value)}
-                  onKeyDown={handleKeyPress}
-                  className="flex-1"
-                />
-                <Button onClick={handleSendMessage} disabled={!messageInput.trim()} size="icon">
-                  <Send className="h-5 w-5" />
-                </Button>
-              </div>
-            </div>
-          </Card>
-        )}
-      </div>
-      </TabsPanel>
-
-      <TabsPanel value="automation">
-        <InboxAutomation />
-      </TabsPanel>
-      </Tabs>
+      {activeTab === "automation" && <InboxAutomation />}
     </div>
   );
 }

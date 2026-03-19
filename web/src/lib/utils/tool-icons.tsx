@@ -20,7 +20,7 @@ import {
 	Target02Icon,
 	Task01Icon,
 	VideoReplayIcon,
-} from "@/components/icons";
+} from "@/components/layout/icons";
 
 export interface IconProps {
 	size?: number;

@@ -18,6 +18,27 @@ export function ExpandableNav() {
   const pathname = usePathname();
   const router = useRouter();
 
+  // Keyboard shortcuts - must be declared before any conditional returns
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    const isMac = typeof navigator !== "undefined"
+      ? navigator.platform.toUpperCase().indexOf("MAC") >= 0
+      : false;
+    const modifierKey = isMac ? "metaKey" : "ctrlKey";
+
+    if (e[modifierKey] && e.key >= "1" && e.key <= "6") {
+      e.preventDefault();
+      const index = parseInt(e.key) - 1;
+      if (navItems[index]) {
+        router.push(navItems[index].to);
+      }
+    }
+  }, [router]);
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [handleKeyDown]);
+
   // Hide nav on sub-pages that aren't main navigation routes
   // Only show on exact main routes or direct children of /post and /inbox
   const shouldShowNav = (() => {
@@ -39,27 +60,6 @@ export function ExpandableNav() {
 
   // Calculate the current active index based on pathname
   const activeIndex = navItems.findIndex((item) => pathname.startsWith(item.to));
-
-  // Keyboard shortcuts
-  const handleKeyDown = useCallback((e: KeyboardEvent) => {
-    const isMac = typeof navigator !== "undefined"
-      ? navigator.platform.toUpperCase().indexOf("MAC") >= 0
-      : false;
-    const modifierKey = isMac ? "metaKey" : "ctrlKey";
-
-    if (e[modifierKey] && e.key >= "1" && e.key <= "6") {
-      e.preventDefault();
-      const index = parseInt(e.key) - 1;
-      if (navItems[index]) {
-        router.push(navItems[index].to);
-      }
-    }
-  }, [router]);
-
-  useEffect(() => {
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [handleKeyDown]);
 
   // Convert navItems to TabItem format
   const tabs: TabItem[] = navItems.map((item) => ({

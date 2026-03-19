@@ -1,14 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { HugeiconsIcon } from "@/components/icons";
+import { HugeiconsIcon } from "@/components/layout/icons";
 import {
 	Delete02Icon,
 	FloppyDiskIcon,
 	Add01Icon,
 	Cancel01Icon,
 	Copy02Icon,
-} from "@/components/icons";
+} from "@/components/layout/icons";
 import { cn } from "@/lib/utils";
 import type { ComposerTemplate, TemplateManager } from "@/lib/types/template";
 

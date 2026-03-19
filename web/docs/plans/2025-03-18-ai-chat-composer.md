@@ -212,7 +212,7 @@ export function GeneratedPostCard({ post, onPlan, onPost, onDelete }: GeneratedP
       <div className="border-b border-border/50 px-4 py-3 flex items-center justify-between bg-muted/30">
         <div className="flex items-center gap-2">
           <span className="text-base">{platform?.icon}</span>
-          <span className="font-medium text-sm">{platform?.name}</span>
+          <span className="font-medium text-sm ">{platform?.name}</span>
           {tone && (
             <>
               <span className="text-muted-foreground">•</span>

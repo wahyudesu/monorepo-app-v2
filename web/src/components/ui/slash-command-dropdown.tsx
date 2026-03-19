@@ -7,7 +7,7 @@ import {
 	HugeiconsIcon,
 	Tag01Icon,
 	ToolsIcon,
-} from "@/components/icons";
+} from "@/components/layout/icons";
 
 import { cn } from "@/lib/utils";
 import { formatToolName, getToolCategoryIcon } from "@/lib/utils/tool-icons";

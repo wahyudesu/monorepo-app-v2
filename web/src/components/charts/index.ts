@@ -5,6 +5,25 @@ export { BarXAxis } from "./bar-x-axis";
 export { BarYAxis } from "./bar-y-axis";
 export { ChartTooltip } from "./tooltip/chart-tooltip";
 export { useChart } from "./chart-context";
+export { PieChart } from "./pie-chart";
+export { PieSlice } from "./pie-slice";
+export { PatternLines } from "./pattern-lines";
+export {
+  ChoroplethChart,
+  type ChoroplethChartProps,
+} from "./choropleth/choropleth-chart";
+export {
+  ChoroplethGraticule,
+  type ChoroplethGraticuleProps,
+} from "./choropleth/choropleth-graticule";
+export {
+  ChoroplethFeature,
+  type ChoroplethFeatureProps,
+} from "./choropleth/choropleth-feature";
+export {
+  ChoroplethTooltip,
+  type ChoroplethTooltipProps,
+} from "./choropleth/choropleth-tooltip";
 export type { BarProps, BarLineCap, BarAnimationType } from "./bar";
 export type { BarChartProps, BarOrientation } from "./bar-chart";
 export type { GridProps } from "./grid";

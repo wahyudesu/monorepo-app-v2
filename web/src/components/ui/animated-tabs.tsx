@@ -4,6 +4,11 @@ import { useReducedMotion } from "motion/react";
 import { motion } from "motion/react";
 import { type ReactNode, useCallback, useId } from "react";
 import { cn } from "@/lib/utils";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export interface AnimatedTabsProps {
   tabs: { id: string; label: string; icon?: ReactNode }[];
@@ -13,6 +18,7 @@ export interface AnimatedTabsProps {
   variant?: "underline" | "pill" | "segment";
   layoutId?: string;
   className?: string;
+  iconOnly?: boolean;
 }
 
 const SPRING = {
@@ -29,6 +35,7 @@ export function AnimatedTabs({
   variant = "pill",
   layoutId: customLayoutId,
   className,
+  iconOnly = false,
 }: AnimatedTabsProps) {
   const shouldReduceMotion = useReducedMotion();
   const generatedId = useId();
@@ -76,60 +83,116 @@ export function AnimatedTabs({
 
   const baseContainerStyles = cn(
     "relative inline-flex",
-    variant === "underline" && "gap-1 border-border border-b",
+    variant === "underline" && "gap-3",
     variant === "pill" && "",
     variant === "segment" && ""
   );
 
-  const getTabStyles = (isActive: boolean) =>
-    cn(
-      "relative z-10 flex items-center justify-center gap-2 px-4 py-2 font-medium text-sm transition-colors",
-      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-      variant === "underline" && [
-        "rounded-t-md",
-        isActive
-          ? "text-foreground"
-          : "text-muted-foreground hover:text-foreground",
-      ],
-      variant === "pill" && [
-        "rounded-lg",
-        isActive
-          ? "text-foreground"
-          : "text-muted-foreground hover:text-foreground",
-      ],
-      variant === "segment" && [
-        "flex-1 rounded-md",
-        isActive
-          ? "text-foreground"
-          : "text-muted-foreground hover:text-foreground",
-      ]
-    );
+          const getTabStyles = (isActive: boolean) =>
+            cn(
+              "relative z-10 flex items-center justify-center font-medium transition-colors",
+              variant === "underline" 
+                ? "text-sm gap-2 px-3 py-2" 
+                : iconOnly ? "text-sm px-2.5 py-2" : "text-sm gap-2 px-3 py-2",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+          variant === "underline" && [
+            "rounded-t-md",
+            isActive
+              ? "text-foreground"
+              : "text-muted-foreground hover:text-foreground",
+          ],
+          variant === "pill" && [
+            "rounded-md",
+            isActive
+              ? "text-foreground"
+              : "text-muted-foreground hover:text-foreground",
+          ],
+          variant === "segment" && [
+            "flex-1 rounded-md",
+            isActive
+              ? "text-foreground"
+              : "text-muted-foreground hover:text-foreground",
+          ]
+        );
 
-  const getIndicatorStyles = () =>
-    cn(
-      "absolute",
-      variant === "underline" && "right-0 -bottom-px left-0 h-0.5 bg-brand",
-      variant === "pill" &&
-        "inset-0 rounded-lg border border-border bg-background shadow-sm",
-      variant === "segment" &&
-        "inset-0 rounded-md border border-border bg-background shadow-sm"
-    );
+      const getIndicatorStyles = () =>
+        cn(
+          "absolute",
+          variant === "underline" && "right-0 -bottom-px left-0 h-[2px] bg-brand",
+        variant === "pill" &&
+          "inset-0 rounded-md border border-border bg-background shadow-sm",
+        variant === "segment" &&
+          "inset-0 rounded-md border border-border bg-background shadow-sm"
+      );
 
-  if (variant === "pill" || variant === "segment") {
-    return (
-      <div
-        aria-label="Tabs"
-        className={cn(baseContainerStyles, className)}
-        role="tablist"
-      >
-        <div className={cn(
-          "inline-flex items-center gap-1 rounded-xl bg-muted p-1",
-          variant === "segment" && "rounded-lg"
-        )}>
+    if (variant === "pill" || variant === "segment") {
+      return (
+        <div
+          aria-label="Tabs"
+          className={cn(baseContainerStyles, className)}
+          role="tablist"
+        >
+              <div className={cn(
+                "inline-flex items-center rounded-lg bg-muted p-1",
+                variant === "segment" && "rounded-md"
+              )}>
+            {tabs.map((tab, index) => {
+              const isActive = activeTab === tab.id;
+
+              const tabButton = (
+                <button
+                  aria-selected={isActive}
+                  className={getTabStyles(isActive)}
+                  id={`${layoutId}-tab-${tab.id}`}
+                  key={tab.id}
+                  onClick={() => handleTabChange(tab.id)}
+                  onKeyDown={(e) => handleKeyDown(e, index)}
+                  role="tab"
+                  tabIndex={isActive ? 0 : -1}
+                  type="button"
+                >
+                  {isActive && (
+                    <motion.span
+                      className={getIndicatorStyles()}
+                      layout
+                      layoutId={layoutId}
+                      transition={shouldReduceMotion ? { duration: 0 } : SPRING}
+                    />
+                  )}
+                    {tab.icon && <span className="relative z-10">{tab.icon}</span>}
+                    {!iconOnly && <span className="relative z-10">{tab.label}</span>}
+                  </button>
+                );
+
+                if (iconOnly) {
+                  return (
+                    <Tooltip key={tab.id}>
+                      <TooltipTrigger>{tabButton}</TooltipTrigger>
+                      <TooltipContent side="bottom">
+                        {tab.label}
+                      </TooltipContent>
+                    </Tooltip>
+                  );
+                }
+
+                return tabButton;
+              })}
+            </div>
+          </div>
+        );
+      }
+  
+      // underline variant
+      return (
+        <div
+          aria-label="Tabs"
+          className={cn(baseContainerStyles, className)}
+          role="tablist"
+        >
           {tabs.map((tab, index) => {
             const isActive = activeTab === tab.id;
 
-            return (
+            const tabButton = (
               <button
                 aria-selected={isActive}
                 className={getTabStyles(isActive)}
@@ -150,50 +213,23 @@ export function AnimatedTabs({
                   />
                 )}
                 {tab.icon && <span className="relative z-10">{tab.icon}</span>}
-                <span className="relative z-10">{tab.label}</span>
+                {!iconOnly && <span className="relative z-10">{tab.label}</span>}
               </button>
             );
+
+            if (iconOnly) {
+              return (
+                <Tooltip key={tab.id}>
+                  <TooltipTrigger>{tabButton}</TooltipTrigger>
+                  <TooltipContent side="bottom">
+                    {tab.label}
+                  </TooltipContent>
+                </Tooltip>
+              );
+            }
+
+            return tabButton;
           })}
         </div>
-      </div>
-    );
+      );
   }
-
-  // underline variant
-  return (
-    <div
-      aria-label="Tabs"
-      className={cn(baseContainerStyles, className)}
-      role="tablist"
-    >
-      {tabs.map((tab, index) => {
-        const isActive = activeTab === tab.id;
-
-        return (
-          <button
-            aria-selected={isActive}
-            className={getTabStyles(isActive)}
-            id={`${layoutId}-tab-${tab.id}`}
-            key={tab.id}
-            onClick={() => handleTabChange(tab.id)}
-            onKeyDown={(e) => handleKeyDown(e, index)}
-            role="tab"
-            tabIndex={isActive ? 0 : -1}
-            type="button"
-          >
-            {isActive && (
-              <motion.span
-                className={getIndicatorStyles()}
-                layout
-                layoutId={layoutId}
-                transition={shouldReduceMotion ? { duration: 0 } : SPRING}
-              />
-            )}
-            {tab.icon && <span className="relative z-10">{tab.icon}</span>}
-            <span className="relative z-10">{tab.label}</span>
-          </button>
-        );
-      })}
-    </div>
-  );
-}

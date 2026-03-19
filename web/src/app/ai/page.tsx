@@ -1,14 +1,59 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Sparkles } from "lucide-react";
-import { Composer } from "@/components/ui/composer";
-import { GeneratedPostCard } from "@/components/post";
+import { Composer, type Tool, type ComposerContextOption, type UploadedFile } from "@/components/ui/composer";
+import { GeneratedPostCard } from "@/components/features/post";
 import { Card } from "@/components/ui/card";
 import { TemplateManagerDialog } from "@/components/ui/template-manager-dialog";
 import { generatePost, platforms, tones, goals, contentTypes } from "@/lib/constants/ai-post";
 import type { Platform, ContentType, Tone, ScriptGoal, GeneratedPost } from "@/lib/types/ai-post";
 import { getTemplateManager, type ComposerTemplate } from "@/lib/types/template";
+import { HugeiconsIcon, AttachmentIcon, Image01Icon, FolderIcon } from "@/components/layout/icons";
+
+// Define AI tools
+const aiTools: Tool[] = [
+	{
+		name: "generate_post",
+		category: "content",
+		description: "Generate a social media post based on your topic",
+	},
+	{
+		name: "generate_thread",
+		category: "content",
+		description: "Create a threaded post series for engagement",
+	},
+	{
+		name: "rewrite_content",
+		category: "content",
+		description: "Rewrite existing content with a different tone",
+	},
+	{
+		name: "add_hashtags",
+		category: "optimize",
+		description: "Generate relevant hashtags for your content",
+	},
+	{
+		name: "suggest_cta",
+		category: "optimize",
+		description: "Suggest call-to-action options for your post",
+	},
+	{
+		name: "analyze_tone",
+		category: "analyze",
+		description: "Analyze the tone of your content",
+	},
+	{
+		name: "trending_topics",
+		category: "research",
+		description: "Find trending topics in your niche",
+	},
+	{
+		name: "competitor_analysis",
+		category: "research",
+		description: "Analyze competitor content strategies",
+	},
+];
 
 export default function AIChatPage() {
 	const [topic, setTopic] = useState("");
@@ -19,14 +64,17 @@ export default function AIChatPage() {
 	const [posts, setPosts] = useState<GeneratedPost[]>([]);
 	const [isGenerating, setIsGenerating] = useState(false);
 	const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false);
+	const [attachedFiles, setAttachedFiles] = useState<UploadedFile[]>([]);
+	const fileInputRef = useRef<HTMLInputElement>(null);
+	const imageInputRef = useRef<HTMLInputElement>(null);
 
 	const templateManager = getTemplateManager();
 
 	const currentPlatform = platforms.find((p) => p.id === selectedPlatform);
 	const supportedContentTypes = contentTypes.filter((c) => currentPlatform?.supports.includes(c.value));
 
-	const handleGenerate = async (message: string, _files?: unknown[], tone?: string) => {
-		if (!message.trim() || isGenerating) return;
+	const handleGenerate = async (message: string, files?: unknown[], tone?: string) => {
+		if ((!message.trim() && (!files || files.length === 0)) || isGenerating) return;
 
 		setTopic(message);
 		if (tone) setSelectedTone(tone as Tone);
@@ -49,6 +97,8 @@ export default function AIChatPage() {
 			};
 
 			setPosts((prev) => [newPost, ...prev]);
+			// Clear attached files after successful generation
+			setAttachedFiles([]);
 		} catch (error) {
 			console.error("Failed to generate post:", error);
 		} finally {
@@ -101,8 +151,77 @@ export default function AIChatPage() {
 		message: topic,
 	});
 
+	const handleToolSelect = (tool: Tool) => {
+		console.log("Selected tool:", tool.name);
+		// Handle different tools
+		switch (tool.name) {
+			case "generate_thread":
+				setContentType("thread");
+				break;
+			case "generate_post":
+				setContentType("single");
+				break;
+			default:
+				console.log(`Tool ${tool.name} selected`);
+		}
+	};
+
+	// File handling
+	const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>, isImage: boolean = false) => {
+		const files = e.target.files;
+		if (!files) return;
+
+		const newFiles: UploadedFile[] = Array.from(files).map((file) => ({
+			id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+			name: file.name,
+			size: file.size,
+			type: file.type,
+			file,
+			preview: isImage && file.type.startsWith("image/") ? URL.createObjectURL(file) : undefined,
+		}));
+
+		setAttachedFiles((prev) => [...prev, ...newFiles]);
+		e.target.value = ""; // Reset input
+	};
+
+	const handleRemoveFile = (id: string) => {
+		setAttachedFiles((prev) => {
+			const file = prev.find((f) => f.id === id);
+			if (file?.preview) {
+				URL.revokeObjectURL(file.preview);
+			}
+			return prev.filter((f) => f.id !== id);
+		});
+	};
+
+	const openFilePicker = () => {
+		fileInputRef.current?.click();
+	};
+
+	const openImagePicker = () => {
+		imageInputRef.current?.click();
+	};
+
 	return (
 		<div className="mx-auto max-w-6xl space-y-6">
+			{/* Hidden file inputs */}
+			<input
+				ref={fileInputRef}
+				type="file"
+				multiple
+				className="hidden"
+				onChange={(e) => handleFileSelect(e, false)}
+				accept=".pdf,.doc,.docx,.txt,.csv,.xlsx,.xls"
+			/>
+			<input
+				ref={imageInputRef}
+				type="file"
+				multiple
+				className="hidden"
+				onChange={(e) => handleFileSelect(e, true)}
+				accept="image/*"
+			/>
+
 			{/* Header */}
 			<div className="flex items-center justify-between">
 				<div>
@@ -119,7 +238,9 @@ export default function AIChatPage() {
 				placeholder="What do you want to post about?"
 				onSubmit={handleGenerate}
 				isLoading={isGenerating}
-				showToolsButton={false}
+				showToolsButton={true}
+				tools={aiTools}
+				onToolSelect={handleToolSelect}
 				showToneSelector={true}
 				toneOptions={tones}
 				showTemplateButton={true}
@@ -132,11 +253,28 @@ export default function AIChatPage() {
 				}))}
 				selectedPlatform={selectedPlatform}
 				onPlatformSelect={(id) => setSelectedPlatform(id as Platform)}
+				attachedFiles={attachedFiles}
+				onRemoveFile={handleRemoveFile}
 				contextOptions={[
+					{
+						id: "attach",
+						label: "Attach Files",
+						description: "Upload documents or images",
+						icon: <HugeiconsIcon icon={AttachmentIcon} size={18} />,
+						onClick: openFilePicker,
+					},
+					{
+						id: "image",
+						label: "Add Image",
+						description: "Upload or generate an image",
+						icon: <HugeiconsIcon icon={Image01Icon} size={18} />,
+						onClick: openImagePicker,
+					},
 					{
 						id: "content-type",
 						label: "Format: " + supportedContentTypes.find((c) => c.value === contentType)?.label,
 						description: supportedContentTypes.find((c) => c.value === contentType)?.description,
+						icon: <HugeiconsIcon icon={FolderIcon} size={18} />,
 						onClick: cycleContentType,
 					},
 					{
@@ -145,7 +283,7 @@ export default function AIChatPage() {
 						description: goals.find((g) => g.value === selectedGoal)?.description,
 						onClick: cycleGoal,
 					},
-				]}
+				] as ComposerContextOption[]}
 			/>
 
 			{/* Template Manager Dialog */}

@@ -232,29 +232,29 @@ export default function AnalyticsPage() {
             variant="pill"
           />
 
-          {/* Time Range Filter */}
-          <div className="inline-flex items-center rounded-lg bg-muted/50 p-1">
-            {[
-              { value: "7d" as const, label: "7D" },
-              { value: "30d" as const, label: "30D" },
-              { value: "90d" as const, label: "90D" },
-            ].map((range) => (
-              <Button
-                key={range.value}
-                variant="ghost"
-                size="sm"
-                onClick={() => setTimeRange(range.value)}
-                className={cn(
-                  "h-7 rounded-md px-3 text-xs font-medium transition-all",
-                  timeRange === range.value
-                    ? "bg-background shadow-sm text-foreground"
-                    : "text-muted-foreground hover:text-foreground",
-                )}
-              >
-                {range.label}
-              </Button>
-            ))}
-          </div>
+            {/* Time Range Filter */}
+            <div className="inline-flex items-center rounded-lg bg-muted/50 p-1">
+              {[
+                { value: "7d" as const, label: "7D" },
+                { value: "30d" as const, label: "30D" },
+                { value: "90d" as const, label: "90D" },
+              ].map((range) => (
+                <Button
+                  key={range.value}
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setTimeRange(range.value)}
+                  className={cn(
+                    "h-8 rounded-md px-3 text-sm font-medium transition-all",
+                    timeRange === range.value
+                      ? "bg-background shadow-sm text-foreground"
+                      : "text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  {range.label}
+                </Button>
+              ))}
+            </div>
         </div>
 
         {/* Animated Tab Content */}

@@ -25,6 +25,7 @@
     "@reui": "https://reui.io/r/{style}/{name}.json",
     "@jalco": "https://ui.justinlevine.me/r/{name}.json",
     "@coss": "https://coss.com/ui/r/{name}.json",
-    "@kokonutui": "https://kokonutui.com/r/{name}.json"
+    "@kokonutui": "https://kokonutui.com/r/{name}.json",
+    "@animate-ui": "https://animate-ui.com/r/{name}.json"
   }
 }

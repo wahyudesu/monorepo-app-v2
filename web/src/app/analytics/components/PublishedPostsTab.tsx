@@ -1,13 +1,7 @@
 import { useState, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { PlatformFilterSelect } from "@/components/ui/platform-filter";
 import {
   Pagination,
   PaginationContent,
@@ -154,29 +148,10 @@ export function PublishedPostsTab() {
         <span className="text-sm font-medium text-muted-foreground">
           Filter by platform:
         </span>
-        <Select
-          value={selectedPlatform}
-          onValueChange={(val) => setSelectedPlatform(val ?? "")}
-        >
-          <SelectTrigger className="w-[180px] h-8 font-medium">
-            <SelectValue placeholder="Select platform" />
-          </SelectTrigger>
-          <SelectContent>
-            {availablePlatforms.map((platformId) => {
-              const platform = analyticsPlatforms.find(
-                (p) => p.id === platformId,
-              );
-              return (
-                <SelectItem key={platformId} value={platformId}>
-                  <span className="flex items-center gap-2 font-medium">
-                    <PlatformIcon platform={platformId as Platform} size={16} />
-                    <span>{platform?.name}</span>
-                  </span>
-                </SelectItem>
-              );
-            })}
-          </SelectContent>
-        </Select>
+        <PlatformFilterSelect
+          value={selectedPlatform as Platform}
+          onChange={(val) => setSelectedPlatform(val)}
+        />
         <span className="text-xs text-muted-foreground">
           ({filteredPosts.length} posts)
         </span>
@@ -192,13 +167,13 @@ export function PublishedPostsTab() {
             <Card
               key={post.id}
               className={cn(
-                "group overflow-hidden hover:shadow-lg transition-all cursor-pointer",
+                "group overflow-hidden hover:shadow-lg transition-all cursor-pointer bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800",
                 post.isViral &&
                   "border-orange-500/30 bg-gradient-to-br from-orange-500/5 to-transparent",
               )}
             >
               {/* Thumbnail */}
-              <div className="p-3 pb-0">{getPostThumbnail(post)}</div>
+              <div className="p-2 pb-0">{getPostThumbnail(post)}</div>
 
               <CardContent className="p-3">
                 {/* Platform & Type */}

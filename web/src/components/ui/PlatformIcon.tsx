@@ -59,20 +59,20 @@ export function PlatformIcon({
 
 export function getPlatformColor(platform: Platform): string {
   const colors: Record<Platform, string> = {
-    instagram: "#E4405F",
-    tiktok: "#000000",
-    twitter: "#000000",
-    youtube: "#FF0000",
-    facebook: "#1877F2",
-    linkedin: "#0077B5",
-    pinterest: "#E60023",
-    threads: "#000000",
-    whatsapp: "#25D366",
-    reddit: "#FF4500",
-    bluesky: "#0085FF",
-    google: "#4285F4",
-    telegram: "#0088CC",
-    snapchat: "#FFFC00",
+    instagram: "#E4405F", // Pink/Red
+    tiktok: "#00F2EA", // Cyan
+    twitter: "#657786", // Gray Blue
+    youtube: "#FF0000", // Red
+    facebook: "#1877F2", // Blue
+    linkedin: "#0077B5", // Dark Blue
+    pinterest: "#E60023", // Red-Pink
+    threads: "#A0A0A0", // Gray
+    whatsapp: "#25D366", // Green
+    reddit: "#FF4500", // Orange
+    bluesky: "#0085FF", // Light Blue
+    google: "#EA4335", // Red-ish (Google's red)
+    telegram: "#229ED9", // Sky Blue
+    snapchat: "#FFFC00", // Yellow
   };
   return colors[platform] || "#666";
 }

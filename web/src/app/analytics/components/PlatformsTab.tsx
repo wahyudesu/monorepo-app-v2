@@ -34,8 +34,8 @@ export function PlatformsTab() {
                 </div>
               </div>
 
-              {/* Platform Name */}
-              <h3 className="font-semibold text-sm mb-3">{platform.name}</h3>
+                {/* Platform Name */}
+                <h3 className="font-semibold text-sm mb-3" style={{ color: platform.color }}>{platform.name}</h3>
 
               {/* Stats */}
               <div className="space-y-2">

@@ -1,6 +1,6 @@
 import { LayoutGrid } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { ContentCard } from "@/components/post/ContentCard";
+import { ContentCard } from "@/components/features/post/ContentCard";
 import { type CalendarEvent } from "@/data/mock";
 
 interface PostCardsViewProps {

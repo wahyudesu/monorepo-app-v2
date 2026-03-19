@@ -1,85 +1,111 @@
-"use client"
+import * as React from "react";
 
-import { Tabs as TabsPrimitive } from "@base-ui/react/tabs"
-import { cva, type VariantProps } from "class-variance-authority"
+import {
+  Tabs as TabsPrimitive,
+  TabsList as TabsListPrimitive,
+  TabsTab as TabsTabPrimitive,
+  TabsPanel as TabsPanelPrimitive,
+  TabsPanels as TabsPanelsPrimitive,
+  TabsHighlight as TabsHighlightPrimitive,
+  TabsHighlightItem as TabsHighlightItemPrimitive,
+  type TabsProps as TabsPrimitiveProps,
+  type TabsListProps as TabsListPrimitiveProps,
+  type TabsTabProps as TabsTabPrimitiveProps,
+  type TabsPanelProps as TabsPanelPrimitiveProps,
+  type TabsPanelsProps as TabsPanelsPrimitiveProps,
+} from "@/lib/animate-ui/primitives/base/tabs";
+import { cn } from "@/lib/utils";
 
-import { cn } from "@/lib/utils"
+type TabsProps = TabsPrimitiveProps;
 
-function Tabs({
-  className,
-  orientation = "horizontal",
-  ...props
-}: TabsPrimitive.Root.Props) {
+function Tabs({ className, ...props }: TabsProps) {
   return (
-    <TabsPrimitive.Root
-      data-slot="tabs"
-      data-orientation={orientation}
-      className={cn(
-        "group/tabs flex gap-2 data-horizontal:flex-col",
-        className
-      )}
+    <TabsPrimitive
+      className={cn("flex flex-col gap-2", className)}
       {...props}
     />
-  )
+  );
 }
 
-const tabsListVariants = cva(
-  "group/tabs-list inline-flex w-fit items-center justify-center rounded-4xl p-[3px] text-muted-foreground group-data-horizontal/tabs:h-9 group-data-vertical/tabs:h-fit group-data-vertical/tabs:flex-col group-data-vertical/tabs:rounded-2xl data-[variant=line]:rounded-none",
-  {
-    variants: {
-      variant: {
-        default: "bg-muted",
-        line: "gap-1 bg-transparent",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-    },
+type TabsListProps = TabsListPrimitiveProps & {
+  variant?: "default" | "line";
+};
+
+function TabsList({ className, variant = "default", ...props }: TabsListProps) {
+  // variant="line" removes the pill background for underline-style tabs
+  if (variant === "line") {
+    return (
+      <TabsHighlightPrimitive className="absolute bottom-0 left-0 right-0 h-0.5 bg-muted">
+        <TabsListPrimitive
+          className={cn(
+            "relative inline-flex h-9 w-fit items-center justify-center bg-transparent gap-1",
+            className,
+          )}
+          {...props}
+        />
+      </TabsHighlightPrimitive>
+    );
   }
-)
 
-function TabsList({
-  className,
-  variant = "default",
-  ...props
-}: TabsPrimitive.List.Props & VariantProps<typeof tabsListVariants>) {
   return (
-    <TabsPrimitive.List
-      data-slot="tabs-list"
-      data-variant={variant}
-      className={cn(tabsListVariants({ variant }), className)}
-      {...props}
-    />
-  )
+    <TabsHighlightPrimitive className="absolute z-0 inset-0 border border-transparent rounded-md bg-background dark:border-input dark:bg-input/30 shadow-sm">
+      <TabsListPrimitive
+        className={cn(
+          "bg-muted text-muted-foreground inline-flex h-9 w-fit items-center justify-center rounded-lg p-[3px]",
+          className,
+        )}
+        {...props}
+      />
+    </TabsHighlightPrimitive>
+  );
 }
 
-function TabsTrigger({ className, ...props }: TabsPrimitive.Tab.Props) {
+type TabsTabProps = TabsTabPrimitiveProps;
+
+function TabsTab({ className, ...props }: TabsTabProps) {
   return (
-    <TabsPrimitive.Tab
-      data-slot="tabs-trigger"
-      className={cn(
-        "relative inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-xl border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap text-foreground/60 transition-all group-data-vertical/tabs:w-full group-data-vertical/tabs:justify-start group-data-vertical/tabs:px-2.5 group-data-vertical/tabs:py-1.5 hover:text-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-1 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 dark:text-muted-foreground dark:hover:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-        "group-data-[variant=line]/tabs-list:bg-transparent group-data-[variant=line]/tabs-list:data-active:bg-transparent dark:group-data-[variant=line]/tabs-list:data-active:border-transparent dark:group-data-[variant=line]/tabs-list:data-active:bg-transparent",
-        "data-active:bg-background data-active:text-foreground dark:data-active:border-input dark:data-active:bg-input/30 dark:data-active:text-foreground",
-        "after:absolute after:bg-foreground after:opacity-0 after:transition-opacity group-data-horizontal/tabs:after:inset-x-0 group-data-horizontal/tabs:after:bottom-[-5px] group-data-horizontal/tabs:after:h-0.5 group-data-vertical/tabs:after:inset-y-0 group-data-vertical/tabs:after:-right-1 group-data-vertical/tabs:after:w-0.5 group-data-[variant=line]/tabs-list:data-active:after:opacity-100",
-        className
-      )}
-      {...props}
-    />
-  )
+    <TabsHighlightItemPrimitive value={props.value} className="flex-1">
+      <TabsTabPrimitive
+        className={cn(
+          "data-[selected]:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring text-muted-foreground inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md w-full px-2 py-1 text-sm font-medium whitespace-nowrap transition-colors duration-500 ease-in-out focus-visible:ring-[3px] focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+          className,
+        )}
+        {...props}
+      />
+    </TabsHighlightItemPrimitive>
+  );
 }
 
-function TabsContent({ className, ...props }: TabsPrimitive.Panel.Props) {
-  return (
-    <TabsPrimitive.Panel
-      data-slot="tabs-content"
-      className={cn("flex-1 text-sm outline-none", className)}
-      {...props}
-    />
-  )
+type TabsPanelsProps = TabsPanelsPrimitiveProps;
+
+function TabsPanels(props: TabsPanelsProps) {
+  return <TabsPanelsPrimitive {...props} />;
 }
 
-export { Tabs, TabsList, TabsTrigger, TabsContent, tabsListVariants }
+type TabsPanelProps = TabsPanelPrimitiveProps;
 
-// Aliases for alternative naming conventions
-export { TabsTrigger as TabsTab, TabsContent as TabsPanel }
+function TabsPanel({ className, ...props }: TabsPanelProps) {
+  return (
+    <TabsPanelPrimitive
+      className={cn("flex-1 outline-none", className)}
+      {...props}
+    />
+  );
+}
+
+export {
+  Tabs,
+  TabsList,
+  TabsTab,
+  TabsPanels,
+  TabsPanel,
+  // Backward compatibility aliases for old naming
+  TabsTab as TabsTrigger,
+  TabsPanel as TabsContent,
+  TabsPanels as TabsContents,
+  type TabsProps,
+  type TabsListProps,
+  type TabsTabProps,
+  type TabsPanelsProps,
+  type TabsPanelProps,
+};

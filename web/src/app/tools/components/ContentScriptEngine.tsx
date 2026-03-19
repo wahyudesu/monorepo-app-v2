@@ -23,7 +23,7 @@ import {
   ToggleGroup,
   ToggleGroupItem,
 } from "@/components/ui/toggle-group";
-import { ContentScriptTemplateDialog } from "@/components/post/content-script-template-dialog";
+import { ContentScriptTemplateDialog } from "@/components/features/post/content-script-template-dialog";
 import { getToolTemplateManager, type ContentScriptTemplate } from "@/lib/types/tool-template";
 import { cn } from "@/lib/utils";
 import { toast as sooner } from "sonner";
@@ -192,7 +192,7 @@ export function ContentScriptEngine() {
           <div className="space-y-2">
             <Label>Tujuan Utama</Label>
             <Select value={purpose} onValueChange={(val) => setPurpose(val ?? "")}>
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="w-full font-medium">
                 <SelectValue placeholder="Pilih tujuan" />
               </SelectTrigger>
               <SelectContent>
@@ -212,7 +212,7 @@ export function ContentScriptEngine() {
           <div className="space-y-2">
             <Label>Role Pengguna</Label>
             <Select value={persona} onValueChange={(val) => setPersona(val ?? "")}>
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="w-full font-medium">
                 <SelectValue placeholder="Pilih role" />
               </SelectTrigger>
               <SelectContent>
@@ -232,7 +232,7 @@ export function ContentScriptEngine() {
           <div className="space-y-2">
             <Label>Platform Target</Label>
             <Select value={platform} onValueChange={(val) => setPlatform(val ?? "")}>
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="w-full font-medium">
                 <SelectValue placeholder="Pilih platform" />
               </SelectTrigger>
               <SelectContent>
@@ -252,7 +252,7 @@ export function ContentScriptEngine() {
           <div className="space-y-2">
             <Label>Tone</Label>
             <Select value={tone} onValueChange={(val) => setTone(val ?? "")}>
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="w-full font-medium">
                 <SelectValue placeholder="Pilih tone" />
               </SelectTrigger>
               <SelectContent>
@@ -286,6 +286,7 @@ export function ContentScriptEngine() {
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleGenerate()}
+              className="font-medium"
             />
           </div>
 
@@ -293,7 +294,7 @@ export function ContentScriptEngine() {
           <div className="space-y-2">
             <Label>Format Konten</Label>
             <Select value={format} onValueChange={(val) => setFormat(val ?? "")}>
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="w-full font-medium">
                 <SelectValue placeholder="Pilih format" />
               </SelectTrigger>
               <SelectContent>
@@ -323,7 +324,7 @@ export function ContentScriptEngine() {
           <div className="space-y-2">
             <Label>Framework</Label>
             <Select value={framework} onValueChange={(val) => setFramework(val ?? "")}>
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="w-full font-medium">
                 <SelectValue placeholder="Pilih framework" />
               </SelectTrigger>
               <SelectContent>
@@ -343,7 +344,7 @@ export function ContentScriptEngine() {
           <div className="space-y-2">
             <Label>Jenis CTA</Label>
             <Select defaultValue="save">
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="w-full font-medium">
                 <SelectValue placeholder="Pilih CTA" />
               </SelectTrigger>
               <SelectContent>
@@ -373,13 +374,13 @@ export function ContentScriptEngine() {
           {/* Demografis */}
           <div className="space-y-2">
             <Label>Demografis</Label>
-            <Input placeholder="e.g. Pria/Wanita 25-35 tahun, profesional" />
+            <Input placeholder="e.g. Pria/Wanita 25-35 tahun, profesional" className="font-medium" />
           </div>
 
           {/* Pain Points */}
           <div className="space-y-2">
             <Label>Pain Points / Masalah</Label>
-            <Input placeholder="e.g. Kesulitan manajemen waktu, burnout" />
+            <Input placeholder="e.g. Kesulitan manajemen waktu, burnout" className="font-medium" />
           </div>
         </div>
       </div>
