@@ -44,6 +44,9 @@ next-env.d.ts
 # OpenNext
 /.open-next
 
+# Git worktrees for isolated development
+/.worktrees/
+
 # wrangler files
 .wrangler
 .dev.vars*
