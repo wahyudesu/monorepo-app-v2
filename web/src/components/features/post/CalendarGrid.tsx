@@ -159,29 +159,38 @@ export function CalendarGrid({
                   >
                     {cell.day}
                   </span>
-                  <div className="space-y-1">
-                    {dayEvents.slice(0, 4).map((ev) => (
-                      <div
-                        key={ev.id}
-                        draggable
-                        onDragStart={(e) => onDragStart(e, ev)}
-                        onDragEnd={onDragEnd}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onEventClick(ev);
-                        }}
-                        className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-xs font-medium transition-colors hover:opacity-80"
-                        style={{
-                          backgroundColor: `hsl(${ev.color} / 0.15)`,
-                          color: `hsl(${ev.color})`,
-                        }}
-                      >
-                        <span className="shrink-0 flex items-center">
-                          <PlatformIcon platform={ev.platform as Platform} size={20} />
-                        </span>
-                        <span className="truncate">{ev.title}</span>
-                      </div>
-                    ))}
+                      <div className="space-y-1.5">
+                        {dayEvents.slice(0, 4).map((ev) => (
+                              <div
+                                key={ev.id}
+                                draggable
+                                onDragStart={(e) => onDragStart(e, ev)}
+                                onDragEnd={onDragEnd}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  onEventClick(ev);
+                                }}
+                                className="flex flex-col cursor-pointer rounded-lg px-2.5 py-2 text-xs font-medium transition-colors hover:opacity-80 min-h-[56px]"
+                                style={{
+                                  backgroundColor: `hsl(${ev.color} / 0.15)`,
+                                  color: `hsl(${ev.color})`,
+                                }}
+                              >
+                                <div className="flex items-start gap-2 min-w-0">
+                                  <span className="shrink-0 flex items-center mt-0.5">
+                                    <PlatformIcon platform={ev.platform as Platform} size={14} />
+                                  </span>
+                                  <span className="line-clamp-2 leading-tight flex-1">{ev.description}</span>
+                                </div>
+                                {ev.time && (
+                                  <div className="flex justify-end mt-auto pt-1">
+                                    <span className="text-[10px] opacity-70">
+                                      {ev.time}
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
+                        ))}
                     {dayEvents.length > 4 && (
                       <p className="px-2 text-xs text-muted-foreground">
                         +{dayEvents.length - 4} more

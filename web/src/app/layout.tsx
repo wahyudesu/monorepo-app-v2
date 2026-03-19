@@ -8,6 +8,7 @@ import { AppLayoutWrapper } from '@/components/layout/AppLayoutWrapper';
 import { PageSkeleton } from '@/components/ui';
 import { Figtree } from "next/font/google";
 import { cn } from "@/lib/utils";
+import { ClerkProvider } from '@clerk/nextjs';
 
 const figtree = Figtree({subsets:['latin'],variable:'--font-sans'});
 
@@ -96,12 +97,53 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className={cn("font-sans", figtree.variable)}>
       <body className={openRunde.className}>
-        <TooltipProvider>
-          <Suspense fallback={<PageSkeleton />}>
-            <AppLayoutWrapper>{children}</AppLayoutWrapper>
-          </Suspense>
-          <Toaster />
-        </TooltipProvider>
+        <ClerkProvider
+          localization={{
+            signIn: {
+              start: {
+                title: "Hey there! Welcome back 👋",
+                subtitle: "Sign in to start creating, scheduling, and analyzing your social media content like a pro.",
+                actionText: "New here?",
+                actionLink: "Create an account",
+              },
+            },
+            signUp: {
+              start: {
+                title: "Let's get you started! 🚀",
+                subtitle: "Create your free account and join thousands of creators managing their social media presence.",
+                actionText: "Already have an account?",
+                actionLink: "Sign in",
+              },
+            },
+          }}
+          appearance={{
+            elements: {
+              // Custom styling untuk match dengan app
+              card: "rounded-3xl border-border/60 bg-card/95 backdrop-blur-xl shadow-xl",
+              headerTitle: "font-display text-xl font-semibold text-foreground",
+              headerSubtitle: "text-sm text-muted-foreground",
+              socialButtonsBlockButton: "rounded-2xl",
+              formButtonPrimary: "h-11 rounded-2xl font-semibold bg-primary text-primary-foreground hover:bg-primary/90",
+              formFieldInput: "rounded-xl h-11 border-border/60",
+              dividerRow: "border-border/50",
+              dividerText: "text-muted-foreground text-xs",
+              navbar: "hidden",
+              footer: {
+                base: "hidden",
+              },
+              rootBox: "w-full",
+              // Add helpful hint text
+              formFieldHintText: "text-xs text-muted-foreground",
+            },
+          }}
+        >
+          <TooltipProvider>
+            <Suspense fallback={<PageSkeleton />}>
+              <AppLayoutWrapper>{children}</AppLayoutWrapper>
+            </Suspense>
+            <Toaster />
+          </TooltipProvider>
+        </ClerkProvider>
       </body>
     </html>
   );

@@ -27,7 +27,7 @@ export function EventDetailDialog({ event, onClose }: EventDetailDialogProps) {
         <DialogHeader>
           <div className="flex items-center gap-2">
             <PlatformIcon platform={event.platform as Platform} size={24} />
-            <DialogTitle className="font-display">{event.title}</DialogTitle>
+            <DialogTitle className="font-display">{event.description.slice(0, 50)}</DialogTitle>
           </div>
           <DialogDescription className="sr-only">Event details</DialogDescription>
         </DialogHeader>

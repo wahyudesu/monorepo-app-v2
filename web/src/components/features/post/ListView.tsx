@@ -85,7 +85,7 @@ export function ListView({ events, onEventClick }: ListViewProps) {
       
       switch (sortField) {
         case "title":
-          comparison = a.title.localeCompare(b.title);
+          comparison = a.description.localeCompare(b.description);
           break;
         case "date":
           comparison = new Date(a.date).getTime() - new Date(b.date).getTime();
@@ -182,41 +182,36 @@ export function ListView({ events, onEventClick }: ListViewProps) {
                     />
                   </TableCell>
                 <TableCell>
-                  {event.thumbnail ? (
-                    <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded-md">
-                      <img
-                        src={event.thumbnail}
-                        alt={event.title}
-                        className="h-full w-full object-cover"
-                      />
-                      {event.mediaType === "video" && (
-                        <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-                          <Play className="h-3 w-3 text-white fill-white" />
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="h-10 w-10 rounded-md bg-muted flex items-center justify-center">
-                      {event.mediaType === "video" ? (
-                        <Video className="h-4 w-4 text-muted-foreground" />
-                      ) : (
-                        <ImageIcon className="h-4 w-4 text-muted-foreground" />
-                      )}
-                    </div>
-                  )}
-                </TableCell>
-                <TableCell>
-                  <div className="flex flex-col">
-                    <span className="font-medium text-sm truncate max-w-[200px]">
-                      {event.title}
-                    </span>
-                    {event.description && (
-                      <span className="text-xs text-muted-foreground truncate max-w-[200px]">
+                    {event.thumbnail ? (
+                      <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded-md">
+                        <img
+                          src={event.thumbnail}
+                          alt={event.description}
+                          className="h-full w-full object-cover"
+                        />
+                        {event.mediaType === "video" && (
+                          <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                            <Play className="h-3 w-3 text-white fill-white" />
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="h-10 w-10 rounded-md bg-muted flex items-center justify-center">
+                        {event.mediaType === "video" ? (
+                          <Video className="h-4 w-4 text-muted-foreground" />
+                        ) : (
+                          <ImageIcon className="h-4 w-4 text-muted-foreground" />
+                        )}
+                      </div>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex flex-col">
+                      <span className="text-sm text-muted-foreground truncate max-w-[200px]">
                         {event.description}
                       </span>
-                    )}
-                  </div>
-                </TableCell>
+                    </div>
+                  </TableCell>
                   <TableCell>
                     <PlatformIcon platform={event.platform} size={26} />
                   </TableCell>

@@ -10,6 +10,7 @@ import { generatePost, platforms, tones, goals, contentTypes } from "@/lib/const
 import type { Platform, ContentType, Tone, ScriptGoal, GeneratedPost } from "@/lib/types/ai-post";
 import { getTemplateManager, type ComposerTemplate } from "@/lib/types/template";
 import { HugeiconsIcon, AttachmentIcon, Image01Icon, FolderIcon } from "@/components/layout/icons";
+import { useAuthGate } from "@/components/auth";
 
 // Define AI tools
 const aiTools: Tool[] = [
@@ -56,6 +57,8 @@ const aiTools: Tool[] = [
 ];
 
 export default function AIChatPage() {
+	const { gatedCallback } = useAuthGate();
+
 	const [topic, setTopic] = useState("");
 	const [selectedPlatform, setSelectedPlatform] = useState<Platform>("threads");
 	const [contentType, setContentType] = useState<ContentType>("single");
@@ -73,7 +76,7 @@ export default function AIChatPage() {
 	const currentPlatform = platforms.find((p) => p.id === selectedPlatform);
 	const supportedContentTypes = contentTypes.filter((c) => currentPlatform?.supports.includes(c.value));
 
-	const handleGenerate = async (message: string, files?: unknown[], tone?: string) => {
+	const handleGenerateInternal = async (message: string, files?: unknown[], tone?: string) => {
 		if ((!message.trim() && (!files || files.length === 0)) || isGenerating) return;
 
 		setTopic(message);
@@ -106,22 +109,37 @@ export default function AIChatPage() {
 		}
 	};
 
-	const handlePlan = async (id: string) => {
+	// Wrap generate with auth gate
+	const handleGenerate = gatedCallback(handleGenerateInternal, {
+		title: "Generate AI Content",
+		description: "Sign in to generate AI-powered social media content.",
+	});
+
+	const handlePlan = gatedCallback((id: string) => {
 		console.log("Planning post:", id);
 		// TODO: Implement plan/save to drafts
 		alert("Post saved to drafts!");
-	};
+	}, {
+		title: "Save to Drafts",
+		description: "Sign in to save posts to your drafts.",
+	});
 
-	const handlePost = async (id: string) => {
+	const handlePost = gatedCallback((id: string) => {
 		console.log("Posting:", id);
 		// TODO: Implement publish to platform
 		const post = posts.find((p) => p.id === id);
 		alert("Post published to " + platforms.find((p) => p.id === post?.platform)?.name + "!");
-	};
+	}, {
+		title: "Publish Post",
+		description: "Sign in to publish posts to social media.",
+	});
 
-	const handleDelete = (id: string) => {
+	const handleDelete = gatedCallback((id: string) => {
 		setPosts((prev) => prev.filter((p) => p.id !== id));
-	};
+	}, {
+		title: "Delete Post",
+		description: "Sign in to manage your generated posts.",
+	});
 
 	const cycleContentType = () => {
 		const currentIndex = supportedContentTypes.findIndex((c) => c.value === contentType);

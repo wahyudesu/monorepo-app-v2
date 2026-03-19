@@ -1,0 +1,14 @@
+# Node
+node_modules/
+
+# Cloudflare
+.wrangler/
+.dev.vars
+dist/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~

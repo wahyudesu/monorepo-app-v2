@@ -41,6 +41,7 @@ import { cn } from "@/lib/utils";
 import { TeamMemberCard } from "@/components/ui/TeamMemberCard";
 import { IntegrationCard } from "@/components/ui/IntegrationCard";
 import { PlatformIcon, type Platform } from "@/components/ui/PlatformIcon";
+import { useUser } from "@clerk/nextjs";
 
 const tabs = [
   {
@@ -83,24 +84,64 @@ const tabs = [
 type TabId = (typeof tabs)[number]["id"];
 
 function AccountTab() {
-  const [fullName, setFullName] = useState("John Doe");
-  const [jobTitle, setJobTitle] = useState("Product Designer");
-  const [originalFullName] = useState("John Doe");
-  const [originalJobTitle] = useState("Product Designer");
-  const [avatarUrl, setAvatarUrl] = useState("https://i.pravatar.cc/150?u=me");
+  const { user, isLoaded } = useUser();
+  const [fullName, setFullName] = useState(
+    () => {
+      if (user?.firstName && user?.lastName) {
+        return `${user.firstName} ${user.lastName}`;
+      }
+      return user?.firstName || user?.emailAddresses[0]?.emailAddress?.split('@')[0] || "";
+    }
+  );
+  const [jobTitle, setJobTitle] = useState("User");
+  const [originalFullName] = useState(
+    () => {
+      if (user?.firstName && user?.lastName) {
+        return `${user.firstName} ${user.lastName}`;
+      }
+      return user?.firstName || user?.emailAddresses[0]?.emailAddress?.split('@')[0] || "";
+    }
+  );
+  const [originalJobTitle] = useState("User");
+  const [avatarUrl, setAvatarUrl] = useState(user?.imageUrl || "");
+  const [email] = useState(user?.emailAddresses[0]?.emailAddress || "");
+  const [userId] = useState(user?.id || "");
 
   const hasChanges =
     fullName !== originalFullName || jobTitle !== originalJobTitle;
 
   const handleAvatarClick = () => {
-    // Simulate avatar change with random avatar
-    const randomId = Math.floor(Math.random() * 1000);
-    setAvatarUrl(`https://i.pravatar.cc/150?u=${randomId}`);
+    // Would trigger Clerk's avatar upload in production
+    console.log("Open avatar upload");
   };
 
-  const handleSave = () => {
-    // In real app, this would save to backend
-    console.log("Saving:", { fullName, jobTitle });
+  const handleSave = async () => {
+    // Update user profile via Clerk
+    try {
+      const names = fullName.split(' ');
+      await user?.update({
+        firstName: names[0] || '',
+        lastName: names.slice(1).join(' ') || '',
+      });
+      console.log("Profile updated");
+    } catch (error) {
+      console.error("Failed to update profile:", error);
+    }
+  };
+
+  // Get user initials for fallback
+  const getInitials = () => {
+    if (user?.firstName && user?.lastName) {
+      return `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
+    }
+    if (user?.firstName) {
+      return user.firstName[0].toUpperCase();
+    }
+    const email = user?.emailAddresses[0]?.emailAddress;
+    if (email) {
+      return email[0].toUpperCase();
+    }
+    return "U";
   };
 
   return (
@@ -121,8 +162,8 @@ function AccountTab() {
               className="relative group cursor-pointer"
             >
               <Avatar className="h-16 w-16 ring-2 ring-border group-hover:ring-primary transition-all">
-                <AvatarImage src={avatarUrl} />
-                <AvatarFallback>ME</AvatarFallback>
+                <AvatarImage src={user?.imageUrl} />
+                <AvatarFallback>{getInitials()}</AvatarFallback>
               </Avatar>
               <div className="absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                 <span className="text-white text-xs font-medium">Change</span>
@@ -131,7 +172,7 @@ function AccountTab() {
             <div>
               <p className="text-sm font-medium">Profile Photo</p>
               <p className="text-xs text-muted-foreground">
-                Click on avatar to change
+                From Clerk account
               </p>
             </div>
           </div>
@@ -139,20 +180,18 @@ function AccountTab() {
           {/* Form Fields */}
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label className="text-sm">Full Name</Label>
+              <Label className="text-sm">First Name</Label>
               <Input
-                value={fullName}
+                value={user?.firstName || ""}
                 onChange={(e) => setFullName(e.target.value)}
                 className="h-10 font-medium"
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-sm">Job Title</Label>
+              <Label className="text-sm">Last Name</Label>
               <Input
-                value={jobTitle}
-                onChange={(e) => setJobTitle(e.target.value)}
+                value={user?.lastName || ""}
                 className="h-10 font-medium"
-                placeholder="What do you do?"
               />
             </div>
           </div>
@@ -160,13 +199,38 @@ function AccountTab() {
           <div className="space-y-2">
             <Label className="text-sm">Email</Label>
             <Input
-              value="john@acme.com"
+              value={email}
               type="email"
               className="h-10 bg-muted/50 cursor-not-allowed font-medium"
               disabled
             />
             <p className="text-xs text-muted-foreground">
-              Email cannot be changed
+              Managed by Clerk - change in your Clerk profile
+            </p>
+          </div>
+
+          {/* Account Info */}
+          <div className="space-y-2">
+            <Label className="text-sm">Account ID</Label>
+            <div className="flex items-center gap-2">
+              <Input
+                value={userId}
+                readOnly
+                className="h-10 bg-muted/50 font-mono text-xs"
+              />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="shrink-0"
+                onClick={() => {
+                  navigator.clipboard.writeText(userId);
+                }}
+              >
+                <Sparkles className="h-4 w-4" />
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Your unique account identifier
             </p>
           </div>
 
@@ -285,9 +349,56 @@ function AccountTab() {
                 Irreversible and destructive actions.
               </p>
             </div>
-            <Button variant="destructive" size="sm">
-              Delete Account
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => window.location.href = "https://dashboard.clerk.com"}
+            >
+              Manage Account
             </Button>
+          </div>
+          <p className="text-xs text-muted-foreground mt-2">
+            Go to Clerk Dashboard to delete your account or manage password
+          </p>
+        </CardContent>
+      </Card>
+
+      {/* Account Info Card */}
+      <Card className="border-border/50">
+        <CardContent className="p-4 space-y-3">
+          <div>
+            <p className="font-display font-semibold text-sm">Account Information</p>
+            <p className="text-xs text-muted-foreground">
+              Your account details from Clerk
+            </p>
+          </div>
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Account Created</span>
+              <span className="font-medium">
+                {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Last Sign In</span>
+              <span className="font-medium">
+                {user?.lastSignInAt ? new Date(user.lastSignInAt).toLocaleDateString() : 'N/A'}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Email Verified</span>
+              <span className={user?.emailAddresses[0]?.verification?.status === 'verified'
+                ? 'font-medium text-green-600'
+                : 'font-medium text-amber-600'}>
+                {user?.emailAddresses[0]?.verification?.status === 'verified' ? '✓ Verified' : 'Pending'}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">2FA Enabled</span>
+              <span className="font-medium">
+                {user?.twoFactorEnabled ? 'Yes' : 'No'}
+              </span>
+            </div>
           </div>
         </CardContent>
       </Card>

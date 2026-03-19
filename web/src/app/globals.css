@@ -189,3 +189,18 @@
         @apply bg-background text-foreground;
     }
 }
+
+/* Clerk Modal Centering */
+.cl-modalContent,
+.cl-internal-1b05mvg {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 100vh !important;
+    padding: 1rem !important;
+}
+
+.cl-card,
+.cl-internal-ml9k5m {
+    margin: auto !important;
+}

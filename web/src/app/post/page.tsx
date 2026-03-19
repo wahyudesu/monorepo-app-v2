@@ -14,12 +14,15 @@ import {
 } from "@/components/features/post";
 import { getDaysInMonth, getFirstDayOfMonth } from "@/lib/constants";
 import { Platform } from "@/components/ui/PlatformIcon";
+import { useAuthGate } from "@/components/auth";
 
 type ViewMode = "calendar" | "cards";
 type CalendarView = "month" | "week";
 type CardsView = "grid" | "kanban" | "list";
 
 export default function PostPage() {
+  const { gatedCallback } = useAuthGate();
+
   const [viewMode, setViewMode] = useState<ViewMode>("calendar");
   const [calendarView, setCalendarView] = useState<CalendarView>("month");
   const [cardsView, setCardsView] = useState<CardsView>("grid");
@@ -46,10 +49,22 @@ export default function PostPage() {
     "all" as const,
   );
 
-  const openCreateDialog = (dateStr?: string) => {
+  // Handler that requires auth for creating content
+  const handleCreateClick = gatedCallback((dateStr?: string) => {
     setSelectedDateForCreate(dateStr || null);
     setIsCreateDialogOpen(true);
-  };
+  }, {
+    title: "Create content",
+    description: "Sign in to create and schedule social media content.",
+  });
+
+  // Handler that requires auth for viewing event details
+  const handleEventClick = gatedCallback((event: CalendarEvent) => {
+    setSelectedEvent(event);
+  }, {
+    title: "View content",
+    description: "Sign in to view and manage your scheduled content.",
+  });
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -133,6 +148,7 @@ export default function PostPage() {
     e.dataTransfer.dropEffect = "move";
   }, []);
 
+  // Gated drag and drop - requires auth to actually move events
   const handleDrop = useCallback(
     (e: React.DragEvent, targetDate: string) => {
       e.preventDefault();
@@ -146,6 +162,11 @@ export default function PostPage() {
     },
     [draggedEvent],
   );
+
+  const handleDropWithAuth = gatedCallback(handleDrop, {
+    title: "Reschedule content",
+    description: "Sign in to reschedule your content by dragging.",
+  });
 
   const today = currentDate;
   const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
@@ -205,12 +226,12 @@ export default function PostPage() {
           eventsByDate={eventsByDate}
           todayStr={todayStr}
           draggedEvent={draggedEvent}
-          onDateClick={openCreateDialog}
-          onEventClick={setSelectedEvent}
+          onDateClick={handleCreateClick}
+          onEventClick={handleEventClick}
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
           onDragOver={handleDragOver}
-          onDrop={handleDrop}
+          onDrop={handleDropWithAuth}
           calendarView={calendarView}
         />
       )}
@@ -218,22 +239,22 @@ export default function PostPage() {
       {viewMode === "cards" && cardsView === "grid" && (
         <PostCardsView
           events={filteredEvents}
-          onEventClick={setSelectedEvent}
-          onCreateClick={() => openCreateDialog()}
+          onEventClick={handleEventClick}
+          onCreateClick={() => handleCreateClick()}
         />
       )}
 
       {viewMode === "cards" && cardsView === "kanban" && (
         <KanbanView
           events={filteredEvents}
-          onEventClick={setSelectedEvent}
-          onCreateClick={() => openCreateDialog()}
+          onEventClick={handleEventClick}
+          onCreateClick={() => handleCreateClick()}
           onEventsChange={setEvents}
         />
       )}
 
       {viewMode === "cards" && cardsView === "list" && (
-        <ListView events={filteredEvents} onEventClick={setSelectedEvent} />
+        <ListView events={filteredEvents} onEventClick={handleEventClick} />
       )}
 
       <EventDetailDialog

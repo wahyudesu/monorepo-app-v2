@@ -38,6 +38,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Instagram, Twitter, Youtube, Music, Star } from "lucide-react";
 import { InboxAutomation } from "./InboxAutomation";
+import { useAuthGate } from "@/components/auth";
 
 type CustomerLabel = "vip" | "lead" | "customer" | "partner" | "none";
 
@@ -71,6 +72,7 @@ const labelConfig: Record<
 type Platform = "all" | "instagram" | "tiktok" | "twitter" | "youtube";
 type TypeFilter = "message" | "comment";
 type SortBy = "newest" | "name";
+type MessageFilter = "all" | "unread" | "favorites";
 
 interface ChatMessage {
   id: string;
@@ -313,9 +315,12 @@ const mockConversations: Conversation[] = [
 ];
 
 export function InboxContent() {
+  const { gatedCallback } = useAuthGate();
+
   const [activeTab, setActiveTab] = useState("inbox");
   const [platform, setPlatform] = useState<Platform>("all");
   const [typeFilter, setTypeFilter] = useState<TypeFilter>("message");
+  const [messageFilter, setMessageFilter] = useState<MessageFilter>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedConversation, setSelectedConversation] =
     useState<Conversation | null>(null);
@@ -335,17 +340,54 @@ export function InboxContent() {
     },
   ];
 
-  // Filter conversations
-  const filteredConversations = useMemo(() => {
-    let result = mockConversations.filter((conv) => {
-      const matchesPlatform = platform === "all" || conv.platform === platform;
-      const matchesType = conv.type === typeFilter;
-      const matchesSearch =
-        searchQuery === "" ||
-        conv.sender.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        conv.lastMessage.toLowerCase().includes(searchQuery.toLowerCase());
-      return matchesPlatform && matchesType && matchesSearch;
-    });
+  // Gated function to select a conversation (requires auth)
+  const handleSelectConversation = gatedCallback((conv: Conversation) => {
+    setSelectedConversation(conv);
+  }, {
+    title: "View Messages",
+    description: "Sign in to view and respond to messages.",
+  });
+
+  // Gated function to send a message (requires auth)
+  const handleSendMessageInternal = () => {
+    if (!messageInput.trim() || !selectedConversation) return;
+
+    const newMessage: ChatMessage = {
+      id: `m${Date.now()}`,
+      content: messageInput,
+      timestamp: "Just now",
+      isFromMe: true,
+    };
+
+    // In a real app, you'd update the backend
+    setMessageInput("");
+  };
+
+  const handleSendMessage = gatedCallback(handleSendMessageInternal, {
+    title: "Send Message",
+    description: "Sign in to send messages to your customers.",
+  });
+
+// Filter conversations
+    const filteredConversations = useMemo(() => {
+      let result = mockConversations.filter((conv) => {
+        const matchesPlatform = platform === "all" || conv.platform === platform;
+        const matchesType = conv.type === typeFilter;
+        const matchesSearch =
+          searchQuery === "" ||
+          conv.sender.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          conv.lastMessage.toLowerCase().includes(searchQuery.toLowerCase());
+        
+        // Message filter
+        let matchesMessageFilter = true;
+        if (messageFilter === "unread") {
+          matchesMessageFilter = !conv.isRead || conv.unreadCount > 0;
+        } else if (messageFilter === "favorites") {
+          matchesMessageFilter = conv.isStarred;
+        }
+        
+        return matchesPlatform && matchesType && matchesSearch && matchesMessageFilter;
+      });
 
     // Sort based on sortBy
     if (sortBy === "newest") {
@@ -365,22 +407,8 @@ export function InboxContent() {
       result = [...result].sort((a, b) => a.sender.localeCompare(b.sender));
     }
 
-    return result;
-  }, [platform, typeFilter, searchQuery, sortBy]);
-
-  const handleSendMessage = () => {
-    if (!messageInput.trim() || !selectedConversation) return;
-
-    const newMessage: ChatMessage = {
-      id: `m${Date.now()}`,
-      content: messageInput,
-      timestamp: "Just now",
-      isFromMe: true,
-    };
-
-    // In a real app, you'd update the backend
-    setMessageInput("");
-  };
+return result;
+    }, [platform, typeFilter, searchQuery, sortBy, messageFilter]);
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -449,30 +477,56 @@ export function InboxContent() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 h-[calc(100%-6rem)]">
             {/* Conversation List */}
             <Card className="lg:col-span-1 border-border/50 overflow-hidden flex flex-col">
-              {/* Search & Sort */}
-              <div className="p-3 border-b border-border/50 space-y-2">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search conversations..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 h-9 font-medium"
-                  />
-                </div>
-                <Select
-                  value={sortBy}
-                  onValueChange={(v) => setSortBy(v as SortBy)}
-                >
-                  <SelectTrigger className="w-full h-8 text-xs">
-                    <SelectValue placeholder="Sort by" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="newest">Terbaru</SelectItem>
-                    <SelectItem value="name">Nama</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+  {/* Search & Sort */}
+                  <div className="p-3 border-b border-border/50 space-y-2">
+                    {/* Filter Tabs + Sort in one row */}
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-1">
+                        {(["all", "unread", "favorites"] as MessageFilter[]).map(
+                          (filter) => (
+                            <button
+                              key={filter}
+                              onClick={() => setMessageFilter(filter)}
+                              className={cn(
+                                "px-3 py-1.5 text-xs font-medium rounded-full transition-all",
+                                messageFilter === filter
+                                  ? "bg-primary text-primary-foreground"
+                                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                              )}
+                            >
+                              {filter === "all"
+                                ? "All"
+                                : filter === "unread"
+                                ? "Unread"
+                                : "Favorites"}
+                            </button>
+                          )
+                        )}
+                      </div>
+                      <Select
+                        value={sortBy}
+                        onValueChange={(v) => setSortBy(v as SortBy)}
+                      >
+                        <SelectTrigger className="w-[100px] h-7 text-xs">
+                          <SelectValue placeholder="Sort by" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="newest">Terbaru</SelectItem>
+                          <SelectItem value="name">Nama</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        placeholder="Search conversations..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="pl-10 h-9 font-medium"
+                      />
+                    </div>
+                  </div>
 
               {/* Conversation List */}
               <ScrollArea className="flex-1">
@@ -492,7 +546,7 @@ export function InboxContent() {
                       return (
                         <button
                           key={conv.id}
-                          onClick={() => setSelectedConversation(conv)}
+                          onClick={() => handleSelectConversation(conv)}
                           className={cn(
                             "w-full text-left p-3 rounded-xl transition-all",
                             "hover:bg-muted/50",

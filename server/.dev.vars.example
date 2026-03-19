@@ -1,0 +1,3 @@
+# Copy this file to .dev.vars and add your API key
+# .dev.vars is gitignored for security
+ZERNIO_API_KEY=your_api_key_here
